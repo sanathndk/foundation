@@ -372,7 +372,7 @@ $_SESSION['csrf_token']=$token;
                               <option selected value="A">Availabale</option>
                               <option value="N">Not Availabale</option>
                               <option value="L">Lost</option>
-                              <option value="D">Damage</option>
+                              <option value="D">Damage</option> 
                             </select>
                           </div>            
                         </div>

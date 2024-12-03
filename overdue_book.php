@@ -17,7 +17,7 @@ else{
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <meta name="description" content="" />
     <meta name="author" content="AS Indika"/>
-    <link rel="stylesheet" href="css/jquery.dataTables.min.css">  
+	<link rel="stylesheet" href="css/jquery.dataTables.min.css">  
     <link rel="icon" href="img/logo.png" type="image/png">
 
     <title>Overdue Book | Foundation Library Management System</title>
@@ -105,7 +105,14 @@ else{
      <!-- CONTENT-WRAPPER SECTION END-->
   <?php include('includes/footer.php');?>
 
-    <script src="js/jquery-3.7.0.js"></script>
+  <script src="js/jquery-3.7.0.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+
+	<script>
+		new DataTable('#dataTables');  
+	</script>
+
+    <!-- <script src="js/jquery-3.7.0.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
     <script src="js/dataTables.buttons.min.js"></script>
     <script src="js/buttons.print.min.js"></script>
@@ -115,7 +122,7 @@ else{
     <script src="js/buttons.html5.min.js"></script>      
     <script src="js/dataTables.bootstrap5.min.js"></script>    
     <script src="js/buttons.bootstrap5.min.js"></script>    
-    <script src="js/buttons.colVis.min.js"></script>  
+    <script src="js/buttons.colVis.min.js"></script>   -->
 
     <script>
 		// new DataTable('#dataTables');   
