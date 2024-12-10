@@ -30,7 +30,7 @@ else{
                         <div class="container-fluid">
                             <div class="row page-title-div">
                                 <div class="col-sm-8">
-                                    <h2 class="title">Dashboard: Foundation Library Management System</h2>                                  
+                                    <h2 class="title">Foundation Library Management System</h2>                                  
                                 </div>
                                 <!-- /.col-sm-8 -->
                              </div>
