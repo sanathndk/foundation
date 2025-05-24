@@ -50,7 +50,8 @@ include('includes/config.php');
             <div class="centered-div">
                 <input type="search" name="keyword" class="form-control" placeholder="Enter search keyword" title="Enter search keyword">    
             </div>
-            <p class="mt-4  text-light">&copy;Foundation - 2023</p>
+            <p class="mt-4  text-light"> Software Solution by Dte of IT - SL Army</p>
+            <!--&copy; <?php echo date('Y'); ?> -->
         </div>
 
     </div>

@@ -235,8 +235,8 @@ $_SESSION['csrf_token']=$token;
 											<td><?php echo $row["mobile"]?></td>
 											<td><?php echo $row["email"]?></td>
 											<td class="text-center">
-												<a href="edit_author.php?id=<?php echo $row['authorid']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i>&nbsp;Edit</a>
-												<a href="add-author.php?id=<?php echo $row['authorid']; ?>" onclick="return confirm('Are your sure Delete this record?');" class="btn btn-danger btn-sm" name="btndelete"><i class="bi bi-trash3"></i>&nbsp;Delete</a>
+												<a href="edit_author.php?id=<?php echo $row['authorid']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i></a>
+												<a href="add-author.php?id=<?php echo $row['authorid']; ?>" onclick="return confirm('Are your sure Delete this record?');" class="btn btn-danger btn-sm" name="btndelete"><i class="bi bi-trash3"></i></a>
 											</td>
 										</tr>
 										<?php

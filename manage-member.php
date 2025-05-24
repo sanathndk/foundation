@@ -121,10 +121,10 @@ else{
                                                         <td class="center">
                                         <?php if($row['status']==1)
                                         {?>
-                                        <a href="manage-member.php?inactive=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to block this Member?');">  <button class="btn btn-danger"><i class="bi bi-toggle-off"></i>&nbsp;Inactive</button>
+                                        <a href="manage-member.php?inactive=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to block this Member?');">  <button class="btn btn-danger"><i class="bi bi-toggle-off"></i></button>
                                         <?php } else {?>
 
-                                            <a href="manage-member.php?active=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to active this Member?');"><button class="btn btn-primary"><i class="bi bi-toggle2-off"></i>&nbsp;Active</button> 
+                                            <a href="manage-member.php?active=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to active this Member?');"><button class="btn btn-primary"><i class="bi bi-toggle2-off"></i></button> 
                                             <?php } ?>
                                           
                                             </td>

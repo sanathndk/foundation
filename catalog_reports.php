@@ -108,7 +108,7 @@ else{
                                                         </td>
 
                                                         <td class="center">                                       
-                                                            <a href="edit_cataloging.php?id=<?php echo htmlentities($row['booknumber']);?>" onclick="return confirm('Are you sure you want to edit this book?');">  <button class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i>&nbsp;Edit</button>
+                                                            <a href="edit_cataloging.php?id=<?php echo htmlentities($row['booknumber']);?>" onclick="return confirm('Are you sure you want to edit this book?');">  <button class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></button>
                                           
                                             </td>
                                         </tr>

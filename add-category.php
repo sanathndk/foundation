@@ -141,8 +141,9 @@ else{
 											<td><?php echo $row["categorycode"]?></td>
 											<td><?php echo $row["description"]?></td>
 											<td class="text-center">
-												<a href="edit-category.php?id=<?php echo $row['categoryid']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i>&nbsp;Edit</a>
-												<a href="add-category.php?id=<?php echo $row['categoryid']; ?>" onclick="return confirm('Are your sure Delete this record?');" class="btn btn-danger btn-sm" name="btndelete"><i class="bi bi-trash3"></i>&nbsp;Delete</a>
+												
+												<a href="edit-category.php?id=<?php echo $row['categoryid']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i></a>
+												<a href="add-category.php?id=<?php echo $row['categoryid']; ?>" onclick="return confirm('Are your sure Delete this record?');" class="btn btn-danger btn-sm" name="btndelete"><i class="bi bi-trash3"></i></a>
 											</td>
 										</tr>
 										<?php

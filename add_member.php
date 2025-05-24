@@ -619,7 +619,7 @@ $_SESSION['csrf_token']=$token;
                                 </fieldset>
 
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                                    <div class="col-sm-1">     
+                                    <div class="col-sm-2">     
                                         <input type="hidden" name="csrf_token" value="<?php echo $token?>">
                                         <button type="submit" class="btn btn-primary btn-md" name="btnsave"><i class="bi bi-person-plus-fill"></i>&nbsp;Register</button>
                                     </div>

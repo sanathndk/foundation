@@ -3,7 +3,7 @@
             
             <div class="row">
                 <div class="col-md-12">
-                   &copy; 2023 Foundation Library Management System |<a href="#" > Designed by : MCTE - Mhow</a> 
+                   &copy; Software Solution by Dte of IT - SL Army</a> 
                 </div>
 
             </div>

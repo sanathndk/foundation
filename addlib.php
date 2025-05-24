@@ -31,7 +31,7 @@ else{
 			mysqli_stmt_bind_param($result,'ssssssssssss',$branchcode, $name, $address1, $address2, $zip, $city, $state, $country, $phone, $fax, $email, $url);
 			if(mysqli_stmt_execute($result)) {
 				echo "Record updated successfully";
-				header('location:add-publishers.php');
+				// header('location:add-publishers.php');
 			} else{
 				echo "Error inserting data: " .mysqli_error($dbcon);
 			}

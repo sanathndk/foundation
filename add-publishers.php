@@ -190,8 +190,8 @@ else{
 											<td><?php echo $row["pubmobile"]?></td>
 											<td><?php echo $row["pubemail"]?></td>
 											<td class="text-center">
-												<a href="edit_publishers.php?id=<?php echo $row['pubid']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i>&nbsp;Edit</a>
-												<a href="add-publishers.php?id=<?php echo $row['pubid']; ?>" onclick="return confirm('Are your sure Delete this record?');" class="btn btn-danger btn-sm" name="btndelete"><i class="bi bi-trash3"></i>&nbsp;Delete</a>
+												<a href="edit_publishers.php?id=<?php echo $row['pubid']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i></a>
+												<a href="add-publishers.php?id=<?php echo $row['pubid']; ?>" onclick="return confirm('Are your sure Delete this record?');" class="btn btn-danger btn-sm" name="btndelete"><i class="bi bi-trash3"></i></a>
 											</td>
 										</tr>
 										<?php
