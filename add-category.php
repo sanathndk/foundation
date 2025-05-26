@@ -105,6 +105,7 @@ else{
 										<button type="submit" class="btn btn-primary btn-md" name="btnsave"><i class="bi bi-tags-fill"></i> &nbsp;Save</button>
 									</div>
 								</div>
+								
 							</fieldset>
 						</form>						
 						<div class="row justify-content-md-center"> 
@@ -150,17 +151,17 @@ else{
 											}
 											} 
 										?>						  											
-									</tbody>
-								</table>	
+									</tbody>									
+								</table>									 
 							</div>														
-						</div>						
-					</div>					
-				</div> 			
-			</div>
-		</div>	
+						</div>											
+					</div>	
+					<?php include('includes/footer.php');?>									
+				</div> 							
+			</div>					
+		</div>					
 	</div>	   
-	<?php include('includes/footer.php');?>   
-
+	  	
 	<script src="js/jquery-3.7.0.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
 

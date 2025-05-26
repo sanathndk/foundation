@@ -125,7 +125,11 @@ else{
     <script src="js/buttons.colVis.min.js"></script>   -->
 
     <script>
-		// new DataTable('#dataTables');   
+		// new DataTable('#dataTables'); 
+        function loadTable() {
+        if ($.fn.DataTable.isDataTable('#dataTables')) {
+        $('#dataTables').DataTable().clear().destroy();  
+        }
         $(document).ready(function() {
         $('#dataTables').DataTable( {
             dom: 'Bfrtip',
@@ -134,6 +138,7 @@ else{
             ]
         } );
     } );
+}
 
     // table.buttons().container()
     // .appendTo( '#dataTables .col-md-6:eq(0)' );

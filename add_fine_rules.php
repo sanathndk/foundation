@@ -243,12 +243,13 @@ else{
 								</table>	
 							</div>														
 						</div>						
-					</div>					
+					</div>
+					<?php include('includes/footer.php');?>  
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>   
+	 
 	<!-- <script src="js/search.js"></script> -->
 
 	<script src="js/jquery-3.7.0.js"></script>

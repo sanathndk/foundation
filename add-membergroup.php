@@ -176,7 +176,7 @@ else{
 											<td><?php echo $row["limitation"]?></td>
 											<td class="text-center">
 												<a href="edit_membergroup.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i></a>
-												<a href="add-membergroup.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are your sure Delete this record?');" name="btndelete"><i class="bi bi-trash3"></i></a>
+												<!-- <a href="add-membergroup.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are your sure Delete this record?');" name="btndelete"><i class="bi bi-trash3"></i></a> -->
 											</td>
 										</tr>
 										<?php
@@ -186,13 +186,14 @@ else{
 									</tbody>
 								</table>	
 							</div>														
-						</div>						
-					</div>					
+						</div> 
+					</div>			
+					<?php include('includes/footer.php');?>		
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>   
+	
 	<!-- <script src="js/search.js"></script> -->
 
 	<script src="js/jquery-3.7.0.js"></script>

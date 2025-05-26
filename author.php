@@ -92,6 +92,7 @@ $_SESSION['csrf_token']=$token;
 						</div>
 						<!-- /.row -->
 					</div>
+					
 					<!-- /.container-fluid -->
 
 					<div class="container">                 
@@ -134,14 +135,15 @@ $_SESSION['csrf_token']=$token;
 										?>						  											
 									</tbody>
 								</table>	
-							</div>														
+							</div>																					
 						</div>						
-					</div>					
-				</div> 			
+					</div>			 
+				</div>  			
 			</div>
 		</div>	
+		
 	</div>	   
-	<?php include('includes/footer.php');?>   
+	 <?php include('includes/footer.php');?>  
     <script src="js/jquery-3.7.0.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
     <script src="js/dataTables.buttons.min.js"></script>

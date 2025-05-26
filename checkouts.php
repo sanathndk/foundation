@@ -165,16 +165,18 @@ $_SESSION['csrf_token']=$token;
 									</div>
 								</div>	
 							</fieldset>														
-						</form>						
-				</div> 
-			</div>
-		</div>
+						</form>		
+					</div>
+				<br><br><br><br><br><br><br><br><br><br>
+				<?php include('includes/footer.php');?>	
+			</div>		
+		</div>	
 	</div>
 
 	<div class="col"> 
-		<?php include('includes/footer.php');?>                    
-	</div>   	
-
+		                   
+	</div>
+</div>   	
 </body>
 </html>
 <?php } ?>
