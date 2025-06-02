@@ -92,6 +92,7 @@ else{
                                                         <th>Mobile Number</th>
                                                         <th>Email</th>
                                                         <th>Category</th>
+                                                        <th>Service</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
                                                     </tr>
@@ -111,7 +112,8 @@ else{
                                                             <td><?php echo $row['initials'].' '.$row['surname'];?></td>
                                                             <td><?php echo $row['mobile'];?></td>
                                                             <td><?php echo $row['email'];?></td>
-                                                            <td><?php echo $row['categorycode'];?></td>                                             
+                                                            <td><?php echo $row['categorycode'];?></td>
+                                                            <td><?php echo $row['service'];?></td>
                                                             <td><?php if($row['status']==1)
                                                             {
                                                                 echo htmlentities("Active");

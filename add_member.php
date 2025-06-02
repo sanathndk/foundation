@@ -9,6 +9,7 @@ if(isset($_POST['btnsave'])){
     if ($_SESSION['csrf_token']==$_POST['csrf_token']) {        
 
         $memberphoto=$_FILES['memberphoto'];
+        $service = $_POST['service'];
         $title =$_POST['title'];  
         $cardnumber=$_POST['cardnumber']; 
         $surname=$_POST['surname']; 
@@ -67,11 +68,11 @@ if(isset($_POST['btnsave'])){
             if (in_array($imagedetails['extension'],$allwextention)) {
                 $filepath='img/'.uniqid().'.'.$imagedetails['extension'];
                 if (move_uploaded_file($memberphoto['tmp_name'],$filepath)) {
-                    $sql="INSERT INTO `member`(`title`, `cardnumber`, `surname`, `firstname`, `middle_name`, `othernames`, `initials`,`regtnumber`, `dateofbirth`, `gender`, `address`, `address2`, `city`, `state`, `zipcode`, `country`, `mobile`, `mobile2`, `email`, `email2`, `primary_contact_method`, `B_address`, `B_address2`, `B_city`, `B_state`, `B_zipcode`, `B_country`, `altcontactname`, `altcontactmobil`, `altcontactaddress1`, `altcontactaddress2`, `altcontactcity`, `altcontactstate`, `altcontactzipcode`, `altcontactcountry`, `altcontactemail`, `relationship`, `idcard`, `passport`, `branchcode`, `categorycode`, `dateenrolled`, `dateexpiry`, `userid`, `password`, `status`,`img`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    $sql="INSERT INTO `member`(`service`,`title`, `cardnumber`, `surname`, `firstname`, `middle_name`, `othernames`, `initials`,`regtnumber`, `dateofbirth`, `gender`, `address`, `address2`, `city`, `state`, `zipcode`, `country`, `mobile`, `mobile2`, `email`, `email2`, `primary_contact_method`, `B_address`, `B_address2`, `B_city`, `B_state`, `B_zipcode`, `B_country`, `altcontactname`, `altcontactmobil`, `altcontactaddress1`, `altcontactaddress2`, `altcontactcity`, `altcontactstate`, `altcontactzipcode`, `altcontactcountry`, `altcontactemail`, `relationship`, `idcard`, `passport`, `branchcode`, `categorycode`, `dateenrolled`, `dateexpiry`, `userid`, `password`, `status`,`img`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     $result = mysqli_prepare($dbcon, $sql);
 
                     if ($result) {
-                        mysqli_stmt_bind_param($result,'sssssssssssssssssssssssssssssssssssssssssssssss',$title,$cardnumber,$surname,$firstname,$middle_name,$othernames,$initials,$regtnumber,$dateofbirth,$gender,$address,$address2,$city,$state,$zipcode,$country,$mobile,$mobile2,$email,$email2,$primary_contact_method,$B_address,$B_address2,$B_city,$B_state,$B_zipcode,$B_country,$altcontactname,$altcontactmobil,$altcontactaddress1,$altcontactaddress2,$altcontactcity,$altcontactstate,$altcontactzipcode,$altcontactcountry,$altcontactemail,$relationship,$idcard,$passport,$branchcode,$categorycode,$dateenrolled,$dateexpiry,$userid,$password,$status,$filepath);
+                        mysqli_stmt_bind_param($result,'ssssssssssssssssssssssssssssssssssssssssssssssss',$service,$title,$cardnumber,$surname,$firstname,$middle_name,$othernames,$initials,$regtnumber,$dateofbirth,$gender,$address,$address2,$city,$state,$zipcode,$country,$mobile,$mobile2,$email,$email2,$primary_contact_method,$B_address,$B_address2,$B_city,$B_state,$B_zipcode,$B_country,$altcontactname,$altcontactmobil,$altcontactaddress1,$altcontactaddress2,$altcontactcity,$altcontactstate,$altcontactzipcode,$altcontactcountry,$altcontactemail,$relationship,$idcard,$passport,$branchcode,$categorycode,$dateenrolled,$dateexpiry,$userid,$password,$status,$filepath);
                         
                         if (mysqli_stmt_execute($result)) {
                             $msg = 'Member registed successfuly, <strong>Member id is '.$cardnumber.'</strong><br>Registration fee is <strong>'.number_format($enrollmentfee, 2).'</strong>';  
@@ -157,10 +158,22 @@ $_SESSION['csrf_token']=$token;
                                         <div class="col-sm-2 text-end">
                                             <label for="inputSalutation" class="form-label">Member Image</label>       
                                         </div>
-                                        <div class="col-sm-4">       
+                                        <div class="col-sm-2">       
                                             <input type="file" class="form-control" id="memberphoto" name="memberphoto" required>                                            
                                         </div>
-                                    
+
+                                        <div class="col-sm-2 text-end">
+                                            <label for="service" class="form-label">Service:</label>       
+                                        </div>
+                                        <div class="col-sm-2">        
+                                            <select id="service" class="form-select" name="service" required>
+                                                <option value="Ar">Army</option>
+                                                <option value="N">Navy</option>
+                                                <option value="A">Air Force</option>
+                                                <option value="P">Police</option>
+                                            </select>
+                                        </div>            
+                                                                            
                                         <div class="col-sm-2 text-end">
                                             <label for="inputSalutation" class="form-label">Salutation:<i class="text-danger font-weight-bold">*</i></label>       
                                         </div>
@@ -262,6 +275,8 @@ $_SESSION['csrf_token']=$token;
                                             <input type="date" class="form-control" name="dateofbirth" id="inputdob">
                                         </div>
                                     </div>
+
+                                        
                                 </fieldset>
                                 <!--Main address -->
                                 <fieldset class="border p-3">
@@ -634,6 +649,7 @@ $_SESSION['csrf_token']=$token;
             </div> 
         </div>   
 	<script src="js/search.js"></script>
+    
 
     </body>
 </html>
