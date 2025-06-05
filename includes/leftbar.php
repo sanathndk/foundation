@@ -73,7 +73,8 @@
                             <li><a href="add-membergroup.php"><i class="bi bi-person-lines-fill"></i>&nbsp;<span>Member Groups</span></a></li>
                             <li><a href="add_salutation.php"><i class="bi bi-star-fill"></i>&nbsp;<span>Salutation</span></a></li>
                             <li><a href="add_item.php"><i class="bi bi-diagram-3"></i> &nbsp;<span>Item types</span></a></li>                                           
-                            <li><a href="add_fine_rules.php"><i class="bi bi-cash-coin"></i> &nbsp;<span>Fine rules</span></a></li>                            
+                            <li><a href="add_fine_rules.php"><i class="bi bi-cash-coin"></i> &nbsp;<span>Fine rules</span></a></li>
+                            <li><a href="get_rank.php"><i class="bi bi-star-fill"></i>&nbsp;<span>Rank</span></a></li>                            
                         </ul>
                     </div>
 

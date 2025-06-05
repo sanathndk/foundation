@@ -173,7 +173,11 @@ $_SESSION['csrf_token']=$token;
                                                 <option value="P">Police</option>
                                             </select>
                                         </div>            
-                                                                            
+                                                   
+                                         <!-- <div class="col-sm-2 text-end">
+                                            <label for="rank" class="form-label">Rank:<i class="text-danger font-weight-bold">*</i></label>       
+                                        </div> -->
+
                                         <div class="col-sm-2 text-end">
                                             <label for="inputSalutation" class="form-label">Salutation:<i class="text-danger font-weight-bold">*</i></label>       
                                         </div>
@@ -649,9 +653,9 @@ $_SESSION['csrf_token']=$token;
             </div> 
         </div>   
 	<script src="js/search.js"></script>
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    </body>
+</body>
 </html>
 <?php 
 mysqli_close($dbcon);
