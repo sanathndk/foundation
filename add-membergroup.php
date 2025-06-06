@@ -199,45 +199,6 @@ else{
 	<script src="js/jquery-3.7.0.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
 
-	<script>
-		new DataTable('#dataTables');  
-		
-function country(str,resultContainerId) {  
-    var resultContainerId="c";
-    if (str.length == 0) {
-        document.getElementById("resultcountry").innerHTML = "";
-        document.getElementById("resultcountry").style.display = "none";
-        return;
-    } else {
-        var xmlhttp = new XMLHttpRequest();
-
-        xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("resultcountry").innerHTML = this.responseText;
-                document.getElementById("resultcountry").style.display = "block";
-            }
-        };
-        xmlhttp.open("GET", "search.php?q=" + str + "&field=" + resultContainerId, true);
-        xmlhttp.send();
-    }
-}
-
-// Event listener for input changes
-document.getElementById("country").addEventListener("input", function() {
-    country(this.value);
-
-});
-
-// Event listener to handle result item clicks
-document.getElementById("resultcountry").addEventListener("click", function(e) {
-    if (e.target.classList.contains("result-item")) {
-        document.getElementById("country").value = e.target.textContent;
-        this.style.display = "none";
-
-    }
-});
-	</script>
-	
 </body>
 </html>
 <?php 

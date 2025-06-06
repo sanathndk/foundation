@@ -184,23 +184,7 @@ else{
 
     <script src="js/jquery-3.7.0.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-    $(document).ready(function () {
-        $("#service").change(function () {
-        var serviceCode = $(this).val();
-
-        $.ajax({
-            url: "get_ranks.php",
-            type: "POST",
-            data: { service: serviceCode },
-            success: function (response) {
-            $("#rank").html(response); // Load the returned HTML
-            }
-        });
-        });
-    });
-    </script>
+    
 
 	<script>
 		new DataTable('#dataTables');  
@@ -210,3 +194,6 @@ else{
 <?php 
 mysqli_close($dbcon); 
 ?>
+
+
+

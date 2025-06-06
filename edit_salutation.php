@@ -16,24 +16,25 @@ else{
 
 	if(isset($_POST['btnsave'])){
 		// Save Record
-		$itemcode=$_POST['itemcode'];
-		$description=$_POST['description'];
+    	$itemcode = $_POST['itemcode']; 
+    	$description = $_POST['description'];
+    	$service = $_POST['service'];
 
-		$sql="UPDATE `salutation` SET `desc`=? WHERE `id`=?";
-		$result=mysqli_prepare($dbcon, $sql);		
+		$sql = "UPDATE `salutation` SET `service`=?, `desc`=? WHERE `id`=?";
+    	$result = mysqli_prepare($dbcon, $sql);			
 
 		if ($result){
-			mysqli_stmt_bind_param($result,'ss', $description, $id);
-			if (mysqli_stmt_execute($result)) {
-				echo "Record updated successfully";
-				header('location:add_salutation.php');
-			} else{
-				echo "Error inserting data: " .mysqli_error($dbcon);
-			}
-		} else{
-			echo "Error Connection: " .mysqli_error($dbcon);
-		}	
+			mysqli_stmt_bind_param($result, 'ssi', $service, $description, $id);
+        if (mysqli_stmt_execute($result)) {
+            header('Location: add_salutation.php?updated=1');
+            exit();
+        } else {
+            echo "Error updating data: " . mysqli_stmt_error($result);
+        }
+    } else {
+        echo "Error preparing statement: " . mysqli_error($dbcon);
     }
+}
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -81,7 +82,21 @@ else{
 					<div class="container">                 
 						<form name="signup" method="post" class="form-controlr"> 
 							<br>
-							<fieldset class="border">   
+							<fieldset class="border">
+							<div class="row p-2">
+								<div class="col-sm-2 text-end">
+									<label for="service" class="form-label">Service:</label>
+								</div>
+								<div class="col-sm-4">
+									<select id="service" class="form-select" name="service" required>
+										<option value="Ar" <?php if($row['service'] == 'Ar') echo 'selected'; ?>>Army</option>
+										<option value="N" <?php if($row['service'] == 'N') echo 'selected'; ?>>Navy</option>
+										<option value="A" <?php if($row['service'] == 'A') echo 'selected'; ?>>Air Force</option>
+										<option value="P" <?php if($row['service'] == 'P') echo 'selected'; ?>>Police</option>
+									</select>
+								</div>
+							</div>
+
 							<div class="row p-2">
 									<div class="col-sm-2 text-end">
 										<label for="inputitemcode" class="form-label">Salutation:</label>

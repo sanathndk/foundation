@@ -10,14 +10,15 @@ if(strlen($_SESSION['alogin'])==0)
 else{ 
 	if(isset($_POST['btnsave']))	{
 		// Save Record
+		$service = $_POST['service'];
 		$itemcode=$_POST['itemcode'];
 		$description=$_POST['description'];
 
-		$sql="INSERT INTO `salutation`(`code`, `desc`) VALUES (?,?)";
+		$sql="INSERT INTO `salutation`(`service`,`code`, `desc`) VALUES (?,?,?)";
 		$result=mysqli_prepare($dbcon, $sql);		
 
 		if ($result){
-			mysqli_stmt_bind_param($result,'ss', $itemcode, $description);
+			mysqli_stmt_bind_param($result,'sss', $service,$itemcode, $description);
 			if (mysqli_stmt_execute($result)) {
 				echo "Record updated successfully";
 				header('location:add_salutation.php');
@@ -27,6 +28,7 @@ else{
 		} else{
 			echo "Error Connection: " .mysqli_error($dbcon);
 		}
+		
 	// Delete Record			
 	}elseif($_GET['id']<>""){
 		$id=$_GET['id'];
@@ -38,6 +40,7 @@ else{
 			echo "<script>Alert('Something went wrong. please try again later')</script>";
 		}
 	}	
+	
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -85,6 +88,19 @@ else{
 							<br>
 							<fieldset class="border">   
 							<div class="row p-2">
+								<div class="col-sm-2 text-end">
+										<label for="inputitemcode" class="form-label">Service:</label>
+									</div>
+								<div class="col-sm-4">        
+                                            <select id="service" class="form-select" name="service" required>
+                                                <option value="Ar">Army</option>
+                                                <option value="N">Navy</option>
+                                                <option value="A">Air Force</option>
+                                                <option value="P">Police</option>
+                                            </select>
+                                </div>   
+							</div>
+							<div class="row p-2">
 									<div class="col-sm-2 text-end">
 										<label for="inputitemcode" class="form-label">Salutation:</label>
 									</div>
@@ -121,6 +137,7 @@ else{
 									<thead>
 										<tr class="text-center">
 											<th class="text-center">Ser</th>
+											<th class="text-center">Service</th>
 											<th class="text-center">Code</th>
 											<th class="text-center">Description</th>
 											<th class="text-center">Action</th>
@@ -141,6 +158,7 @@ else{
 									?>
 										<tr>
 											<td class="text-center"><?php echo $ser++?></td>
+											<td><?php echo $row["service"]?></td>
 											<td><?php echo $row["code"]?></td>
 											<td><?php echo $row["desc"]?></td>
 											<td class="text-center">
