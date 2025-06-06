@@ -76,7 +76,7 @@ include('includes/config.php');
     <div class="content text-center">
         <h2 class="section-title mb-4 text-light">Digital Library</h2>
 
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-6 g-4">
 
             <!-- Card 1 -->
             <div class="col">
@@ -244,9 +244,7 @@ include('includes/config.php');
                         <h6 class="card-title">ONLINE LIBRARY & PUBLICATION PLATFORM</h6>
                     </div>
                 </div>
-            </div>
-
-            <div class="col"></div>
+            </div>            
             
             <!-- Card 15 -->
             <div class="col">

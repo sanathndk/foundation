@@ -195,12 +195,13 @@ else{
 								</div>
 							</fieldset>
 						</form>													
-					</div>					
+					</div>
+					<?php include('includes/footer.php');?> 
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>   
+	  
 	<script>		
 		// ************Country search************
 		function country(str,resultContainerId) {  

@@ -163,6 +163,8 @@ return true;
             </fieldset>
           </form>
         </div>
+        <br><br><br><br><br><br><br><br>
+        <?php include('includes/footer.php');?>
       </div>
     </div>
   </div>  
@@ -170,7 +172,7 @@ return true;
            
   </div>
      <!-- CONTENT-WRAPPER SECTION END-->
- <?php include('includes/footer.php');?>
+ 
 
 </body>
 </html>

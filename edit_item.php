@@ -98,12 +98,14 @@ else{
 								</div>
 							</fieldset>
 						</form>		
-					</div>					
+					</div>
+					<br><br><br><br><br><br><br><br><br><br>
+					<?php include('includes/footer.php');?>  
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>                  
+	                
 </body>
 </html>
 <?php 

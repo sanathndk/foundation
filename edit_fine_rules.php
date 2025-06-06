@@ -171,14 +171,15 @@ else{
                                 </div>
 					 
 							</fieldset>
-						</form>						
-											
-					</div>					
+						</form>												
+					</div>	
+					<br><br><br><br><br><br><br><br><br>	
+					<?php include('includes/footer.php');?>			
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>   
+	   
 	
 </body>
 </html>
