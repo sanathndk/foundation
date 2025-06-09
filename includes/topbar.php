@@ -20,7 +20,7 @@ if(strlen($_SESSION['alogin'])=="")
     <div class="d-flex align-items-center justify-content-between">
       <a href="dashboard.php" class="logo d-flex align-items-center">
         <img src="img/logo.png" alt="">
-        <span class="d-none d-lg-block">Foundation</span>
+        <span class="d-none d-lg-block">DSCSC LMS</span>
       </a>
       <!-- <i class="bi bi-list toggle-sidebar-btn"></i> -->
     </div><!-- End Logo -->

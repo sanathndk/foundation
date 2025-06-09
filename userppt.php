@@ -27,7 +27,7 @@ else{
                         <div class="container-fluid">
                             <div class="row page-title-div">
                                 <div class="col-sm-8">
-                                    <h2 class="title">Dashboard</h2>                                  
+                                    <h2 class="title">Research & PPT </h2>                                  
                                 </div>
                                 <!-- /.col-sm-8 -->
                              </div>
@@ -46,7 +46,7 @@ else{
                                                 <thead>
                                                     <tr>
                                                         <th>Ser</th>
-                                                        <th>Book Name</th>
+                                                        <th>Name</th>
                                                         <th>Book ID</th>
                                                         <th>ISBN </th>
                                                         <th>Issued Date</th>
