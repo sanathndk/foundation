@@ -20,7 +20,7 @@ else{
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css">  
     <link rel="icon" href="img/logo.png" type="image/png">
 
-    <title>Overdue Book | Foundation Library Management System</title>
+    <title>Overdue Book | Library Management System</title>
 
 </head>
 <body class="top-navbar-fixed">
