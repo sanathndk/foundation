@@ -2,83 +2,113 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+$token=rand();
 
-if (strlen($_SESSION['alogin']) == 0) {
-    header('location:index.php');
-    exit;
+if(strlen($_SESSION['alogin'])==0)
+{   
+	header('location:index.php');
 }
 
 if (isset($_POST['btnsave'])) {
-    if (isset($_SESSION['csrf_token']) && $_SESSION['csrf_token'] == $_POST['csrf_token']) {
-
+    if (isset($_SESSION['csrf_token'])== $_POST['csrf_token']) {
+        // Save Record
         $image = $_FILES['image'];
+        $abstract = $_FILES['abstract'];
         $type = $_POST['type'];
-        $booknumber = $_POST['booknumber'];
-        $itemtype = $_POST['itemtype'];
+        $category=$_POST['category'];
         $title = $_POST['title'];
-        $isbn = $_POST['isbn'];
-        $issn = $_POST['issn'];
-        $author = $_POST['author'];
-        $author2 = $_POST['author2'];
-        $language = $_POST['language'];
+        $descreption = $_POST['descreption'];
+        $data = $_POST['date'];
+        $year = $_POST['year'];
+        $booknumber = $_POST['booknumber'];
+        $author=$_POST['author'];
+        $author2=$_POST['author2'];
+        $language=$_POST['language'];
         $checkedin = 1;
 
-        // Check for duplicate book number
-        $stmt = mysqli_prepare($dbcon, "SELECT * FROM ppt WHERE booknumber = ?");
+        $filepath = '';
+        $abstractFilePath = '';
+        $error = '';
+        $error1 = '';
+
+        // Check duplicate book number
+        $stmt = mysqli_prepare($dbcon, "SELECT id FROM ppt WHERE booknumber = ?");
         mysqli_stmt_bind_param($stmt, 's', $booknumber);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
         $count = mysqli_stmt_num_rows($stmt);
+        mysqli_stmt_close($stmt);
 
         if ($count > 0) {
             $error = "Sorry, the Book Number '$booknumber' is already taken.";
         } else {
-            if (empty($image['size'])) {
-                $sql = "INSERT INTO ppt (booknumber, type, itemtype, title, isbn, issn, author, author2, language, checkedin) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // Upload abstract file
+            if (!empty($abstract['name'])) {
+                $abstractDetails = pathinfo($abstract['name']);
+                $allowedAbstractExt = ['pdf', 'ppt', 'pptx', 'jpg', 'jpeg', 'png'];
+                $abstractExt = strtolower($abstractDetails['extension']);
+
+                if (in_array($abstractExt, $allowedAbstractExt)) {
+                    $abstractFilePath = 'uploads/' . uniqid('abstract_') . '.' . $abstractExt;
+                    if (!move_uploaded_file($abstract['tmp_name'], $abstractFilePath)) {
+                        $error1 = "Failed to upload abstract file.";
+                    }
+                } else {
+                    $error1 = "Only PDF, PPT, or image files allowed for abstract.";
+                }
+            }
+
+            // Upload image file
+            if (!empty($image['name'])) {
+                if ($image['size'] <= 200000) { // 200 KB
+                    $imagedetails = pathinfo($image['name']);
+                    $allowedImageExt = ['jpg', 'jpeg', 'png'];
+                    $imageExt = strtolower($imagedetails['extension']);
+
+                    if (in_array($imageExt, $allowedImageExt)) {
+                        $filepath = 'img/' . uniqid('image_') . '.' . $imageExt;
+                        if (!move_uploaded_file($image['tmp_name'], $filepath)) {
+                            $error1 = "Failed to upload the image.";
+                        }
+                    } else {
+                        $error1 = "Only JPG, JPEG, and PNG files are allowed.";
+                    }
+                } else {
+                    $error1 = "Image must be less than 200 KB.";
+                }
+            }
+
+            // Final insert
+            if (empty($error) && empty($error1)) {
+                $sql = "INSERT INTO ppt 
+                    (booknumber, type, category, title, description, publish_date, research_year, author, author2, language, checkedin, image, abstract)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = mysqli_prepare($dbcon, $sql);
-                mysqli_stmt_bind_param($stmt, 'sssssssssi', $booknumber, $type, $itemtype, $title, $isbn, $issn, $author, $author2, $language, $checkedin);
+                mysqli_stmt_bind_param($stmt, 'ssssssisssiss',
+                    $booknumber, $type, $category, $title, $descreption, $date, $year,
+                    $author, $author2, $language, $checkedin,
+                    $filepath, $abstractFilePath
+                );
+
                 if (mysqli_stmt_execute($stmt)) {
                     $msg = "PPT entry registered successfully. Book ID is <strong>$booknumber</strong>";
                 } else {
-                    $error = "Something went wrong. Please try again.";
+                    $error = "Database error: " . mysqli_error($dbcon);
                 }
-            } elseif ($image['size'] <= 200000) {
-                $imagedetails = pathinfo($image['name']);
-                $allowed_extensions = ['jpg', 'jpeg', 'png'];
-                if (in_array(strtolower($imagedetails['extension']), $allowed_extensions)) {
-                    $filepath = 'img/' . uniqid() . '.' . $imagedetails['extension'];
-                    if (move_uploaded_file($image['tmp_name'], $filepath)) {
-                        $sql = "INSERT INTO ppt (booknumber, type, itemtype, title, isbn, issn, author, author2, language, checkedin, image) 
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-                        $stmt = mysqli_prepare($dbcon, $sql);
-                        mysqli_stmt_bind_param($stmt, 'sssssssssss', $booknumber, $type, $itemtype, $title, $isbn, $issn, $author, $author2, $language, $checkedin, $filepath);
-                        if (mysqli_stmt_execute($stmt)) {
-                            $msg = "PPT entry registered successfully. Book ID is <strong>$booknumber</strong>";
-                        } else {
-                            $error = "Something went wrong. Please try again.";
-                        }
-                    } else {
-                        $error1 = "Failed to upload the image.";
-                    }
-                } else {
-                    $error1 = "Only JPG, JPEG, and PNG files are allowed.";
-                }
-            } else {
-                $error1 = "Image must be less than 200 KB.";
+
+                mysqli_stmt_close($stmt);
             }
         }
     } else {
-        $error = "Invalid authentication.";
-    }   
+        $error = "Invalid CSRF token.";
+    }
 }
-
+    
 // Delete Record	
 	if($_GET['id']<>""){
 		$id=$_GET['id'];
 		mysqli_query($dbcon,"delete from ppt where id='$id'");
 	}
-
 
 $token = rand();
 $_SESSION['csrf_token'] = $token;
@@ -145,26 +175,24 @@ $_SESSION['csrf_token'] = $token;
                          
                         
                         <div class="row p-2">  
-                            <div class="col-sm-2 text-end"></div>
-                            <div class="col-sm-2 text-end">         
-                            <input type="file" class="form-control" id="image" name="image">
+                            <div class="col-sm-2 text-end">
+                                <label for="abstract" class="form-label">Attachment:</label>
                             </div>
-
-                            <div class="col-sm-1 text-end"></div>
-                            <div class="col-sm-1 text-end"></div>
-
-                            
+                            <div class="col-sm-2">
+                                <input type="file" class="form-control" id="abstract" name="abstract" accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png">
+                            </div>
+  
+                            <div class="col-sm-4 text-end">
+                                <label for="abstract" class="form-label"> Abstract:</label>
+                            </div>
+                              <div class="col-sm-2 text-end">         
+                              <input type="file" class="form-control" id="image" name="image">
+                            </div>
                         </div>
-
-                        <div class="row p-2">  
-                          <div class="col-sm-2 text-end"></div>
-                          <div class="col-sm-4 text-danger">         
-                            <span><?php echo $error1?></span>
-                          </div>               
-                        </div> 
-                        <div class="row p-2">
-                          <div class="col-sm-2 text-end">
-                            <label for="inputtype" class="form-label">Type:</label>
+                            
+                        <div class="row p-2"></div>   
+                            <div class="col-sm-2 text-end">
+                                <label for="inputtype" class="form-label">Type:</label>
                             </div>
                             <div class="col-sm-4">
                                 <select id="type" class="form-select" name="type" required>
@@ -173,40 +201,84 @@ $_SESSION['csrf_token'] = $token;
                                     <option value="PPT">PPT</option> 
                                 </select>
                             </div>
-                        
-                          <div class="col-sm-2 text-end">
-                            <label for="inputTitle" class="form-label">Title:<i class="text-danger font-weight-bold">*</i></label>
-                          </div>
-                          <div class="col-sm-4">
-                            <input type="text" class="form-control" id="inputTitle" name="title" required>            
-                          </div>
+                            <div class="col-sm-2 text-end">
+                                <label for="inputCategory" class="form-label">Category:<i class="text-danger font-weight-bold">*</i></label>       
+                            </div>
+                            <div class="col-sm-4">        
+                                <select id="inputCategory" class="form-select" name="category">
+                                    <!-- Load Category type of Database -->
+                                    <?php
+                                        $sql=mysqli_query($dbcon, "SELECT * FROM `category`");
+
+                                        if (mysqli_num_rows($sql)>0) {
+                                        while ($row=mysqli_fetch_array($sql)) {
+                                            echo "<option value='" . $row['categorycode'] . "'>" .$row['description'] . "(".$row['categorycode'].")"."</option>";
+                                        }
+                                        }
+                                    
+                                    ?>
+                                </select>
+                            </div>                            
                         </div>
 
                         <div class="row p-2">
-                          <div class="col-sm-2 text-end">
-                            <label for="inputBarcode" class="form-label">Barcode:<i class="text-danger font-weight-bold">*</i></label>
-                          </div>
-                          <div class="col-sm-4">
-                            <input type="text" class="form-control" id="inputBarcode" name="booknumber" required>
-                            <?php if (isset($error)): ?>
-                               <span class="badge bg-danger fs-6"><?php echo $error; ?></span>
-                           <?php endif; ?>
-                          </div>
+                            <div class="col-sm-2 text-end">
+                                <label for="inputTitle" class="form-label">Title:<i class="text-danger font-weight-bold">*</i></label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="inputTitle" name="title" required>            
+                            </div>
+
+                            <div class="col-sm-2 text-end">
+                              <label for="Inputdesc" class="form-label">Descreption:</label>
+                            </div>
+                            <div class="col-sm-4">
+                              <input type="text" class="form-control" id="Inputdesc" name="descreption">
+                            </div>
+                        </div>
+                            
+                        <div class="row p-2">                           
+                            <div class="col-sm-2 text-end">
+                              <label for="Inputdate" class="form-label">Publish Date:</label>
+                            </div>
+                            <div class="col-sm-4">
+                              <input type="date" class="form-control" id="Inputdate" name="date">
+                            </div>
+
+                            <div class="col-sm-2 text-end">
+                              <label for="Inputyear" class="form-label">Research Year:</label>
+                            </div>
+                            <div class="col-sm-4">
+                                <select name="year" class="form-control" id="year" name="year">
+                                        <?php
+                                        $currentYear = date("Y");
+                                        for ($y = $currentYear; $y >= 1950; $y--) {
+                                            echo "<option value='$y'>$y</option>";
+                                        }
+                                        ?>
+                                </select>
+                            </div>
+                        </div>
+        
+                        <div class="row p-2">
+                            <div class="col-sm-2 text-end">
+                                <label for="inputBarcode" class="form-label">Barcode:<i class="text-danger font-weight-bold">*</i></label>
+                            </div>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="inputBarcode" name="booknumber" required>
+                                    <?php if (isset($error)): ?>
+                                    <span class="badge bg-danger fs-6"><?php echo $error; ?></span>
+                                    <?php endif; ?>
+                            </div>
                        
-                          <div class="col-sm-2 text-end">
-                            <label for="inputauthor" class="form-label">Author:<i class="text-danger font-weight-bold">*</i></label>
-                          </div>
+                            <div class="col-sm-2 text-end">
+                                <label for="inputauthor" class="form-label">Author:<i class="text-danger font-weight-bold">*</i></label>
+                            </div>
                             <div class="col-sm-4">
                               <input type="search" name="author" class="form-control" title="Enter search keyword" id="author" required> 
                               <div id="resultauthor"></div>
                               <a href="add-author.php" target="_blank">Add Author</a>
-                          </div>
-                        </div>
-
-                        <div class="row p-2">
-                          
-                      
-                          
+                            </div>
                         </div>
 
                         <div class="row p-2">
@@ -224,7 +296,8 @@ $_SESSION['csrf_token'] = $token;
                           <div class="col-sm-4">
                             <input type="text" class="form-control" id="inputLanguage" name="language" required> 
                           </div>
-                        </div>                        
+                        </div>  
+
 						<div class="row p-2">
 							<div class="col-sm-2 text-end">
 							</div>
@@ -236,53 +309,58 @@ $_SESSION['csrf_token'] = $token;
 					</form>	
                     </div>
 
-						<div class="row justify-content-md-center"> 
+						
+                    <div class="row justify-content-md-center"> 
 							<div class="col-sm-10">
 								<h3>List of Research & PPT</h3>
 							</div>
-						</div>
+					</div>
 						<div class="row justify-content-md-center">							
                             <div class="col-sm-10">			
                                       <table class="table table-striped table-bordered table-hover align-middle table-responsive" id="dataTables">										
-                                          <thead>
-                                              <tr class="text-center">
-                                                  <th>Ser</th>
-                                                  <th>Type</th>
-                                                  <th>Item Type</th>
-                                                  <th>Title</th>
-                                                  <th>Book No</th>
-                                                  <th>Language</th>
-                                                  <th>Action</th> 
-                                              </tr>
-                                          </thead>
-                                          <tbody class="table-group-divider">
-                                              <?php
-                                              $sql = "SELECT * FROM ppt ORDER BY id DESC";
-                                              $result = mysqli_query($dbcon, $sql);
-                                              if (mysqli_num_rows($result) > 0) {
-                                                  $ser = 1;
-                                                  while ($row = mysqli_fetch_assoc($result)) {
-                                                      echo "<tr>";
-                                                      echo "<td class='text-center'>" . $ser++ . "</td>";
-                                                      echo "<td>" . htmlspecialchars($row['type']) . "</td>";
-                                                      echo "<td>" . htmlspecialchars($row['itemtype']) . "</td>";
-                                                      echo "<td>" . htmlspecialchars($row['title']) . "</td>";
-                                                      echo "<td>" . htmlspecialchars($row['booknumber']) . "</td>";
-                                                      echo "<td>" . htmlspecialchars($row['language']) . "</td>";
-                                                      echo "<td class='text-center'>
-                                                              <a href='ppt-show.php?id=" . $row['id'] . "' class='btn btn-info btn-sm'><i class='bi bi-eye'></i></a>
-                                                              <a href='ppt-download.php?id=" . $row['id'] . "' class='btn btn-success btn-sm'><i class='bi bi-download'></i></a>
-                                                              <a href='edit-ppt.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm'><i class='bi bi-pencil-square'></i></a>
-                                                              <a href='ppt.php?id=" . $row['id'] . "' onclick=\"return confirm('Are you sure to delete?');\" class='btn btn-danger btn-sm'><i class='bi bi-trash3'></i></a>
+                                            <thead class="text-center">
+                                                <tr>
+                                                    <th>Ser</th>
+                                                    <th>Type</th>
+                                                    <th>Category</th>
+                                                    <th>Title</th>
+                                                    <th>Description</th>
+                                                    <th>Book No</th>
+                                                    <th>Author</th>
+                                                    <th>Language</th>
+                                                    <th>Action</th> 
+                                                </tr>
+                                            </thead>
+                                            <tbody class="table-group-divider">
+                                                <?php
+                                                $sql = "SELECT * FROM ppt ORDER BY id DESC";
+                                                $result = mysqli_query($dbcon, $sql);
+                                                if (mysqli_num_rows($result) > 0) {
+                                                    $ser = 1;
+                                                    while ($row = mysqli_fetch_assoc($result)) {
+                                                        echo "<tr>";
+                                                        echo "<td class='text-center'>" . $ser++ . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['type']) . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['category']) . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['title']) . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['description']) . "</td>";  // <-- Ensure this column exists in DB
+                                                        echo "<td>" . htmlspecialchars($row['booknumber']) . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['author']) . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['language']) . "</td>";
+                                                        echo "<td class='text-center'>
+                                                                <a href='ppt-show.php?id=" . $row['id'] . "' class='btn btn-info btn-sm'><i class='bi bi-eye'></i></a>
+                                                                <a href='ppt-download.php?id=" . $row['id'] . "' class='btn btn-success btn-sm'><i class='bi bi-download'></i></a>
+                                                                <a href='edit-ppt.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm'><i class='bi bi-pencil-square'></i></a>
+                                                                <a href='ppt.php?id=" . $row['id'] . "' onclick=\"return confirm('Are you sure to delete?');\" class='btn btn-danger btn-sm'><i class='bi bi-trash3'></i></a>
                                                             </td>";
-                                                      echo "</tr>";
-                                                  }
-                                              } else {
-                                                  echo "<tr><td colspan='7' class='text-center'>No records found</td></tr>";
-                                              }
-                                              ?>
-                                          </tbody>                                                        
-                                      </table>	
+                                                        echo "</tr>";
+                                                    }
+                                                } else {
+                                                    echo "<tr><td colspan='9' class='text-center'>No records found</td></tr>";
+                                                }
+                                                ?>
+                                            </tbody>
+                                        </table>
                                   </div>													
                                 </div>
                           </div>		
@@ -290,15 +368,14 @@ $_SESSION['csrf_token'] = $token;
             </div> 			
         </div>
     </div>	
-    	   
-            
+   
             <!-- <script src="js/search.js"></script> -->
 
-            <script src="js/jquery-3.7.0.js"></script>
-          <script src="js/jquery.dataTables.min.js"></script>
-          <script>
-              new DataTable('#dataTables');
-          </script>
+<script src="js/jquery-3.7.0.js"></script>
+<script src="js/jquery.dataTables.min.js"></script>
+<script>
+    new DataTable('#dataTables');
+</script>
 
 </body>
 </html>

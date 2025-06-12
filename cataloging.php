@@ -159,7 +159,7 @@ $_SESSION['csrf_token']=$token;
                         </div> 
                         <div class="row p-2">
                           <div class="col-sm-2 text-end">
-                            <label for="inputType" class="form-label">Item  Type:</label>       
+                            <label for="inputType" class="form-label">Item Type:</label>       
                           </div>
                           <div class="col-sm-4">        
                             <select id="inputType" class="form-select" name ="itemtype" required> 
