@@ -4,34 +4,35 @@ error_reporting(0);
 include('includes/config.php');
 $token=rand();
 
+
 if(strlen($_SESSION['alogin'])==0)
 {   
 	header('location:index.php');
 }
-
+else{
 if (isset($_POST['btnsave'])) {
-    if (isset($_SESSION['csrf_token'])== $_POST['csrf_token']) {
-        // Save Record
-        $image = $_FILES['image'];
-        $abstract = $_FILES['abstract'];
-        $type = $_POST['type'];
-        $category=$_POST['category'];
-        $title = $_POST['title'];
-        $descreption = $_POST['descreption'];
-        $data = $_POST['date'];
-        $year = $_POST['year'];
+    if ($_SESSION['csrf_token']==$_POST['csrf_token']){
+        // save records
+        $image      = $_FILES['image'];
+        $abstract   = $_FILES['abstract'];
+        $type       = $_POST['type'];
+        $category   = $_POST['category'];
+        $title      = $_POST['title'];
+        $description = $_POST['description'];
+        $date       = $_POST['date']; 
+        $year       = $_POST['year'];
         $booknumber = $_POST['booknumber'];
-        $author=$_POST['author'];
-        $author2=$_POST['author2'];
-        $language=$_POST['language'];
-        $checkedin = 1;
+        $author     = $_POST['author'];
+        $author2    = $_POST['author2'];
+        $language   = $_POST['language'];
+        $checkedin  = 1;
 
         $filepath = '';
         $abstractFilePath = '';
         $error = '';
         $error1 = '';
 
-        // Check duplicate book number
+        // Check duplicate booknumber
         $stmt = mysqli_prepare($dbcon, "SELECT id FROM ppt WHERE booknumber = ?");
         mysqli_stmt_bind_param($stmt, 's', $booknumber);
         mysqli_stmt_execute($stmt);
@@ -42,28 +43,15 @@ if (isset($_POST['btnsave'])) {
         if ($count > 0) {
             $error = "Sorry, the Book Number '$booknumber' is already taken.";
         } else {
-            // Upload abstract file
-            if (!empty($abstract['name'])) {
-                $abstractDetails = pathinfo($abstract['name']);
-                $allowedAbstractExt = ['pdf', 'ppt', 'pptx', 'jpg', 'jpeg', 'png'];
-                $abstractExt = strtolower($abstractDetails['extension']);
-
-                if (in_array($abstractExt, $allowedAbstractExt)) {
-                    $abstractFilePath = 'uploads/' . uniqid('abstract_') . '.' . $abstractExt;
-                    if (!move_uploaded_file($abstract['tmp_name'], $abstractFilePath)) {
-                        $error1 = "Failed to upload abstract file.";
-                    }
-                } else {
-                    $error1 = "Only PDF, PPT, or image files allowed for abstract.";
-                }
+           echo "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO";
             }
 
-            // Upload image file
+            // Upload image
             if (!empty($image['name'])) {
                 if ($image['size'] <= 200000) { // 200 KB
-                    $imagedetails = pathinfo($image['name']);
+                    $imageDetails = pathinfo($image['name']);
                     $allowedImageExt = ['jpg', 'jpeg', 'png'];
-                    $imageExt = strtolower($imagedetails['extension']);
+                    $imageExt = strtolower($imageDetails['extension']);
 
                     if (in_array($imageExt, $allowedImageExt)) {
                         $filepath = 'img/' . uniqid('image_') . '.' . $imageExt;
@@ -78,14 +66,15 @@ if (isset($_POST['btnsave'])) {
                 }
             }
 
-            // Final insert
+            // Save record to database
             if (empty($error) && empty($error1)) {
                 $sql = "INSERT INTO ppt 
                     (booknumber, type, category, title, description, publish_date, research_year, author, author2, language, checkedin, image, abstract)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
                 $stmt = mysqli_prepare($dbcon, $sql);
                 mysqli_stmt_bind_param($stmt, 'ssssssisssiss',
-                    $booknumber, $type, $category, $title, $descreption, $date, $year,
+                    $booknumber, $type, $category, $title, $description, $date, $year,
                     $author, $author2, $language, $checkedin,
                     $filepath, $abstractFilePath
                 );
@@ -99,22 +88,23 @@ if (isset($_POST['btnsave'])) {
                 mysqli_stmt_close($stmt);
             }
         }
+
     } else {
-        $error = "Invalid CSRF token.";
+        $error = " Invalid CSRF token.";
     }
 }
-    
+
 // Delete Record	
 	if($_GET['id']<>""){
 		$id=$_GET['id'];
 		mysqli_query($dbcon,"delete from ppt where id='$id'");
 	}
 
-$token = rand();
+// $token = rand();
 $_SESSION['csrf_token'] = $token;
 
-
 ?>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -159,8 +149,7 @@ $_SESSION['csrf_token'] = $token;
                      <br>
                     <div class="container">
                     <form name="signup" method="post" onSubmit="return valid();" enctype="multipart/form-data">  
-                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-                      <!-- Cataloging -->      
+                            
                       <div class="border p-3">
                         <!-- <legend class="w-auto">Catalogue:</legend> -->
                         <div class="row p-2">  
@@ -176,14 +165,14 @@ $_SESSION['csrf_token'] = $token;
                         
                         <div class="row p-2">  
                             <div class="col-sm-2 text-end">
-                                <label for="abstract" class="form-label">Attachment:</label>
+                                <label for="abstract" class="form-label">Abstract:</label>
                             </div>
                             <div class="col-sm-2">
                                 <input type="file" class="form-control" id="abstract" name="abstract" accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png">
                             </div>
   
                             <div class="col-sm-4 text-end">
-                                <label for="abstract" class="form-label"> Abstract:</label>
+                                <label for="abstract" class="form-label">Attachment:</label>
                             </div>
                               <div class="col-sm-2 text-end">         
                               <input type="file" class="form-control" id="image" name="image">
@@ -230,10 +219,10 @@ $_SESSION['csrf_token'] = $token;
                             </div>
 
                             <div class="col-sm-2 text-end">
-                              <label for="Inputdesc" class="form-label">Descreption:</label>
+                              <label for="Inputdesc" class="form-label">Description:</label>
                             </div>
                             <div class="col-sm-4">
-                              <input type="text" class="form-control" id="Inputdesc" name="descreption">
+                              <input type="text" class="form-control" id="Inputdesc" name="description">
                             </div>
                         </div>
                             
@@ -252,7 +241,7 @@ $_SESSION['csrf_token'] = $token;
                                 <select name="year" class="form-control" id="year" name="year">
                                         <?php
                                         $currentYear = date("Y");
-                                        for ($y = $currentYear; $y >= 1950; $y--) {
+                                        for ($y = $currentYear; $y >= 1985; $y--) {
                                             echo "<option value='$y'>$y</option>";
                                         }
                                         ?>
@@ -302,6 +291,7 @@ $_SESSION['csrf_token'] = $token;
 							<div class="col-sm-2 text-end">
 							</div>
 							<div class="col-sm-4">
+                                <input type="hidden" name="csrf_token" value="<?php echo $token?>">  
 								<button type="submit" class="btn btn-primary btn-md" name="btnsave"><i class="bi bi-printer"></i>&nbsp;Save</button>
 							</div>
 						</div>
@@ -316,16 +306,16 @@ $_SESSION['csrf_token'] = $token;
 							</div>
 					</div>
 						<div class="row justify-content-md-center">							
-                            <div class="col-sm-10">			
+                            <div class="col-sm-11">			
                                       <table class="table table-striped table-bordered table-hover align-middle table-responsive" id="dataTables">										
                                             <thead class="text-center">
                                                 <tr>
                                                     <th>Ser</th>
+                                                    <th>Book No</th>
                                                     <th>Type</th>
                                                     <th>Category</th>
                                                     <th>Title</th>
                                                     <th>Description</th>
-                                                    <th>Book No</th>
                                                     <th>Author</th>
                                                     <th>Language</th>
                                                     <th>Action</th> 
@@ -333,6 +323,7 @@ $_SESSION['csrf_token'] = $token;
                                             </thead>
                                             <tbody class="table-group-divider">
                                                 <?php
+                                                
                                                 $sql = "SELECT * FROM ppt ORDER BY id DESC";
                                                 $result = mysqli_query($dbcon, $sql);
                                                 if (mysqli_num_rows($result) > 0) {
@@ -340,11 +331,11 @@ $_SESSION['csrf_token'] = $token;
                                                     while ($row = mysqli_fetch_assoc($result)) {
                                                         echo "<tr>";
                                                         echo "<td class='text-center'>" . $ser++ . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['type']) . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['category']) . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['title']) . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['description']) . "</td>";  // <-- Ensure this column exists in DB
                                                         echo "<td>" . htmlspecialchars($row['booknumber']) . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['type']) . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['description']) . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['title']) . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['description']) . "</td>";  
                                                         echo "<td>" . htmlspecialchars($row['author']) . "</td>";
                                                         echo "<td>" . htmlspecialchars($row['language']) . "</td>";
                                                         echo "<td class='text-center'>
@@ -370,7 +361,7 @@ $_SESSION['csrf_token'] = $token;
     </div>	
    
             <!-- <script src="js/search.js"></script> -->
-
+<script src="js/search.js"></script>
 <script src="js/jquery-3.7.0.js"></script>
 <script src="js/jquery.dataTables.min.js"></script>
 <script>
