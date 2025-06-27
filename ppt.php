@@ -66,6 +66,34 @@ if (isset($_POST['btnsave'])) {
                 }
             }
 
+            // Upload ppt or pdf
+                if (!empty($abstract['name'])) {
+                $fileName = basename($abstract['name']);
+                $fileTmp = $abstract['tmp_name'];
+                $fileSize = $abstract['size'];
+                $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                $allowed = ['pdf', 'ppt', 'pptx'];
+
+                if (in_array($fileExt, $allowed)) {
+                    $uploadDir = "uploads/";
+                    $newFileName = uniqid('abstract_') . "." . $fileExt;
+                    $uploadPath = $uploadDir . $newFileName;
+
+                    if (!is_dir($uploadDir)) {
+                        mkdir($uploadDir, 0755, true);
+                    }
+
+                    if (move_uploaded_file($fileTmp, $uploadPath)) {
+                        $abstractFilePath = $uploadPath; 
+                    } else {
+                        $error1 = "Failed to upload abstract file.";
+                    }
+                } else {
+                    $error1 = "Only PDF, PPT, and PPTX files are allowed.";
+                }
+            }
+
             // Save record to database
             if (empty($error) && empty($error1)) {
                 $sql = "INSERT INTO ppt 
@@ -164,15 +192,15 @@ $_SESSION['csrf_token'] = $token;
                          
                         
                         <div class="row p-2">  
-                            <div class="col-sm-2 text-end">
-                                <label for="abstract" class="form-label">Abstract:</label>
+                            <div class="col-sm-3 text-end">
+                                <label for="abstract" class="form-label">Abstract (PDF or PPT):</label>
                             </div>
                             <div class="col-sm-2">
-                                <input type="file" class="form-control" id="abstract" name="abstract" accept=".pdf,.ppt,.pptx,.jpg,.jpeg,.png">
+                                <input type="file" class="form-control" id="abstract" name="abstract" accept=".pdf,.ppt,.pptx">
                             </div>
   
                             <div class="col-sm-4 text-end">
-                                <label for="abstract" class="form-label">Attachment:</label>
+                                <label for="image" class="form-label">Attachment:</label>
                             </div>
                               <div class="col-sm-2 text-end">         
                               <input type="file" class="form-control" id="image" name="image">
