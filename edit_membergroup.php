@@ -45,7 +45,7 @@ else{
 	<meta name="viewport" content="width=device-width, initial-scale=1">   
 	<link rel="icon" href="img/logo.png" type="image/png">
 
-	<title>Edit Member Groups | Foundation Library Management System</title>
+	<title>Edit Member Groups |  Library Management System</title>
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">
@@ -135,8 +135,10 @@ else{
 						</form>												
 					</div>
 					<br><br><br><br><br><br><br><br><br><br><br>
+			
 					<?php include('includes/footer.php');?> 
 				</div> 			
+				
 			</div>
 		</div>	
 	</div>	   

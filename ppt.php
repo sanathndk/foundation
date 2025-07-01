@@ -117,9 +117,7 @@ if (isset($_POST['btnsave'])) {
             }
         }
 
-    } else {
-        $error = " Invalid CSRF token.";
-    }
+    } 
 }
 
 // Delete Record	

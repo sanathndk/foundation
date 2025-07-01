@@ -34,7 +34,7 @@ else{
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<link rel="icon" href="img/logo.png" type="image/png">
 
-	<title>Foundation Library Management System | Update Category</title>
+	<title> Library Management System | Update Category</title>
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">
