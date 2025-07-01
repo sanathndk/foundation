@@ -1,19 +1,20 @@
 <?php
 session_start();
-include('includes/config.php');  
+include('includes/config.php');
 
 if (strlen($_SESSION['alogin']) == 0) {
     header('location:index.php');
     exit;
 }
 
-if (!isset($_GET['id']) || empty($_GET['id'])) {
-    die('No ID specified.');
+if (!isset($_GET['id']) || !isset($_GET['type'])) {
+    die('Invalid download request.');
 }
 
 $id = intval($_GET['id']);
+$type = $_GET['type'];
 
-// Get file paths from DB for this record
+// Fetch abstract and image paths
 $sql = mysqli_prepare($dbcon, "SELECT abstract, image FROM ppt WHERE id = ?");
 mysqli_stmt_bind_param($sql, 'i', $id);
 mysqli_stmt_execute($sql);
@@ -21,20 +22,25 @@ mysqli_stmt_bind_result($sql, $abstract, $image);
 mysqli_stmt_fetch($sql);
 mysqli_stmt_close($sql);
 
-// Decide which file to download: here I will show abstract first, fallback image if no abstract
-if (!empty($abstract) && file_exists($abstract)) {
+// Choose file
+if ($type == 'abstract') {
     $filePath = $abstract;
-} elseif (!empty($image) && file_exists($image)) {
+} elseif ($type == 'image') {
     $filePath = $image;
 } else {
-    die('No downloadable file Attachments.');
+    die('Invalid type.');
 }
 
-$fileName = basename($filePath);
+if (!file_exists($filePath)) {
+    die('File does not exist.');
+}
 
-// Set headers to force download
+// Send headers
+$fileName = basename($filePath);
+$mimeType = mime_content_type($filePath);
+
 header('Content-Description: File Transfer');
-header('Content-Type: application/octet-stream');
+header('Content-Type: ' . $mimeType);
 header('Content-Disposition: attachment; filename="' . $fileName . '"');
 header('Expires: 0');
 header('Cache-Control: must-revalidate');

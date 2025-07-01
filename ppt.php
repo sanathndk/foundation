@@ -365,8 +365,9 @@ $_SESSION['csrf_token'] = $token;
                                                         echo "<td>" . htmlspecialchars($row['author']) . "</td>";
                                                         echo "<td>" . htmlspecialchars($row['language']) . "</td>";
                                                         echo "<td class='text-center'>
-                                                                <a href='ppt-show.php?id=" . $row['id'] . "' class='btn btn-info btn-sm'><i class='bi bi-eye'></i></a>
-                                                                <a href='ppt-download.php?id=" . $row['id'] . "' class='btn btn-success btn-sm'><i class='bi bi-download'></i></a>
+                                                                
+                                                                <a href='ppt-download.php?id={$row['id']}&type=image' class='btn btn-info btn-sm'><i class='bi bi-file-image'></i></a>
+                                                                <a href='ppt-download.php?id={$row['id']}&type=abstract' class='btn btn-success btn-sm'><i class='bi bi-download'></i></a>
                                                                 <a href='edit-ppt.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm'><i class='bi bi-pencil-square'></i></a>
                                                                 <a href='ppt.php?id=" . $row['id'] . "' onclick=\"return confirm('Are you sure to delete?');\" class='btn btn-danger btn-sm'><i class='bi bi-trash3'></i></a>
                                                             </td>";
@@ -399,3 +400,4 @@ $_SESSION['csrf_token'] = $token;
 <?php 
 mysqli_close($dbcon);
 ?>
+<!-- <a href='ppt-show.php?id=" . $row['id'] . "' class='btn btn-info btn-sm'><i class='bi bi-eye'></i></a> -->
