@@ -1,6 +1,9 @@
 <?php 
 session_start();
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Edit_member");
 error_reporting(0);
 $token=rand();
 if (isset($_GET['id'])) {
@@ -122,7 +125,7 @@ $_SESSION['csrf_token']=$token;
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
     	<meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" href="img/logo.png" type="image/png">
-        <title>Member Registation | Foundation Library Management System</title>
+        <title>Member Registation | Library Management System</title>
     </head>
     <body class="top-navbar-fixed">
         <div class="main-wrapper">

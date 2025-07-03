@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "View_User_ppt");
 
 if(strlen($_SESSION['alogin'])==0)
 {   
@@ -40,14 +43,16 @@ else{
                                         <div class="col-md-12">
                                 <!-- Advanced Tables -->
                                 <div class="row justify-content-md-center">	
-                                <div class="col-sm-10">            
+                                <div class="col-sm-11">            
                                 <table class="table table-striped table-bordered table-hover" id="dataTables">
                                     <thead>
                                     <tr class="text-center">
                                         <th>Ser</th>
+                                        <th>Book No</th>
                                         <th>Type</th>
-                                        <th>Book ID</th>
-                                        <th>Name</th>                                       
+                                        <th>Category</th>                                       
+                                        <th>Title</th>
+                                        <th>Description</th>
                                         <th>Author</th>
                                         <th>Language</th>
                                         <th>Action</th>
@@ -56,41 +61,28 @@ else{
                                     <tbody>
                                     <?php
                                     $cnt = 1;
-                                    $query = mysqli_query($dbcon, "SELECT * FROM `ppt` ORDER BY `id` DESC");
+                                    $query = mysqli_query($dbcon, "
+                                                SELECT ppt.*, category.description AS category_desc 
+                                                FROM ppt 
+                                                LEFT JOIN category ON ppt.category = category.categorycode 
+                                                ORDER BY ppt.id DESC
+                                            ");
                                     if (mysqli_num_rows($query) > 0) {
                                         while ($row = mysqli_fetch_assoc($query)) {
                                     ?>
                                     <tr>
                                         <td class="text-center"><?php echo $cnt++; ?></td>
-                                        <td><?php echo htmlspecialchars($row['type']); ?></td>
                                         <td><?php echo htmlspecialchars($row['booknumber']); ?></td>
-                                        <td><?php echo htmlspecialchars($row['title']); ?></td>                                        
+                                        <td><?php echo htmlspecialchars($row['type']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['category_desc']); ?></td>                                        
+                                        <td><?php echo htmlspecialchars($row['title']); ?></td>
+                                        <td><?php echo htmlspecialchars($row['description']); ?></td>
                                         <td><?php echo htmlspecialchars($row['author']); ?></td>
                                         <td><?php echo htmlspecialchars($row['language']); ?></td>
                                         <td class="text-center">
-                                        <a href="#" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#pptModal<?php echo $row['id']; ?>"><i class="bi bi-eye"></i></a>                                        
-                                        <div class="modal fade" id="pptModal<?php echo $row['id']; ?>" tabindex="-1" aria-labelledby="pptModalLabel<?php echo $row['id']; ?>" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg">
-                                                <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="pptModalLabel<?php echo $row['id']; ?>">Details</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <?php
-                                                    // Load partial or embed content
-                                                    include 'ppt-show.php?id=' . $row['id'];
-                                                    ?>
-                                                </div>
-                                                </div>
-                                            </div>
-                                            </div>
 
-                                        <!-- <a href="ppt-download.php?id=<?php echo $row['id']; ?>" class="btn btn-success btn-sm"><i class="bi bi-download"></i></a>
-                                        <a href="edit-ppt.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></a>
-                                        <a href="ppt.php?id=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure to delete?');" class="btn btn-danger btn-sm"><i class="bi bi-trash3"></i></a>
-                                        </td> -->
-                                        </div>
+                                            <a href='ppt-show.php?id=<?php echo $row['id']; ?>' class='btn btn-info btn-sm'><i class='bi bi-eye'></i></a>
+                                </div>
                                     </tr>
                                     <?php
                                         }

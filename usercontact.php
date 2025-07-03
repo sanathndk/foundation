@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "User_contact");
 
 if(strlen($_SESSION['alogin'])==0)
 {   
@@ -18,7 +21,7 @@ else{
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">    
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css">   
-	<title>Contac Us | Foundation Library Management System</title>
+	<title>Contac Us |Library Management System</title>
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">

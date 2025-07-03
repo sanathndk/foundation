@@ -1,6 +1,9 @@
 <?php
 session_start();
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Download ppt or reserach");
 
 if (strlen($_SESSION['alogin']) == 0) {
     header('location:index.php');

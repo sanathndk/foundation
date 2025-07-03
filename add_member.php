@@ -1,6 +1,9 @@
 <?php 
 session_start();
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Add_member");
 error_reporting(0);
 $token=rand();
 

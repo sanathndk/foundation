@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "checkouts");
 $token=rand();
 if(strlen($_SESSION['alogin'])==0)
 	{   
@@ -94,7 +97,7 @@ $_SESSION['csrf_token']=$token;
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Issue a new Book | Foundation Library Management System</title>
+    <title>Issue a new Book | Library Management System</title>
 
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">

@@ -29,7 +29,7 @@ include('includes/config.php');
     <link rel="stylesheet" href="css/main.css" media="screen" >
     <link rel="stylesheet" href="css/jquery.dataTables.min.css">   
     <link href="css/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-	<title>Search | Foundation Library Management System</title>
+	<title>Search | Library Management System</title>
 
     <style>
 .logo {
@@ -62,7 +62,7 @@ include('includes/config.php');
         <div class="col-2 d-flex"> 
             <a href="index.php" class="logo d-flex">
                 <img src="img/logo.png" alt="Foundation" class="d-flex">
-                <span class="d-none d-lg-block d-flex">Foundation</span>
+                <span class="d-none d-lg-block d-flex">DSCSC</span>
             </a>
         </div>
         <div class="col-md-5 offset-md-2 d-flex">

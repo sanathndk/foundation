@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Edit_salutation");
 
 if(strlen($_SESSION['alogin'])==0)
 {   
@@ -45,7 +48,7 @@ else{
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css">   
 	<link rel="icon" href="img/logo.png" type="image/png">
 
-	<title>Edit Salutation | Foundation Library Management System</title>
+	<title>Edit Salutation |Library Management System</title>
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">

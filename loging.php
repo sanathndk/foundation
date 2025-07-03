@@ -1,6 +1,9 @@
 <?php
 session_start();
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Loging");
 $token=rand();
 if(isset($_POST['login'])){
 
@@ -22,6 +25,19 @@ if(isset($_POST['login'])){
           $_SESSION['user_group'] = $row['categorycode'];
           $_SESSION['user_name'] = $row['initials'].' '.$row['surname'];
           $_SESSION['image'] = $row['img'];
+
+          $ip = $_SERVER['REMOTE_ADDR']; // Get user IP
+          $loginTime = date('Y-m-d H:i:s'); // Current time
+          $sessionId = session_id(); // Unique session
+          $_SESSION['session_id'] = $sessionId; // Save for logout
+
+          // Insert login info into user_logs
+          $logSql = "INSERT INTO user_logs (username, ip_address, login_time, session_id) 
+                    VALUES (?, ?, ?, ?)";
+          $logStmt = $dbcon->prepare($logSql);
+          $logStmt->bind_param("ssss", $row['userid'], $ip, $loginTime, $sessionId);
+          $logStmt->execute();
+
           
           if ($_SESSION['user_group']=="Staff") {
             header('Location: dashboard.php');
@@ -48,7 +64,7 @@ $_SESSION['csrf_token']=$token;
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login | Foundation Library Management System</title>
+  <title>Login |  Library Management System</title>
   <link rel="icon" href="img/logo.png" type="image/png">
 
   <!-- Bootstrap CSS -->

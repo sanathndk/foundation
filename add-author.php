@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Add_author");
 $token=rand();
 if(strlen($_SESSION['alogin'])==0)
 {   
@@ -61,7 +64,7 @@ $_SESSION['csrf_token']=$token;
 	<meta name="viewport" content="width=device-width, initial-scale=1">    
 	<link rel="icon" href="img/logo.png" type="image/png">
 
-	<title>Add Author | Foundation Library Management System</title>
+	<title>Add Author | Library Management System</title>
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">

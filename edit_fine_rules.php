@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Edit_fine_rules");
 if(strlen($_SESSION['alogin'])==0)
 {   
 	header('location:index.php');
@@ -49,7 +52,7 @@ else{
 	<meta name="viewport" content="width=device-width, initial-scale=1">  
 	<link rel="icon" href="img/logo.png" type="image/png">
 
-	<title>Edit Fine Rules | Foundation Library Management System</title>
+	<title>Edit Fine Rules | Library Management System</title>
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">

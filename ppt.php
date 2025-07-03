@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "View Ppt");
 $token=rand();
 
 
@@ -350,7 +353,7 @@ $_SESSION['csrf_token'] = $token;
                                             <tbody class="table-group-divider">
                                                 <?php
                                                 
-                                                $sql = "SELECT * FROM ppt ORDER BY id DESC";
+                                                $sql = " SELECT ppt.*, category.description AS category_desc FROM ppt LEFT JOIN category ON ppt.category = category.categorycode ORDER BY ppt.id DESC";
                                                 $result = mysqli_query($dbcon, $sql);
                                                 if (mysqli_num_rows($result) > 0) {
                                                     $ser = 1;
@@ -359,7 +362,7 @@ $_SESSION['csrf_token'] = $token;
                                                         echo "<td class='text-center'>" . $ser++ . "</td>";
                                                         echo "<td>" . htmlspecialchars($row['booknumber']) . "</td>";
                                                         echo "<td>" . htmlspecialchars($row['type']) . "</td>";
-                                                        echo "<td>" . htmlspecialchars($row['description']) . "</td>";
+                                                        echo "<td>" . htmlspecialchars($row['category_desc']) . "</td>";
                                                         echo "<td>" . htmlspecialchars($row['title']) . "</td>";
                                                         echo "<td>" . htmlspecialchars($row['description']) . "</td>";  
                                                         echo "<td>" . htmlspecialchars($row['author']) . "</td>";

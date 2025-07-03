@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "edit_cataloging");
 if(strlen($_SESSION['alogin'])==0)
 {   
 	header('location:index.php');
@@ -94,7 +97,7 @@ else{
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="img/logo.png" type="image/png">
-  	<title>Update Cataloging | Foundation Library Management System</title>
+  	<title>Update Cataloging | Library Management System</title>
 </head>
 <body>
 <body class="top-navbar-fixed">

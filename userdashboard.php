@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "User_dashboard");
 
 if(strlen($_SESSION['alogin'])==0)
 {   

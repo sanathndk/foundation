@@ -2,6 +2,9 @@
 session_start();
 error_reporting(1);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Edit-ppt");
 
 if(strlen($_SESSION['alogin'])==0) {   
     header('location:index.php');    

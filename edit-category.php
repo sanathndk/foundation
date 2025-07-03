@@ -1,7 +1,10 @@
 <?php
 session_start();
 error_reporting(0);
-include('includes/config.php');		
+include('includes/config.php');	
+include('includes/activity.php');
+
+logAction($dbcon, "Edit_category");	
 
 if(strlen($_SESSION['alogin'])==0)
 {   

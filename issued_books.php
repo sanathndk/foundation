@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "View_issued_book");
 if(strlen($_SESSION['alogin'])==0){   
     header('location:index.php');
 }
@@ -19,7 +22,7 @@ else{
     <link rel="icon" href="img/logo.png" type="image/png">
 
     <link rel="stylesheet" href="css/jquery.dataTables.min.css">   
-    <title>Total Circulations | Foundation Library Management System</title>
+    <title>Total Circulations |Library Management System</title>
 
 </head>
 <body class="top-navbar-fixed">
