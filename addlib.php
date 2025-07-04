@@ -183,7 +183,7 @@ else{
 										<label for="inputemail" class="form-label">Email:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" class="form-control" id="inputemail" name="phone">
+										<input type="email" class="form-control" id="inputemail" name="phone">
 									</div>
 								
 									<div class="col-sm-2 text-end">

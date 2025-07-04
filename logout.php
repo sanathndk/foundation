@@ -1,9 +1,6 @@
 <?php
 session_start();
 include('includes/config.php');
-include('includes/activity.php');
-
-logAction($dbcon, "Logout");
 
 // Get session ID before destroying
 $sessionId = $_SESSION['session_id'] ?? null;
