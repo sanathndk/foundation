@@ -2,11 +2,6 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
-logAction($dbcon, "view_image");
-
-
-header("Location: index.php");
-exit;
 
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -23,6 +18,7 @@ mysqli_stmt_fetch($sql);
 mysqli_stmt_close($sql);
 
 $hasImage = (!empty($image) && file_exists($image));
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -34,7 +30,7 @@ $hasImage = (!empty($image) && file_exists($image));
 <body>
 <div class="container mt-4">
     <div class="card shadow">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-secondary text-white">
             <h4 class="mb-0">Image Preview: <?php echo htmlspecialchars($title); ?></h4>
         </div>
         <div class="card-body text-center">

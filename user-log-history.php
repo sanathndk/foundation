@@ -84,7 +84,7 @@ if (!isset($_SESSION['user_group']) || $_SESSION['user_group'] !== 'Staff') {
                         <th class="text-center">IP Address</th>
                         <th class="text-center">Login Time</th>
                         <th class="text-center">Logout Time</th>
-                        <th class="text-center">Session ID</th>
+                        <!-- <th class="text-center">Session ID</th> -->
                         <th class="text-center">User Actions</th>
                     </tr>
                 </thead>									
@@ -108,7 +108,7 @@ if (!isset($_SESSION['user_group']) || $_SESSION['user_group'] !== 'Staff') {
                                     : '<span class="text-danger">Still Logged In</span>';
                                 ?>
                             </td>
-                            <td><?php echo htmlspecialchars($row['session_id']); ?></td>
+                            <!-- <td><?php echo htmlspecialchars($row['session_id']); ?></td> -->
                             <td><?php echo htmlspecialchars($row['action']); ?></td>
                         </tr>
                     <?php
