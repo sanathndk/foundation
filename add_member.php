@@ -101,6 +101,7 @@ if(isset($_POST['btnsave'])){
 
 }
 $_SESSION['csrf_token']=$token;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -562,7 +563,7 @@ $_SESSION['csrf_token']=$token;
                                             <label for="inputCardNo" class="form-label">Card Number:<i class="text-danger font-weight-bold">*</i></label>
                                         </div>
                                         <div class="col-sm-4">
-                                            <input type="text" class="form-control" name="cardnumber" id="inputCardNo" required>  <!--required-->
+                                            <input type="text" class="form-control" name="cardnumber" id="inputCardNo" value="<?php echo $newCard; ?>" readonly required>  <!--required-->
                                         </div>
                                    
                                         <div class="col-sm-2 text-end">        
@@ -713,13 +714,14 @@ $(function() {
         });
     });
 }); -->
+
+<script>
+    function generateCardNumber(){
+        const prefix = "CARD";
+        const randomNumber = Math.floor
+    }
 </script>
-
-</body>
-</html>
-
-
-
+</script>
 </body>
 </html>
 <?php 
