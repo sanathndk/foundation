@@ -1,17 +1,21 @@
 <?php
 function generateCardNumber($dbcon) {
-    // Use your actual table name instead of 'members' if different
-    $result = mysqli_query($dbcon, "SELECT cardnumber FROM member ORDER BY id DESC LIMIT 1");
+    $prefix = "CARD";
 
-    if (mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $lastCard = $row['cardnumber']; // e.g. CARD00012
+    $sql = "SELECT cardnumber FROM member 
+            WHERE cardnumber LIKE '$prefix%' 
+            ORDER BY cardnumber DESC LIMIT 1";
 
-        // Extract number part, increment, and format
-        $number = intval(substr($lastCard, 4)) + 1;
-        return "CARD" . str_pad($number, 5, "0", STR_PAD_LEFT); // CARD00013
+    $result = mysqli_query($dbcon, $sql);
+    $row = mysqli_fetch_assoc($result);
+
+    if ($row) {
+        $lastNum = intval(substr($row['cardnumber'], strlen($prefix)));
+        $nextNum = $lastNum + 1;
     } else {
-        return "CARD00001";
+        $nextNum = 1;
     }
+
+    return $prefix . str_pad($nextNum, 4, '0', STR_PAD_LEFT); // CARD0001
 }
 ?>
