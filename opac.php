@@ -2,6 +2,7 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+
 // if(strlen($_SESSION['alogin'])==0)
 // {   
 // 	header('location:index.php');
@@ -16,7 +17,6 @@ include('includes/config.php');
     } 
 
 ?>
-
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -65,6 +65,7 @@ include('includes/config.php');
                 <span class="d-none d-lg-block d-flex">DSCSC</span>
             </a>
         </div>
+        
         <div class="col-md-5 offset-md-2 d-flex">
             <input type="search" name="keyword" class="form-control d-flex" placeholder="Enter search keyword" title="Enter search keyword">    
             <div class="col-md-1 d-flex"><a href="loging.php" class="btn text-light d-flex"><i class="bi bi-person-lock"></i>&nbsp;Loging</a> </div>            
@@ -125,13 +126,11 @@ include('includes/config.php');
                 </tbody>									
             </table>	 
         </div>														
-    </div>        					
+    </div>  
+    <br><br><br><br><br><br><br><br>
 </div>	   
+<?php include('includes/footer.php');?>
 </div>
-
-	<?php include('includes/footer.php');?>   
-
-
 
     <script src="js/jquery-3.7.0.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>

@@ -3,7 +3,8 @@ session_start();
 include('includes/config.php');
 include('includes/activity.php');
 
-logAction($dbcon, "Loging");
+logAction($dbcon, "login");
+
 $token=rand();
 if(isset($_POST['login'])){
 
@@ -56,9 +57,7 @@ if(isset($_POST['login'])){
   }
 }
 $_SESSION['csrf_token']=$token;
-
 ?>
-
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
