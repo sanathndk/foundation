@@ -1,7 +1,10 @@
 <?php 
 session_start();
+include('includes/functions.php');
 include('includes/config.php');
 include('includes/activity.php');
+
+$autoCardNumber = generateCardNumber($dbcon);
 
 logAction($dbcon, "Add_member");
 error_reporting(0);
@@ -562,7 +565,7 @@ $_SESSION['csrf_token']=$token;
                                             <label for="inputCardNo" class="form-label">Card Number:<i class="text-danger font-weight-bold">*</i></label>
                                         </div>
                                         <div class="col-sm-4">
-                                            <input type="text" class="form-control" name="cardnumber" id="inputCardNo" required>  <!--required-->
+                                            <input type="text" class="form-control" name="cardnumber" id="inputCardNo" value="<?php echo $autoCardNumber; ?>" readonly>  <!--required-->
                                         </div>
                                    
                                         <div class="col-sm-2 text-end">        

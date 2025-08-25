@@ -213,7 +213,7 @@ $_SESSION['csrf_token'] = $token;
                                 <label for="inputtype" class="form-label">Type:</label>
                             </div>
                             <div class="col-sm-4">
-                                <select id="type" class="form-select" name="type" required>
+                                <select id="type" class="form-select" name="type" onchange="getBarcode(this.value)">
                                     <option value="" selected>Select Type</option>
                                     <option value="Research">Research</option>
                                     <option value="PPT">PPT</option> 
@@ -280,7 +280,7 @@ $_SESSION['csrf_token'] = $token;
         
                         <div class="row p-2">
                             <div class="col-sm-2 text-end">
-                                <label for="inputBarcode" class="form-label">Barcode:<i class="text-danger font-weight-bold">*</i></label>
+                                <label for="inputBarcode" class="form-label" readonly>Barcode:<i class="text-danger font-weight-bold">*</i></label>
                             </div>
                             <div class="col-sm-4">
                                 <input type="text" class="form-control" id="inputBarcode" name="booknumber" required>
@@ -335,12 +335,12 @@ $_SESSION['csrf_token'] = $token;
 							</div>
 					</div>
 						<div class="row justify-content-md-center">							
-                            <div class="col-sm-11">			
+                            <div class="col-sm-10">			
                                       <table class="table table-striped table-bordered table-hover align-middle table-responsive" id="dataTables">										
                                             <thead class="text-center">
                                                 <tr>
                                                     <th>Ser</th>
-                                                    <th>Book No</th>
+                                                    <th>Research No</th>
                                                     <th>Type</th>
                                                     <th>Category</th>
                                                     <th>Title</th>
@@ -369,7 +369,7 @@ $_SESSION['csrf_token'] = $token;
                                                         echo "<td>" . htmlspecialchars($row['language']) . "</td>";
                                                         echo "<td class='text-center'>
                                                                 
-                                                                <a href='ppt-download.php?id={$row['id']}&type=image' class='btn btn-info btn-sm'><i class='bi bi-file-image'></i></a>
+                                                                
                                                                 <a href='ppt-download.php?id={$row['id']}&type=abstract' class='btn btn-success btn-sm'><i class='bi bi-download'></i></a>
                                                                 <a href='edit-ppt.php?id=" . $row['id'] . "' class='btn btn-warning btn-sm'><i class='bi bi-pencil-square'></i></a>
                                                                 <a href='ppt.php?id=" . $row['id'] . "' onclick=\"return confirm('Are you sure to delete?');\" class='btn btn-danger btn-sm'><i class='bi bi-trash3'></i></a>
@@ -390,7 +390,24 @@ $_SESSION['csrf_token'] = $token;
         </div>
     </div>	
    
+    <script>
+        function getBarcode(type) {
+            if (type == "") {
+                document.getElementById("inputBarcode").value = "";
+                return;
+            }
+
+            const xhttp = new XMLHttpRequest();
+            xhttp.onload = function () {
+                document.getElementById("inputBarcode").value = this.responseText;
+            }
+            xhttp.open("GET", "type_barcode.php?type=" + type, true);
+            xhttp.send();
+        }
+    </script>
+
             <!-- <script src="js/search.js"></script> -->
+<script src="js/search.js"></script>
 <script src="js/search.js"></script>
 <script src="js/jquery-3.7.0.js"></script>
 <script src="js/jquery.dataTables.min.js"></script>
@@ -404,3 +421,4 @@ $_SESSION['csrf_token'] = $token;
 mysqli_close($dbcon);
 ?>
 <!-- <a href='ppt-show.php?id=" . $row['id'] . "' class='btn btn-info btn-sm'><i class='bi bi-eye'></i></a> -->
+ <!-- <a href='ppt-download.php?id={$row['id']}&type=image' class='btn btn-info btn-sm'><i class='bi bi-file-image'></i></a> -->

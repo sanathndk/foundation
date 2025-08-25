@@ -92,11 +92,13 @@ else{
                     </div>
                     <!-- /.main-page -->                    
                 </div>
+                
                 <!-- /.content-container -->
             </div>
+            <?php include('includes/footer.php');?>
             <!-- /.content-wrapper -->
         </div>
-        <?php include('includes/footer.php');?>   
+           
 	<!-- <script src="js/search.js"></script> -->
 
 	<script src="js/jquery-3.7.0.js"></script>

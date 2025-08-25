@@ -165,7 +165,7 @@ $_SESSION['csrf_token']=$token;
                             <label for="inputType" class="form-label">Item Type:</label>       
                           </div>
                           <div class="col-sm-4">        
-                            <select id="inputType" class="form-select" name ="itemtype" required> 
+                            <select id="inputType" class="form-select" name ="itemtype" onchange="getBarcode(this.value)"> 
                             <!-- Load Item Type in database -->
                               <?php
                                 $sql=mysqli_query($dbcon, "SELECT * FROM `itemtypes`");
@@ -394,6 +394,23 @@ $_SESSION['csrf_token']=$token;
       </div>
     </div>
   </div> 
+
+  <script>
+    function getBarcode(typeCode) {
+        if (typeCode == "") {
+            document.getElementById("inputBarcode").value = "";
+            return;
+        }
+
+        const xhttp = new XMLHttpRequest();
+        xhttp.onload = function () {
+            document.getElementById("inputBarcode").value = this.responseText;
+        }
+        xhttp.open("GET", "itemtype_barcode.php?type=" + typeCode, true);
+        xhttp.send();
+    }
+</script>
+
 
 <script src="js/search.js"></script>
 
