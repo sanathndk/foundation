@@ -42,6 +42,7 @@ else{
 			$loanperiod=$finerules['loanperiod'];
 			$checkoutallow=$finerules['checkoutallow'];
 
+			
 			// Check no of book issued
 			$issuedbook=mysqli_query($dbcon,"SELECT * FROM issuedbook WHERE membernumber = '$membernumber' and RetrunStatus=0");
 
@@ -67,7 +68,7 @@ else{
 										
 								if (mysqli_stmt_execute($result) && mysqli_stmt_execute($update)) {
 									$error1='The following items have been checked out:<strong><br>'.$booknumber.'</strong>';		
-									// header('location:checkouts.php');
+
 								} else{
 									$error='Something went wrong please try again' .mysqli_error($dbcon);;		
 								}					

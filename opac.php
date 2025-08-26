@@ -3,7 +3,7 @@ session_start();
 error_reporting(0);
 include('includes/config.php');
 
-// Search keyword
+// search keyword
 $keyword = isset($_GET['keyword']) ? mysqli_real_escape_string($dbcon, trim($_GET['keyword'])) : '';
 
 $catalog_result = $ppt_result = null;
@@ -30,15 +30,24 @@ if (!empty($keyword)) {
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <title>Search | Library Management System</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">  
     <link rel="icon" href="img/logo.png" type="image/png">
+    <meta name="author" content="AS Indika - Sri Lanka - 94716593406">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css" media="screen" >
     <link rel="stylesheet" href="css/jquery.dataTables.min.css">   
     <link href="css/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <title>Search | Library Management System</title>
+    <style>
+    .logo { line-height: 1; }
+    @media (min-width: 1200px) { .logo { width: 280px; } }
+    .logo img { max-height: 26px; margin-right: 6px; }
+    .logo span { font-size: 26px; font-weight: 700; color: #ffffff; font-family: "Nunito", sans-serif; }
+    </style>
 </head>
 
 <body class="bg-dark text-light">
@@ -46,19 +55,18 @@ if (!empty($keyword)) {
     <div class="row align-items-center d-flex p-3">
         <div class="col-2 d-flex"> 
             <a href="index.php" class="logo d-flex">
-                <img src="img/logo.png" alt="Foundation" class="d-flex">
+                <img src="img/logo.png" alt="Foundation">
                 <span class="d-none d-lg-block d-flex">DSCSC</span>
             </a>
         </div>
-        
         <div class="col-md-5 offset-md-2 d-flex">
-            <input type="search" name="keyword" class="form-control d-flex" placeholder="Enter search keyword" value="<?php echo htmlspecialchars($keyword); ?>">    
-            <div class="col-md-1 d-flex"><a href="loging.php" class="btn text-light d-flex"><i class="bi bi-person-lock"></i>&nbsp;Login</a> </div>            
+            <input type="search" name="keyword" class="form-control" placeholder="Enter search keyword" value="<?php echo htmlspecialchars($keyword); ?>">    
+            <div class="col-md-1 d-flex"><a href="loging.php" class="btn text-light"><i class="bi bi-person-lock"></i>&nbsp;Login</a></div>            
         </div>
     </div>
 </form>
 
-<div class="container-fluid bg-light text-dark p-4 rounded">
+<div class="container-fluid bg-light text-dark p-4">
     <h4 class="mb-4">Search Results for: <em><?php echo htmlspecialchars($keyword); ?></em></h4>
 
     <!-- Books Catalog Results -->
@@ -78,23 +86,21 @@ if (!empty($keyword)) {
                 </tr>
             </thead>
             <tbody>
-                <?php $ser=1; while($row = mysqli_fetch_assoc($catalog_result)): ?>
+                <?php $ser = 1; while ($row = mysqli_fetch_assoc($catalog_result)): ?>
                     <tr>
-                        <td class="text-center"><?php echo $ser++?></td>
-                        <td><?php echo $row['booknumber']?></td>
-                        <td><?php echo $row['title']?></td>
-                        <td><?php echo $row['isbn']?></td>
-                        <td><?php echo $row['author']?></td>
-                        <td><?php echo $row['publisher']?></td>
-                        <td><?php echo $row['classificationNo'].' '.$row['ItemNo']?></td>
-                        <?php
-                            if ($row['checkedin']==1) {
-                                echo "<td class='text-success'><strong>Available</strong></td>";
-                            } else {
-                                echo "<td class='text-danger'><strong>Not Available</strong></td>";
-                            }
-                        ?>                                              
-                    </tr>    
+                        <td class="text-center"><?php echo $ser++; ?></td>
+                        <td><?php echo $row['booknumber']; ?></td>
+                        <td><?php echo $row['title']; ?></td>
+                        <td><?php echo $row['isbn']; ?></td>
+                        <td><?php echo $row['author']; ?></td>
+                        <td><?php echo $row['publisher']; ?></td>
+                        <td><?php echo $row['classificationNo'].' '.$row['ItemNo']; ?></td>
+                        <?php if ($row['checkedin'] == 1): ?>
+                            <td class="text-success"><strong>Available</strong></td>
+                        <?php else: ?>
+                            <td class="text-danger"><strong>Not Available</strong></td>
+                        <?php endif; ?>
+                    </tr>
                 <?php endwhile; ?>
             </tbody>
         </table>
@@ -116,15 +122,15 @@ if (!empty($keyword)) {
                 </tr>
             </thead>
             <tbody>
-                <?php $ser=1; while($row = mysqli_fetch_assoc($ppt_result)): ?>
+                <?php $pptSer = 1; while ($row = mysqli_fetch_assoc($ppt_result)): ?>
                     <tr>
-                        <td class="text-center"><?php echo $ser++?></td>
-                        <td><?php echo $row['booknumber']?></td>
-                        <td><?php echo $row['title']?></td>
-                        <td><?php echo $row['type']?></td>
-                        <td><?php echo $row['author']?></td>
-                        <td><?php echo $row['language']?></td>
-                        <td><?php echo $row['research_year']?></td>
+                        <td class="text-center"><?php echo $pptSer++; ?></td>
+                        <td><?php echo $row['booknumber']; ?></td>
+                        <td><?php echo $row['title']; ?></td>
+                        <td><?php echo $row['type']; ?></td>
+                        <td><?php echo $row['author']; ?></td>
+                        <td><?php echo $row['language']; ?></td>
+                        <td><?php echo $row['research_year']; ?></td>
                     </tr>
                 <?php endwhile; ?>
             </tbody>
@@ -152,6 +158,7 @@ $(document).ready(function() {
     });
 });
 </script>
+
 </body>
 </html>
 <?php 
