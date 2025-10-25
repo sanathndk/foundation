@@ -67,7 +67,7 @@ if(isset($_POST['btnsave'])){
         $enrfee=mysqli_fetch_array($fee);
         $enrollmentfee=$enrfee['enrollmentfee'];
 
-        if ($memberphoto['size']<=200000) {
+        if ($memberphoto['size']<=500000) {
             $imagedetails=pathinfo($memberphoto['name']);
             $allwextention=array('jpg','jpeg','png');
 
@@ -91,11 +91,11 @@ if(isset($_POST['btnsave'])){
                     }  
                 }
             }else{
-                $error = '<strong>Select an Image File<strong>';    
+                $error = '<strong>Select an Image File (jpg, jpeg, png)<strong>';    
             }
         }
         else{
-            $error = '<strong>Image should be less than 200 KB<strong>'; 
+            $error = '<strong>Image should be less than 500 KB<strong>'; 
         }
         
     }else{
@@ -161,17 +161,11 @@ $_SESSION['csrf_token']=$token;
                                         </div>                              
                                     </div>          
                        
-                                    <div class="row p-2">
-                                        <div class="col-sm-2 text-end">
-                                            <label for="inputSalutation" class="form-label">Member Image</label>       
-                                        </div>
-                                        <div class="col-sm-2">       
-                                            <input type="file" class="form-control" id="memberphoto" name="memberphoto" required>                                            
-                                        </div>
+                                    <div class="row p-2">                                        
 
                                         <!-- Service Dropdown -->
                                             <div class="col-sm-2 text-end">
-                                                <label for="service" class="form-label">Service:</label>       
+                                                <label for="service" class="form-label">Service:<i class="text-danger font-weight-bold">*</i></label>       
                                             </div>
                                             <div class="col-sm-2">  
                                                 <select id="service" class="form-select" name="service" required onchange="this.form.submit()">
@@ -181,13 +175,7 @@ $_SESSION['csrf_token']=$token;
                                                     <option value="A"  <?= ($_POST['service'] ?? '') == 'A' ? 'selected' : '' ?>>Air Force</option>
                                                     <option value="P"  <?= ($_POST['service'] ?? '') == 'P' ? 'selected' : '' ?>>Police</option>
                                                 </select>      
-                                                <!-- <select id="service" class="form-select" name="service" required>
-                                                    <option value="">-- Select Service --</option>
-                                                    <option value="Ar">Army</option>
-                                                    <option value="N">Navy</option>
-                                                    <option value="A">Air Force</option>
-                                                    <option value="P">Police</option>
-                                                </select> -->
+                                             
                                             </div>           
 
                                             <!-- Salutation (Rank) Dropdown -->
@@ -226,17 +214,22 @@ $_SESSION['csrf_token']=$token;
                                                 ?>
                                                 </select> -->
                                             </div>
+                                            <div class="col-sm-2 text-end">
+                                            <label for="inputSalutation" class="form-label">Member Image<i class="text-danger font-weight-bold">*</i></label>       
                                         </div>
+                                        <div class="col-sm-2">       
+                                            <input type="file" class="form-control" id="memberphoto" name="memberphoto" required>                                            
+                                        </div>
+                                    </div>
                                    
+                                        
                                     <!-- Error msg Display -->
                                     <div class="row p-2">
-                                        <div class="col-sm-2 text-end">
-                                        </div>
+                                        <div class="col-sm-2 text-end"></div>
                                         <div class="col-sm-4">       
                                              <span class="text-danger font-weight-bold"><?php echo $error?></span> 
                                         </div>                              
                                     </div>
-                                                
                                     <div class="row p-2">
                                         <div class="col-sm-2 text-end">
                                             <label for="inputSurname" class="form-label">Surname:<i class="text-danger font-weight-bold">*</i></label>

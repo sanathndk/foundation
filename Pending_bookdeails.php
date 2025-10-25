@@ -67,10 +67,8 @@ else{
                                                 <thead>
                                                     <tr>
                                                         <th>Ser</th>
-                                                        <th>Book ID</th>
-                                                        <th>Book Name</th>
-                                                        <th>Member Name</th>
-                                                        <th>ISBN </th>
+                                                        <th>Member ID</th>
+                                                        <th>Book ID</th>                                                    
                                                         <th>Issued Date</th>
                                                         <th>Return Date</th>
                                                     </tr>
@@ -79,17 +77,15 @@ else{
                                                 
                                             <?php 
 
-                                            $query = mysqli_query($dbcon,"SELECT * from `issuedbook_view` WHERE `RetrunStatus`=0");
+                                            $query = mysqli_query($dbcon,"SELECT * from `issuedbook` WHERE `RetrunStatus`=0");
                                             if(mysqli_num_rows($query) > 0)
                                             {                                                
                                                 while ($row=mysqli_fetch_array($query)) 
                                                 {  $cnt++;?>                                      
                                                 <tr>
                                                     <td class="text-center"><?php echo htmlentities($cnt);?></td>
-                                                    <td><?php echo $row['booknumber'];?></td>
-                                                    <td><?php echo $row['title'];?></td>                                                    
-                                                    <td><?php echo $row['initials'].' '.$row['surname'];?></td>
-                                                    <td><?php echo $row['isbn'];?></td>
+                                                    <td><?php echo $row['membernumber'];?></td>
+                                                    <td><?php echo $row['booknumber'];?></td>                                                    
                                                     <td><?php echo $row['IssuesDate'];?></td>
                                                     <td><?php echo $row['ReturnDate'];?></td>                                                                                        
                                                 </tr>

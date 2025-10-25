@@ -19,7 +19,7 @@ if(strlen($_SESSION['alogin'])=="")
     <div class="d-flex align-items-center justify-content-between">
       <a href="userdashboard.php" class="logo d-flex align-items-center">
         <img src="img/Army_Logo.png" alt="">
-        <span class="d-none d-lg-block">DSCSC</span>
+        <span class="d-none d-lg-block">AWC</span>
       </a>
     </div><!-- End Logo -->
 

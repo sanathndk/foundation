@@ -56,7 +56,7 @@ if (!empty($keyword)) {
         <div class="col-2 d-flex"> 
             <a href="index.php" class="logo d-flex">
                 <img src="img/logo.png" alt="Foundation">
-                <span class="d-none d-lg-block d-flex">DSCSC</span>
+                <span class="d-none d-lg-block d-flex">AWC</span>
             </a>
         </div>
         <div class="col-md-5 offset-md-2 d-flex">

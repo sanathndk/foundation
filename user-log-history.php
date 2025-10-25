@@ -54,7 +54,7 @@ if (!isset($_SESSION['user_group']) || $_SESSION['user_group'] !== 'Staff') {
         <div class="col-2 d-flex"> 
             <a href="index.php" class="logo d-flex">
                 <img src="img/logo.png" alt="Foundation" class="d-flex">
-                <span class="d-none d-lg-block d-flex">DSCSC</span>
+                <span class="d-none d-lg-block d-flex">AWC</span>
             </a>
         </div>
         

@@ -22,6 +22,7 @@ else{
         <link rel="icon" href="img/logo.png" type="image/png">
         <script src="js/charts.js"></script>   
         <script src="js/chart.js"></script>
+
     </head>
     <body class="top-navbar-fixed">
         <div class="main-wrapper">
@@ -133,7 +134,7 @@ else{
                                     <!-- Overdue book-->
                                     <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                                         <a class="dashboard-stat bg-danger" href="overdue_book.php">
-                                        <?php 
+                                            <?php 
                                             
                                             $over =mysqli_query($dbcon,"SELECT * from `issuedbook_view` WHERE `RetrunStatus`=0 && `ReturnDate`<= '$sysdate'");
 
