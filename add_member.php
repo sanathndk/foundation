@@ -81,11 +81,12 @@ if(isset($_POST['btnsave'])){
                         mysqli_stmt_bind_param($result,'ssssssssssssssssssssssssssssssssssssssssssssssss',$service,$title,$cardnumber,$surname,$firstname,$middle_name,$othernames,$initials,$regtnumber,$dateofbirth,$gender,$address,$address2,$city,$state,$zipcode,$country,$mobile,$mobile2,$email,$email2,$primary_contact_method,$B_address,$B_address2,$B_city,$B_state,$B_zipcode,$B_country,$altcontactname,$altcontactmobil,$altcontactaddress1,$altcontactaddress2,$altcontactcity,$altcontactstate,$altcontactzipcode,$altcontactcountry,$altcontactemail,$relationship,$idcard,$passport,$branchcode,$categorycode,$dateenrolled,$dateexpiry,$userid,$password,$status,$filepath);
                         
                         if (mysqli_stmt_execute($result)) {
-                            $msg = 'Member registed successfuly, <strong>Member id is '.$cardnumber.'</strong><br>Registration fee is <strong>'.number_format($enrollmentfee, 2).'</strong>';  
-                            // header('location:add_member.php');
-                        } else {
-                            $error1 = '<strong>Something went wrong. Please try again<strong>'; 
-                        }
+                            echo "<script>alert('Member registered successfully!\\nMember ID: {$cardnumber}\\nRegistration fee: ".number_format($enrollmentfee,2)."');window.location = 'add_member.php';</script>";
+                        exit();
+                        } 
+                        else {
+                            echo "<script>alert('Something went wrong. Please try again.');</script>";}
+
                     } else{
                         $error1 = '<strong>Error Connection:'.mysqli_error($dbcon).'<strong>'; 
                     }  
@@ -270,7 +271,7 @@ $_SESSION['csrf_token']=$token;
                                         </div>
 
                                         <div class="col-sm-2 text-end">
-                                            <label for="inputregtnumber" class="form-label">Army Number:</label>
+                                            <label for="inputregtnumber" class="form-label">Service Number:</label>
                                         </div>
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control" name="regtnumber" id="inputregtnumber">

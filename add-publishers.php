@@ -5,44 +5,56 @@ include('includes/config.php');
 include('includes/activity.php');
 
 logAction($dbcon, "Add_publishers");
-if(strlen($_SESSION['alogin'])==0)
-{   
-	header('location:index.php');
-}
-else{ 
-	if(isset($_POST['btnsave']))
-	{
-	// Save Record
-		$name=$_POST['name'];
-		$address=$_POST['address'];
-		$country=$_POST['country'];
-		$contactno=$_POST['contactno'];
-		$fax=$_POST['fax'];
-		$email=$_POST['email'];
-		$web=$_POST['web'];
-		
-		$sql="INSERT INTO `publishersr`( `pubname`, `pubaddress`, `pubcountry`, `pubmobile`, `pubfax`, `pubemail`, `pubwebsite`) VALUES (?,?,?,?,?,?,?)";
-		$result=mysqli_prepare($dbcon, $sql);
-		
-		if ($result){
-			mysqli_stmt_bind_param($result,'sssssss',$name,$address,$country,$contactno,$fax,$email,$web);
-			if (mysqli_stmt_execute($result)) {
-				echo "<script>Alert('Record added successfully')</script>";
-				// header('location:add-publishers.php');
-			} else{
-				echo "Error inserting data: " .mysqli_error($dbcon);
+
+if (strlen($_SESSION['alogin']) == 0) {   
+    header('location:index.php');
+} else { 
+    // Save Record
+    if (isset($_POST['btnsave'])) {
+        $name = $_POST['name'];
+        $address = $_POST['address'];
+        $country = $_POST['country'];
+        $contactno = $_POST['contactno'];
+        $fax = $_POST['fax'];
+        $email = $_POST['email'];
+        $web = $_POST['web'];
+
+        $sql = "INSERT INTO `publishersr`(`pubname`, `pubaddress`, `pubcountry`, `pubmobile`, `pubfax`, `pubemail`, `pubwebsite`) VALUES (?,?,?,?,?,?,?)";
+        $result = mysqli_prepare($dbcon, $sql);
+
+		// Check for duplicate name
+		$check = mysqli_prepare($dbcon, "SELECT pubid FROM publishersr WHERE pubname = ?");
+		mysqli_stmt_bind_param($check, 's', $name);
+		mysqli_stmt_execute($check);
+		mysqli_stmt_store_result($check);
+
+		if (mysqli_stmt_num_rows($check) > 0) {
+			// Name already exists
+			echo "<script>alert('Publisher name already exists!'); window.location='add-publishers.php';</script>";
+			exit();
+		} else {
+			// Proceed with insert
+			$sql = "INSERT INTO publishersr(pubname, pubaddress, pubcountry, pubmobile, pubfax, pubemail, pubwebsite) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			$stmt = mysqli_prepare($dbcon, $sql);
+			mysqli_stmt_bind_param($stmt, 'sssssss', $name, $address, $country, $contactno, $fax, $email, $web);
+			if (mysqli_stmt_execute($stmt)) {
+				echo "<script>alert('Publisher record added successfully!'); window.location='add-publishers.php';</script>";
+				exit();
+			} else {
+				echo "<script>alert('Error inserting data: " . mysqli_error($dbcon) . "');</script>";
 			}
-		} else{
-			echo "Error Connection: " .mysqli_error($dbcon);
 		}
-		
-	}	
-	// Delete Record	
-	if($_GET['id']<>""){
-		$id=$_GET['id'];
-		mysqli_query($dbcon,"delete from publishersr where pubid='$id'");
-	}	
+    } 
+
+    // Delete Record	
+    if (isset($_GET['id']) && $_GET['id'] != '') {
+        $id = $_GET['id'];
+        mysqli_query($dbcon, "DELETE FROM publishersr WHERE pubid='$id'");
+        echo "<script>alert('Publisher record deleted successfully!'); window.location='add-publishers.php';</script>";
+        exit();
+    }
 ?>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -156,12 +168,12 @@ else{
 							</fieldset>
 						</form>						
 						<div class="row justify-content-md-center"> 
-							<div class="col-sm-10">
+							<div class="col-sm-8">
 								<h3>List of Publishers</h3>
 							</div>
 						</div>
 						<div class="row justify-content-md-center">							
-							<div class="col-sm-10">			
+							<div class="col-sm-8">		
 								<table class="table table-striped table-bordered table-hover align-middle table-responsive" id="dataTables">										
 									<thead>
 										<tr class="text-center">

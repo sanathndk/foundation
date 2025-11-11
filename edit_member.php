@@ -256,7 +256,7 @@ $_SESSION['csrf_token']=$token;
                                         </div>
 
                                         <div class="col-sm-2 text-end">
-                                            <label for="inputregtnumber" class="form-label">Army Number:</label>
+                                            <label for="inputregtnumber" class="form-label">Service Number:</label>
                                         </div>
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control" name="regtnumber" id="inputregtnumber" value="<?php echo $row['regtnumber']?>">

@@ -115,7 +115,7 @@ else{
 										<label for="checkoutallow" class="form-label">Current checkouts allowed:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="checkoutallow" class="form-control" id="checkoutallow" value="<?php echo $rul['checkoutallow'];?>" required>                                
+										<input type="number" name="checkoutallow" class="form-control" id="checkoutallow" value="<?php echo $rul['checkoutallow'];?>" required min="0">                                
                                     </div>
 									
 									<div class="col-sm-2 text-end">
@@ -142,14 +142,14 @@ else{
 									</div>
 
 									<div class="col-sm-4">
-										<input type="number" name="loanperiod" class="form-control" id="inputloanperiod" value="<?php echo $rul['loanperiod'];?>" required>
+										<input type="number" name="loanperiod" class="form-control" id="inputloanperiod" value="<?php echo $rul['loanperiod'];?>" required min="0">
                                     </div>
 									
 									<div class="col-sm-2 text-end">
 										<label for="inputamount" class="form-label">Fine amount:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="fineamount" class="form-control" id="inputamount" step="0.00" value="<?php echo $rul['fineamount'];?>" required>									
+										<input type="number" name="fineamount" class="form-control" id="inputamount" step="0.00" value="<?php echo $rul['fineamount'];?>" required min="0">									
 									</div>
 								</div>	
 								<div class="row p-2">
@@ -157,14 +157,14 @@ else{
 										<label for="inputrenallowed" class="form-label">Renewals allowed:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="renewalallow" class="form-control" id="inputrenallowed" value="<?php echo $rul['renewalallow'];?>" required>
+										<input type="number" name="renewalallow" class="form-control" id="inputrenallowed" value="<?php echo $rul['renewalallow'];?>" required min="0">
 									</div>
 									
 									<div class="col-sm-2 text-end">
 										<label for="inputrenperiod" class="form-label">Renewal period (Days):</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="renewalperiod" class="form-control" id="inputrenperiod" value="<?php echo $rul['renewalperiod'];?>" required>									
+										<input type="number" name="renewalperiod" class="form-control" id="inputrenperiod" value="<?php echo $rul['renewalperiod'];?>" required min="0">									
 									</div>
 								</div>	
 								<div class="d-grid gap-2 d-md-flex justify-content-md-center">
@@ -176,16 +176,20 @@ else{
 							</fieldset>
 						</form>												
 					</div>	
-					<br><br><br><br><br><br><br><br><br>	
-					<?php include('includes/footer.php');?>			
+					<?php include('includes/footer.php');?>  
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	   
 	
+	<script src="js/jquery-3.7.0.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script>
+		new DataTable('#dataTables');  
+	</script>
 </body>
 </html>
 <?php 
 mysqli_close($dbcon);
-} ?>
+} 
+?>

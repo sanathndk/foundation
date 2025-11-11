@@ -6,36 +6,44 @@ include('includes/activity.php');
 
 logAction($dbcon, "Add_holiday");
 
-if(strlen($_SESSION['alogin'])==0){   
+if (strlen($_SESSION['alogin']) == 0) {   
     header('location:index.php');
-}
-else{ 
+    exit();
+} else { 
     // Add Record
-    if(isset($_POST['btnsave'])) {
+    if (isset($_POST['btnsave'])) {
         $holiday_date = $_POST['holiday_date'];
-        $description = $_POST['description'];
+        $description  = $_POST['description'];
 
-        $sql = "INSERT INTO holidays (holiday_date, description) VALUES (?, ?)";
-        $stmt = mysqli_prepare($dbcon, $sql);
-
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "ss", $holiday_date, $description);
-            if (mysqli_stmt_execute($stmt)) {
-                echo "<script>alert('Holiday added successfully!'); window.location='add_holiday.php';</script>";
-            } else {
-                echo "Error inserting data: " . mysqli_error($dbcon);
-            }
+        // Validation: block past dates
+        $today = date('Y-m-d');
+        if ($holiday_date < $today) {
+            echo "<script>alert('You cannot add holidays for past dates!');</script>";
         } else {
-            echo "Error preparing query: " . mysqli_error($dbcon);
+            $sql = "INSERT INTO holidays (holiday_date, description) VALUES (?, ?)";
+            $stmt = mysqli_prepare($dbcon, $sql);
+
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "ss", $holiday_date, $description);
+                if (mysqli_stmt_execute($stmt)) {
+                    echo "<script>alert('Holiday added successfully!'); window.location='holiday_list.php';</script>";
+                } else {
+                    echo "<script>alert('Error adding holiday');</script>";
+                }
+            } else {
+                echo "Error preparing query: " . mysqli_error($dbcon);
+            }
         }
     }
 
     // Delete Record
-    if(isset($_GET['id']) && $_GET['id']!=""){
+    if (isset($_GET['id']) && $_GET['id'] != "") {
         $id = $_GET['id'];
-        mysqli_query($dbcon,"DELETE FROM holidays WHERE id='$id'");
+        mysqli_query($dbcon, "DELETE FROM holidays WHERE id='$id'");
         echo "<script>alert('Holiday deleted successfully!'); window.location='add_holiday.php';</script>";
-    }	
+    }
+}
+	
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -163,5 +171,5 @@ else{
 </html>
 <?php 
 mysqli_close($dbcon);
-} 
+
 ?>

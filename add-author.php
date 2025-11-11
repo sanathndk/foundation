@@ -202,12 +202,12 @@ $_SESSION['csrf_token']=$token;
 							</fieldset>
 						</form>						
 						<div class="row justify-content-md-center"> 
-							<div class="col-sm-10">
+							<div class="col-sm-8">
 								<h3>List of Author</h3>
 							</div>
 						</div>
 						<div class="row justify-content-md-center">							
-							<div class="col-sm-10">			
+							<div class="col-sm-8">			
 								<table class="table table-striped table-bordered table-hover align-middle table-responsive" id="dataTables">										
 									<thead>
 										<tr class="text-center">
