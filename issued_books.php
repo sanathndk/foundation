@@ -4,6 +4,7 @@ error_reporting(0);
 include('includes/config.php');
 include('includes/activity.php');
 
+
 logAction($dbcon, "View_issued_book");
 if(strlen($_SESSION['alogin'])==0){   
     header('location:index.php');

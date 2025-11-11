@@ -3,6 +3,7 @@ session_start();
 error_reporting(0);
 include('includes/config.php');
 include('includes/activity.php');
+include('helper.php');
 
 logAction($dbcon, "Book Renew");
 $token=rand();

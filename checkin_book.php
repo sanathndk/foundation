@@ -3,6 +3,7 @@ session_start();
 error_reporting(0);
 include('includes/config.php');
 include('includes/activity.php');
+include('includes/helper.php');
 
 logAction($dbcon, "checkin_book");
 if(strlen($_SESSION['alogin'])==0){   
@@ -44,19 +45,28 @@ if(strlen($_SESSION['alogin'])==0){
 				$sql2=mysqli_query($dbcon,"SELECT * FROM `finerules` WHERE `category`='$category' && itemtype = '$findtype'");
 				$finerules=mysqli_fetch_assoc($sql2);
 				$fineamount=$finerules['fineamount'];
+
+				$loanPeriod = 7; // get from finerules table
+				$issueDate = date('Y-m-d'); // book issued today
+
+				$dueDate = calculateDueDate($issueDate, $loanPeriod, $dbcon);
+
+				// Save due date in issuedbook table
+				$stmt = $dbcon->prepare("UPDATE issuedbook SET ReturnDate=? WHERE issueid=?");
+				$stmt->bind_param("si", $dueDate, $issueId);
+				$stmt->execute();
+				$stmt->close();
+
 				
 				if ($returndate<$sysdate){
 
-					// Calculate Date differnts
-					$diff = strtotime($sysdate) - strtotime($returndate);
-					$noofdate = floor($diff / (60 * 60 * 24));		
-
-					// Calculate fine Amount
-					$totfineamount=$fineamount*$noofdate;
+					// Fine Calculation using helper function
+					$totfineamount = calculateFine($returndate, $sysdate, $fineamount, $dbcon);
+					
 					
 					// Status Change in issuedbook Table
-					$update=mysqli_prepare($dbcon,"UPDATE `issuedbook` SET `RetrunStatus`=?,`fine`=? WHERE `booknumber`=?");				
-					mysqli_stmt_bind_param($update,'sss',$status, $totfineamount,$booknumber);					
+					$update=mysqli_prepare($dbcon,"UPDATE `issuedbook` SET `RetrunStatus`=?, `fine`=? WHERE `booknumber`=?");
+					mysqli_stmt_bind_param($update,'iis',$status, $totfineamount, $booknumber);
 
 					// Status Change in Catalog Table
 					$update1=mysqli_prepare($dbcon,"UPDATE `catalog` SET `checkedin`=? WHERE `booknumber`=?");				
