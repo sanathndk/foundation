@@ -73,10 +73,11 @@ else{
                   mysqli_stmt_bind_param($result,'sssssssssssssssssssssss', $booknumber, $itemtype, $title, $isbn, $issn, $author, $author2, $language, $category, $editionnumber, $classificationNo, $itemno, $publisher, $placeofpublisher, $publicationyear, $volume, $pages, $price, $dateacquired, $collectioncode, $status, $checkedin, $filepath);
                   
                   if (mysqli_stmt_execute($result)) {
+                    echo'<script>alert("Book registered successfully. Book id is '.$booknumber.'");</script>';
                     $msg = 'Book registed successfuly. <strong>Book id is '.$booknumber.'<strong>'; 
                     // header('location:cataloging.php');
                   } else{
-                      $error1 = '<strong>Something went wrong please try again<strong>'; 
+                      $error1 = '<strong> Something went wrong please try again <strong>'; 
                   }               
               }
           }else{
@@ -98,7 +99,7 @@ $_SESSION['csrf_token']=$token;
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="img/logo.png" type="image/png">
   	<title>Cataloging |  Library Management System</title>
 </head>
@@ -166,6 +167,7 @@ $_SESSION['csrf_token']=$token;
                           </div>
                           <div class="col-sm-4">        
                             <select id="inputType" class="form-select" name ="itemtype" onchange="getBarcode(this.value)"> 
+                            <option value="" selected>Select Item Type</option>
                             <!-- Load Item Type in database -->
                               <?php
                                 $sql=mysqli_query($dbcon, "SELECT * FROM `itemtypes`");

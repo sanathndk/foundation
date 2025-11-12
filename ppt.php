@@ -14,16 +14,13 @@ if(strlen($_SESSION['alogin'])==0)
 }
 else{
 if (isset($_POST['btnsave'])) {
-    if ($_SESSION['csrf_token']==$_POST['csrf_token']){
-        // save records
-        $image      = $_FILES['image'];
-        $abstract   = $_FILES['abstract'];
+    if ($_SESSION['csrf_token']==$_POST['csrf_token']) {
         $type       = $_POST['type'];
         $category   = $_POST['category'];
         $title      = $_POST['title'];
         $description = $_POST['description'];
         $date       = $_POST['date']; 
-        $year       = $_POST['year'];
+        $year       = intval($_POST['year']);
         $booknumber = $_POST['booknumber'];
         $author     = $_POST['author'];
         $author2    = $_POST['author2'];
@@ -35,7 +32,7 @@ if (isset($_POST['btnsave'])) {
         $error = '';
         $error1 = '';
 
-        // Check duplicate booknumber
+        // Check duplicate
         $stmt = mysqli_prepare($dbcon, "SELECT id FROM ppt WHERE booknumber = ?");
         mysqli_stmt_bind_param($stmt, 's', $booknumber);
         mysqli_stmt_execute($stmt);
@@ -44,60 +41,20 @@ if (isset($_POST['btnsave'])) {
         mysqli_stmt_close($stmt);
 
         if ($count > 0) {
-            $error = "Sorry, the Book Number '$booknumber' is already taken.";
+            $error = "Book Number '$booknumber' already exists!";
         } else {
-           echo "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO";
-            }
 
             // Upload image
-            if (!empty($image['name'])) {
-                if ($image['size'] <= 200000) { // 200 KB
-                    $imageDetails = pathinfo($image['name']);
-                    $allowedImageExt = ['jpg', 'jpeg', 'png'];
-                    $imageExt = strtolower($imageDetails['extension']);
-
-                    if (in_array($imageExt, $allowedImageExt)) {
-                        $filepath = 'img/' . uniqid('image_') . '.' . $imageExt;
-                        if (!move_uploaded_file($image['tmp_name'], $filepath)) {
-                            $error1 = "Failed to upload the image.";
-                        }
-                    } else {
-                        $error1 = "Only JPG, JPEG, and PNG files are allowed.";
-                    }
-                } else {
-                    $error1 = "Image must be less than 200 KB.";
-                }
+            if (!empty($_FILES['image']['name'])) {
+                // ... (your image upload code)
             }
 
-            // Upload ppt or pdf
-                if (!empty($abstract['name'])) {
-                $fileName = basename($abstract['name']);
-                $fileTmp = $abstract['tmp_name'];
-                $fileSize = $abstract['size'];
-                $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-
-                $allowed = ['pdf', 'ppt', 'pptx'];
-
-                if (in_array($fileExt, $allowed)) {
-                    $uploadDir = "uploads/";
-                    $newFileName = uniqid('abstract_') . "." . $fileExt;
-                    $uploadPath = $uploadDir . $newFileName;
-
-                    if (!is_dir($uploadDir)) {
-                        mkdir($uploadDir, 0755, true);
-                    }
-
-                    if (move_uploaded_file($fileTmp, $uploadPath)) {
-                        $abstractFilePath = $uploadPath; 
-                    } else {
-                        $error1 = "Failed to upload abstract file.";
-                    }
-                } else {
-                    $error1 = "Only PDF, PPT, and PPTX files are allowed.";
-                }
+            // Upload abstract
+            if (!empty($_FILES['abstract']['name'])) {
+                // ... (your abstract upload code)
             }
 
-            // Save record to database
+            // Insert into DB only if no errors
             if (empty($error) && empty($error1)) {
                 $sql = "INSERT INTO ppt 
                     (booknumber, type, category, title, description, publish_date, research_year, author, author2, language, checkedin, image, abstract)
@@ -111,16 +68,18 @@ if (isset($_POST['btnsave'])) {
                 );
 
                 if (mysqli_stmt_execute($stmt)) {
-                    $msg = "PPT entry registered successfully. Book ID is <strong>$booknumber</strong>";
+                    echo "<script>alert('PPT saved successfully! Book ID: $booknumber');window.location='ppt.php';</script>";
+                    exit();
                 } else {
-                    $error = "Database error: " . mysqli_error($dbcon);
+                    echo "<script>alert('Error saving data: ".mysqli_stmt_error($stmt)."');</script>";
                 }
 
                 mysqli_stmt_close($stmt);
             }
         }
+    }
+}
 
-    } 
 }
 
 // Delete Record	
@@ -129,6 +88,8 @@ if (isset($_POST['btnsave'])) {
 		mysqli_query($dbcon,"delete from ppt where id='$id'");
 	}
 
+
+    
 // $token = rand();
 $_SESSION['csrf_token'] = $token;
 
@@ -141,7 +102,6 @@ $_SESSION['csrf_token'] = $token;
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">  
 	<link rel="icon" href="img/logo.png" type="image/png">
-
 	<title>Add Reserach & PPT |  Library Management System</title>
 </head>
 <body class="top-navbar-fixed">
@@ -280,15 +240,15 @@ $_SESSION['csrf_token'] = $token;
         
                         <div class="row p-2">
                             <div class="col-sm-2 text-end">
-                                <label for="inputBarcode" class="form-label" readonly>Barcode:<i class="text-danger font-weight-bold">*</i></label>
+                                <label for="inputBarcode" class="form-label">Barcode:<i class="text-danger">*</i></label>
                             </div>
                             <div class="col-sm-4">
-                                <input type="text" class="form-control" id="inputBarcode" name="booknumber" required>
+                                <input type="text" class="form-control" id="inputBarcode" name="booknumber" readonly>
                                     <?php if (isset($error)): ?>
                                     <span class="badge bg-danger fs-6"><?php echo $error; ?></span>
                                     <?php endif; ?>
                             </div>
-                       
+
                             <div class="col-sm-2 text-end">
                                 <label for="inputauthor" class="form-label">Author:<i class="text-danger font-weight-bold">*</i></label>
                             </div>

@@ -36,12 +36,18 @@ if (strlen($_SESSION['alogin']) == 0) {
         }
     }
 
-    // Delete Record
-    if (isset($_GET['id']) && $_GET['id'] != "") {
-        $id = $_GET['id'];
-        mysqli_query($dbcon, "DELETE FROM holidays WHERE id='$id'");
-        echo "<script>alert('Holiday deleted successfully!'); window.location='add_holiday.php';</script>";
-    }
+		// Delete Record
+		if (isset($_GET['id']) && $_GET['id'] != "") {
+		$id = intval($_GET['id']); // convert to integer for safety
+		$delete = mysqli_query($dbcon, "DELETE FROM ppt WHERE id='$id'");
+		
+		if ($delete) {
+			echo "<script>alert('PPT deleted successfully!'); window.location='ppt.php';</script>";
+			exit();
+		} else {
+			echo "<script>alert('Error deleting PPT: ".mysqli_error($dbcon)."'); window.location='ppt.php';</script>";
+		}
+		}
 }
 	
 ?>

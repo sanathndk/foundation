@@ -34,14 +34,12 @@ if (isset($_POST['btnsave'])) {
 
     $error = '';
 
-    // new image uploaded, process it
+    // Handle image upload
     if (!empty($_FILES['image']['name'])) {
         $image = $_FILES['image'];
         if ($image['size'] <= 200000) {
-            $imageDetails = pathinfo($image['name']);
-            $imageExt = strtolower($imageDetails['extension']);
+            $imageExt = strtolower(pathinfo($image['name'], PATHINFO_EXTENSION));
             $allowedImageExt = ['jpg', 'jpeg', 'png'];
-
             if (in_array($imageExt, $allowedImageExt)) {
                 $newImagePath = 'img/' . uniqid('image_') . '.' . $imageExt;
                 if (move_uploaded_file($image['tmp_name'], $newImagePath)) {
@@ -50,20 +48,18 @@ if (isset($_POST['btnsave'])) {
                     $error = "Failed to upload image.";
                 }
             } else {
-                $error = "Only JPG, JPEG, and PNG files are allowed for images.";
+                $error = "Only JPG, JPEG, PNG allowed for images.";
             }
         } else {
             $error = "Image size must be under 200KB.";
         }
     }
 
-    //  new abstract uploaded, process it
+    // Handle abstract upload
     if (empty($error) && !empty($_FILES['abstract']['name'])) {
         $abstract = $_FILES['abstract'];
-        $fileDetails = pathinfo($abstract['name']);
-        $fileExt = strtolower($fileDetails['extension']);
+        $fileExt = strtolower(pathinfo($abstract['name'], PATHINFO_EXTENSION));
         $allowed = ['pdf', 'ppt', 'pptx'];
-
         if (in_array($fileExt, $allowed)) {
             $newAbstractPath = 'uploads/' . uniqid('abstract_') . '.' . $fileExt;
             if (move_uploaded_file($abstract['tmp_name'], $newAbstractPath)) {
@@ -72,33 +68,42 @@ if (isset($_POST['btnsave'])) {
                 $error = "Failed to upload abstract file.";
             }
         } else {
-            $error = "Only PDF, PPT, and PPTX files are allowed.";
+            $error = "Only PDF, PPT, PPTX allowed.";
         }
     }
 
-            $sql_update = "UPDATE ppt SET
+    // If no errors, update the database
+    if (empty($error)) {
+        $sql_update = "UPDATE ppt SET
             type=?, category=?, title=?, description=?, publish_date=?,
             research_year=?, booknumber=?, author=?, author2=?, language=?, checkedin=?,
             image=?, abstract=? WHERE id=?";
 
-            $stmt = mysqli_prepare($dbcon, $sql_update);
-            if (!$stmt) {
-                die("Prepare failed: " . mysqli_error($dbcon));
-            }
+        $stmt = mysqli_prepare($dbcon, $sql_update);
+        if (!$stmt) {
+            die("Prepare failed: " . mysqli_error($dbcon));
+        }
 
-            mysqli_stmt_bind_param($stmt, 'sssssissssissi',
-                $type, $category, $title, $description, $date, $year, $booknumber,
-                $author, $author2, $language, $checkedin,
-                $filepath, $abstractFilePath, $id);
+        mysqli_stmt_bind_param($stmt, 'sssssissssissi',
+            $type, $category, $title, $description, $date, $year, $booknumber,
+            $author, $author2, $language, $checkedin,
+            $filepath, $abstractFilePath, $id
+        );
 
-            if (mysqli_stmt_execute($stmt)) {
-                header('Location: ppt.php');
-                exit;
-            } else {
-                die("Execute failed: " . mysqli_stmt_error($stmt));
-            }
+        if (mysqli_stmt_execute($stmt)) {
+            echo "<script>alert('PPT updated successfully!');window.location='ppt.php';</script>";
+            exit();
+        } else {
+            $dbError = mysqli_stmt_error($stmt);
+            echo "<script>alert('Error updating data: $dbError');</script>";
+        }
 
+        mysqli_stmt_close($stmt);
+    } else {
+        echo "<script>alert('$error');</script>";
+    }
 }
+
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -245,7 +250,7 @@ if (isset($_POST['btnsave'])) {
                                         <label for="inputBarcode" class="form-label">Barcode:<i class="text-danger font-weight-bold">*</i></label>
                                     </div>
                                     <div class="col-sm-4">
-                                        <input type="text" class="form-control" id="inputBarcode" name="booknumber" value="<?php echo htmlspecialchars($row['booknumber']); ?>" required>
+                                        <input type="text" class="form-control" id="inputBarcode" name="booknumber" value="<?php echo htmlspecialchars($row['booknumber']); ?>" readonly required>
                                     </div>
                             
                                     <div class="col-sm-2 text-end">
@@ -290,7 +295,7 @@ if (isset($_POST['btnsave'])) {
 			</div>
 		</div>	
 	</div>	
-    
+
  <script src="js/jquery-3.7.0.js"></script>
  <script src="js/search.js"></script>
  <script src="js/jquery.dataTables.min.js"></script>
