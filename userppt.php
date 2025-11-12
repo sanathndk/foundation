@@ -18,6 +18,7 @@ else{
     <head>
         <title>Library System Dashboard</title>
         <link rel="icon" href="img/logo.png" type="image/png">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
     </head>
     <body class="top-navbar-fixed">

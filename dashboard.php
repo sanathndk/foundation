@@ -20,6 +20,7 @@ else{
     <head>
         <title>Library Management System</title>
         <link rel="icon" href="img/logo.png" type="image/png">
+        
         <script src="js/charts.js"></script>   
         <script src="js/chart.js"></script>
 

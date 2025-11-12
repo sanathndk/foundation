@@ -53,6 +53,7 @@ if(strlen($_SESSION['alogin'])==0){
 <head>
     <meta charset="utf-8" />
     <title>Edit Holiday | Library Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="img/logo.png" type="image/png">
 </head>
 <body class="top-navbar-fixed">

@@ -129,7 +129,8 @@ if(strlen($_SESSION['alogin'])==0){
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="icon" href="img/logo.png" type="image/png">
-    <meta name="viewport" content="width=device-width, initial-scale=1">       
+    <meta name="viewport" content="width=device-width, initial-scale=1">  
+     
 </head>
 <body class="top-navbar-fixed">
 <div class="main-wrapper">

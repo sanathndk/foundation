@@ -11,38 +11,55 @@ if(strlen($_SESSION['alogin'])==0)
 	header('location:index.php');
 }
 else{ 
-	if(isset($_POST['btnsave'])){
-		if ($_SESSION['csrf_token']==$_POST['csrf_token']) {
-			// Save Record
-			$name=$_POST['name'];
-			$address=$_POST['address']; 
-			$country=$_POST['country']; 
-			$mobile=$_POST['mobile']; 
-			$email=$_POST['email']; 
-			$dob=$_POST['dob']; 
-			$dateofdied=$_POST['dateofdied']; 
-			$bio=$_POST['bio'];
-			$publications=$_POST['publications']; 
-			$awards=$_POST['awards']; 
-			$ref=$_POST['ref'];
-				
-			$sql="INSERT INTO `author`(`name`, `address`, `country`, `mobile`, `email`, `dob`, `dateofdied`, `bio`, `publications`, `awards`, `ref`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-			$result=mysqli_prepare($dbcon, $sql);
-			
-			if ($result){
-				mysqli_stmt_bind_param($result,'sssssssssss',$name, $address, $country, $mobile, $email, $dob, $dateofdied, $bio, $publications, $awards, $ref);
-				if (mysqli_stmt_execute($result)) {
-					echo "<script>Alert('Record added successfully')</script>";
-					// header('location:add-publishers.php');
-				} else{
-					echo "Error inserting data: " .mysqli_error($dbcon);
-				}
-			} else{
-				echo "Error Connection: " .mysqli_error($dbcon);
-			}
-		}else{
-			echo "<script>Alert('Invalid authentication')</script>";
-		}
+	if (isset($_POST['btnsave'])) {
+    if ($_SESSION['csrf_token'] == $_POST['csrf_token']) {
+        // Get form data
+        $name = trim($_POST['name']);
+        $address = $_POST['address'];
+        $country = $_POST['country'];
+        $mobile = $_POST['mobile'];
+        $email = $_POST['email'];
+        $dob = $_POST['dob'];
+        $dateofdied = $_POST['dateofdied'];
+        $bio = $_POST['bio'];
+        $publications = $_POST['publications'];
+        $awards = $_POST['awards'];
+        $ref = $_POST['ref'];
+
+        // 🔍 Check if author name already exists
+        $check = mysqli_prepare($dbcon, "SELECT COUNT(*) FROM author WHERE name = ?");
+        mysqli_stmt_bind_param($check, 's', $name);
+        mysqli_stmt_execute($check);
+        mysqli_stmt_bind_result($check, $count);
+        mysqli_stmt_fetch($check);
+        mysqli_stmt_close($check);
+
+        if ($count > 0) {
+            //  Duplicate found
+            echo "<script>alert('This author name already exists! Please use a different name.');</script>";
+        } else {
+            //  Insert new record
+            $sql = "INSERT INTO `author`(`name`, `address`, `country`, `mobile`, `email`, `dob`, `dateofdied`, `bio`, `publications`, `awards`, `ref`)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+            $result = mysqli_prepare($dbcon, $sql);
+
+            if ($result) {
+                mysqli_stmt_bind_param($result, 'sssssssssss', $name, $address, $country, $mobile, $email, $dob, $dateofdied, $bio, $publications, $awards, $ref);
+                if (mysqli_stmt_execute($result)) {
+                    echo "<script>alert('Author added successfully!');window.location.href='add-author.php';</script>";
+                    exit();
+                } else {
+                    echo "<script>alert('Error inserting data: " . mysqli_error($dbcon) . "');</script>";
+                }
+            } else {
+                echo "<script>alert('Error preparing statement: " . mysqli_error($dbcon) . "');</script>";
+            }
+        }
+    } else {
+        echo "<script>alert('Invalid authentication!');</script>";
+    }
+
+
 	// Delete Record	
 	}elseif($_GET['id']<>""){
 		$id=$_GET['id'];
