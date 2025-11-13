@@ -9,7 +9,7 @@ logAction($dbcon, "checkin_book");
 if(strlen($_SESSION['alogin'])==0){   
 	header('location:index.php');
 }else{ 
-	$token=rand();
+	$_SESSION['csrf_token'] = $token;
 	if(isset($_POST['btnCheckin'])){
 		// if(!empty($_POST["bookid"])) {
 

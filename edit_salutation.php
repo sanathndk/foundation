@@ -28,16 +28,19 @@ else{
 
 		if ($result){
 			mysqli_stmt_bind_param($result, 'ssi', $service, $description, $id);
+
         if (mysqli_stmt_execute($result)) {
-            header('Location: add_salutation.php?updated=1');
+			echo "<script>alert('Record Updated Successfully'); window.location='add_salutation.php'</script>";
+            // header('Location: add_salutation.php?updated=1');
             exit();
         } else {
-            echo "Error updating data: " . mysqli_stmt_error($result);
+            echo "Error inserting data: " .mysqli_error($dbcon);
         }
     } else {
-        echo "Error preparing statement: " . mysqli_error($dbcon);
+        echo "Error Connection: " .mysqli_error($dbcon);
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">

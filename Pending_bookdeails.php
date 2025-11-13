@@ -68,7 +68,7 @@ else{
                                                     <tr>
                                                         <th>Ser</th>
                                                         <th>Member ID</th>
-                                                        <th>Book ID</th>                                                    
+                                                        <th>Book ID</th>                                                   
                                                         <th>Issued Date</th>
                                                         <th>Return Date</th>
                                                     </tr>
@@ -85,7 +85,7 @@ else{
                                                 <tr>
                                                     <td class="text-center"><?php echo htmlentities($cnt);?></td>
                                                     <td><?php echo $row['membernumber'];?></td>
-                                                    <td><?php echo $row['booknumber'];?></td>                                                    
+                                                    <td><?php echo $row['booknumber'];?></td>                                                          
                                                     <td><?php echo $row['IssuesDate'];?></td>
                                                     <td><?php echo $row['ReturnDate'];?></td>                                                                                        
                                                 </tr>

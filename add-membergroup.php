@@ -23,15 +23,18 @@ else{
 		
 		if ($result){
 			mysqli_stmt_bind_param($result,'ssss',$categorycode, $description, $enrollmentfee, $limitation);
+
 			if (mysqli_stmt_execute($result)) {
-				echo "Record updated successfully";
-				header('location:add-membergroup.php');
+				echo "<script>alert('Record added successfully!');window.location = 'add-membergroup.php';</script>";
+				exit();
+				
 			} else{
-				echo "Error inserting data: " .mysqli_error($dbcon);
+				echo "<script>alert(' Error inserting data: " . mysqli_error($dbcon) . "');</script>";
 			}
 		} else{
-			echo "Error Connection: " .mysqli_error($dbcon);
+			echo "<script>alert(' Database error: " . mysqli_error($dbcon) . "');</script>";
 		}
+
 	// Delete Record		
 	}elseif($_GET['id']<>""){
 		$id=$_GET['id'];
