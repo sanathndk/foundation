@@ -26,7 +26,7 @@ if (strlen($_SESSION['alogin']) == 0) {
             if ($stmt) {
                 mysqli_stmt_bind_param($stmt, "ss", $holiday_date, $description);
                 if (mysqli_stmt_execute($stmt)) {
-                    echo "<script>alert('Holiday added successfully!'); window.location='holiday_list.php';</script>";
+                    echo "<script>alert('Holiday added successfully!'); window.location='add_holiday.php';</script>";
                 } else {
                     echo "<script>alert('Error adding holiday');</script>";
                 }

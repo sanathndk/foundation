@@ -61,7 +61,7 @@ else{
 					<div class="container-fluid">
 						<div class="row page-title-div">
 							<div class="col-md-6">
-								<h2 class="title">Manage Members</h2>
+								<h2 class="title">Registered Members</h2>
 							</div>                                
 						</div>
 						<!-- /.row -->
@@ -70,7 +70,7 @@ else{
 								<ul class="breadcrumb">
 									<li><a href="dashboard.php"><i class="fa fa-home"></i> Home /&nbsp;</a></li>
 									<li><a href="#">Administration /&nbsp; </a></li>
-									<li class="active">Manage Members</li>
+									<li class="active">Registered Members</li>
 								</ul>
 							</div>                               
 						</div>
@@ -84,7 +84,7 @@ else{
                                 <!-- Advanced Tables -->
                                 <div class="panel panel-default">                                
                                     <div class="panel-body">
-                                        <div class="table-responsive">
+                                        <div class="row justify-content-md-center">
                                             <table class="table table-striped table-bordered table-hover" id="dataTables">
                                                 <thead>
                                                     <tr>

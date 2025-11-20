@@ -88,7 +88,7 @@ else{
 							<fieldset class="border">                                
 							<div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputcategorycode" class="form-label">Group code:</label>
+										<label for="inputcategorycode" class="form-label">Group Code:</label>
 									</div>
 									<div class="col-sm-4">
 										<input type="text" class="form-control" id="inputcategorycode" name="categorycode" value="<?php echo $result['categorycode']?>" disabled required>
@@ -104,14 +104,14 @@ else{
 
                                 <div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputenrollmentfee" class="form-label">Enrollment fee:</label>
+										<label for="inputenrollmentfee" class="form-label">Enrollment Fee:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="enrollmentfee" class="form-control" id="enrollmentfee" value="<?php echo $result['enrollmentfee']?>" step="0.00" required>
+										<input type="number" name="enrollmentfee" class="form-control" id="enrollmentfee" value="<?php echo $result['enrollmentfee']?>" step="0.00" required min="0">
 									</div>
 								
 									<div class="col-sm-2 text-end">
-										<label for="inputlimitation" class="form-label">Library limitations:</label>
+										<label for="inputlimitation" class="form-label">Library Limitations:</label>
 									</div>
 									<div class="col-sm-4">
 

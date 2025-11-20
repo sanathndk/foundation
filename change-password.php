@@ -146,7 +146,7 @@ return true;
 
             <div class="row p-2">
               <div class="col-sm-2 text-end">
-                <label class="form-label">Enter New Password</label>
+                <label class="form-label">New Password:</label>
               </div>
               <div class="col-sm-4">
                 <input class="form-control" type="password" name="newpassword" autocomplete="off" required  />
@@ -156,11 +156,11 @@ return true;
 
             <div class="row p-2">
               <div class="col-sm-2 text-end">
-                <label class="form-label">Confirm Password </label>
+                <label class="form-label">Confirm Password: </label>
               </div>
               <div class="col-sm-4">
                 <input class="form-control"  type="password" name="confirmpassword" autocomplete="off" required  />
-                <button type="submit" name="change" class="btn btn-danger">Chnage </button>
+                <button type="submit" name="change" class="btn btn-danger">Change </button>
               </div>
             </div>
             </fieldset>

@@ -17,6 +17,11 @@ else{
 		$description=$_POST['description'];
 		$enrollmentfee=$_POST['enrollmentfee'];
 		$limitation=$_POST['limitation'];		
+
+		if(strlen($description) > 100) {
+        echo "<script>alert('Description cannot exceed 100 characters.'); window.history.back();</script>";
+        exit();
+    }
 		
 		$sql="INSERT INTO `membergroups`(`categorycode`, `description`, `enrollmentfee`, `limitation`) VALUES (?,?,?,?)";
 		$result=mysqli_prepare($dbcon, $sql);
@@ -95,7 +100,7 @@ else{
 							<fieldset class="border">                                
 							<div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputcategorycode" class="form-label">Group code:</label>
+										<label for="inputcategorycode" class="form-label">Group Code:</label>
 									</div>
 									<div class="col-sm-4">
 										<input type="text" class="form-control" id="inputcategorycode" name="categorycode" required>
@@ -105,20 +110,20 @@ else{
 										<label for="inputdescription" class="form-label">Description:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="text" class="form-control" id="inputdescription" name="description" required>
+										<input type="text" class="form-control" id="inputdescription" name="description" required maxlength="100" placeholder="Enter Description (max 100 characters)">
 									</div>
 								</div>		
 
                                 <div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputenrollmentfee" class="form-label">Enrollment fee:</label>
+										<label for="inputenrollmentfee" class="form-label">Enrollment Fee:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="enrollmentfee" class="form-control" id="enrollmentfee" step="0.00" required>
+										<input type="number" name="enrollmentfee" class="form-control" id="enrollmentfee" step="0.00" required min="0">
 									</div>
 								
 									<div class="col-sm-2 text-end">
-										<label for="inputlimitation" class="form-label">Library limitations:</label>
+										<label for="inputlimitation" class="form-label">Library Limitations:</label>
 									</div>
 									<div class="col-sm-4">
 
@@ -182,7 +187,7 @@ else{
 											<td><?php echo $row["limitation"]?></td>
 											<td class="text-center">
 												<a href="edit_membergroup.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i></a>
-												<!-- <a href="add-membergroup.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are your sure Delete this record?');" name="btndelete"><i class="bi bi-trash3"></i></a> -->
+												<a href="add-membergroup.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are your sure Delete this record?');" name="btndelete"><i class="bi bi-trash3"></i></a>
 											</td>
 										</tr>
 										<?php
@@ -201,6 +206,15 @@ else{
 	</div>	   
 	
 	<!-- <script src="js/search.js"></script> -->
+	 <script>
+		// Example: letters only
+		document.getElementById('inputcategorycode').addEventListener('keypress', function(e) {
+			if(!/[a-zA-Z]/.test(e.key)) {
+				e.preventDefault();
+			}
+		});
+	</script>
+
 
 	<script src="js/jquery-3.7.0.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>

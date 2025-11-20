@@ -26,7 +26,7 @@ if(strlen($_SESSION['alogin'])=="")
     </div><!-- End Logo -->
 
     <div class="search-bar">
-      <form class="search-form lign-items-center d-flex" method="get" action="dashboardsearch.php">
+      <form class="search-form d-flex align-items-center" method="get" action="dashboardsearch.php">        
         <div class="lign-items-center col-3 ">
           <select class="form-select d-flex" value="searchtype" name="searchtype">
             <option name="catalog" value="catalog">Catalogue</option>            

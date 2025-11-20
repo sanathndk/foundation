@@ -58,8 +58,8 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1"> 
     <link rel="icon" href="img/logo.png" type="image/png">
-
 	<title>Add Fine Rules | Library Management System</title>
+
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">
@@ -99,7 +99,7 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 							<fieldset class="border">                                
 							<div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputcategorycode" class="form-label">Member category:</label>
+										<label for="inputcategorycode" class="form-label">Member Category:</label>
 									</div>
 									<div class="col-sm-4">
 										<select name="category" id="patroncode" class="form-select" required>
@@ -116,7 +116,7 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 									</div>
 								
 									<div class="col-sm-2 text-end">
-										<label for="inputitemtype" class="form-label">Item type:</label>
+										<label for="inputitemtype" class="form-label">Item Type:</label>
 									</div>
 									<div class="col-sm-4">
 										<select name="itemtype" id="itemtype" class="form-select" required>
@@ -135,14 +135,14 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 
                                 <div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="checkoutallow" class="form-label">Current checkouts allowed:</label>
+										<label for="checkoutallow" class="form-label">Current Checkouts Allowed:</label>
 									</div>
 									<div class="col-sm-4">
 										<input type="number" name="checkoutallow" class="form-control" id="checkoutallow" required min="0">
 									</div>
 									
 									<div class="col-sm-2 text-end">
-										<label for="library" class="form-label">Library limitations:</label>
+										<label for="library" class="form-label">Library Limitations:</label>
 									</div>
 									<div class="col-sm-4">
 
@@ -161,14 +161,14 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 								</div>	
 								<div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputloanperiod" class="form-label">Loan period (Days):</label>
+										<label for="inputloanperiod" class="form-label">Loan Period (Days):</label>
 									</div>
 									<div class="col-sm-4">
 										<input type="number" name="loanperiod" class="form-control" id="inputloanperiod" required min="0">
 									</div>
 									
 									<div class="col-sm-2 text-end">
-										<label for="inputamount" class="form-label">Fine amount:</label>
+										<label for="inputamount" class="form-label">Fine Amount:</label>
 									</div>
 									<div class="col-sm-4">
 										<input type="number" name="fineamount" class="form-control" id="inputamount" step="0.00" required min="0">									
@@ -176,14 +176,14 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 								</div>	
 								<div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputrenallowed" class="form-label">Renewals allowed:</label>
+										<label for="inputrenallowed" class="form-label">Renewals Allowed:</label>
 									</div>
 									<div class="col-sm-4">
 										<input type="number" name="renewalallow" class="form-control" id="inputrenallowed" required min="0">
 									</div>
 									
 									<div class="col-sm-2 text-end">
-										<label for="inputrenperiod" class="form-label">Renewal period (Days):</label>
+										<label for="inputrenperiod" class="form-label">Renewal Period (Days):</label>
 									</div>
 									<div class="col-sm-4">
 										<input type="number" name="renewalperiod" class="form-control" id="inputrenperiod" required min="0">									
@@ -209,12 +209,12 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 										<tr class="text-center">
 											<th class="text-center">Ser</th>
 											<th class="text-center">Code</th>
-											<th class="text-center">Item type</th>
-											<th class="text-center">Checkouts allowed</th>
-											<th class="text-center">Loan period</th>
-											<th class="text-center">Fine amount</th>
-											<th class="text-center">Renewals allowed</th>
-											<th class="text-center">Renewal period</th>
+											<th class="text-center">Item Type</th>
+											<th class="text-center">Checkouts Allowed</th>
+											<th class="text-center">Loan Period</th>
+											<th class="text-center">Fine Amount</th>
+											<th class="text-center">Renewals Allowed</th>
+											<th class="text-center">Renewal Period</th>
 											<th class="text-center">Action</th>
 										</tr>
 									</thead>
