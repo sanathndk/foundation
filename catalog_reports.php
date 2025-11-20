@@ -11,7 +11,6 @@ header('location:index.php');
 }
 else{ 
 
-
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -111,8 +110,7 @@ else{
                                                         </td>
 
                                                         <td class="center">                                       
-                                                            <a href="edit_cataloging.php?id=<?php echo htmlentities($row['booknumber']);?>" onclick="return confirm('Are you sure you want to edit this book?');">  <button class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></button>
-                                          
+                                                        <a href="edit_cataloging.php?id=<?php echo htmlentities($row['booknumber']);?>" onclick="return confirm('Are you sure you want to edit this book?');">  <button class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></button>                                         
                                             </td>
                                         </tr>
                                     <?php }} ?>                                      
@@ -142,15 +140,19 @@ else{
     
     <script>
 		// new DataTable('#dataTables');   
-        $(document).ready(function() {
-        $('#dataTables').DataTable( {
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
-        } );
-    } );
-
+        $('#dataTables').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": "catalog_ajax.php",
+        "columns": [
+            { "data": 0 },
+            { "data": 1 },
+            { "data": 2 },
+            // add other columns...
+        ],
+        dom: 'Bfrtip',
+        buttons: ['copy', 'csv', 'excel', 'pdf', 'print']   
+        });
     // table.buttons().container()
     // .appendTo( '#dataTables .col-md-6:eq(0)' );
 

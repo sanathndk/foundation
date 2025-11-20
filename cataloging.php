@@ -153,8 +153,9 @@ $_SESSION['csrf_token']=$token;
                           <div class="col-sm-2 text-end"></div>
                           <div class="col-sm-2 text-end">         
                             <input type="file" class="form-control" id="image" name="image">
-                          </div>               
+                          </div>     
                         </div>  
+
                         <div class="row p-2">  
                           <div class="col-sm-2 text-end"></div>
                           <div class="col-sm-4 text-danger">         
