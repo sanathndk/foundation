@@ -122,6 +122,7 @@ else{
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ]
+             
         } );
     } );
 

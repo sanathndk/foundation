@@ -380,7 +380,17 @@ $_SESSION['csrf_token']=$token;
                               <option value="L">Lost</option>
                               <option value="D">Damage</option> 
                             </select>
-                          </div>            
+                          </div>      
+                          
+                                
+                            <div class="col-sm-4 text-end">
+                              <label for="inputBarcode" class="form-label">Barcode:</label>  
+                            </div>
+                                <div class="col-sm-4">
+                                    <button type="button" onclick="window.location.href='barcode_genrator.php'" class="btn btn-secondary btn-md">Download</button>
+                                </div>
+                            </div>
+                                
                         </div>
                       </fieldset>     
                       
