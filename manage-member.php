@@ -33,6 +33,20 @@ else{
         }
     }
 
+    if (isset($_GET['delete'])) {
+    $id = intval($_GET['delete']);
+
+    $sql = mysqli_query($dbcon, "DELETE FROM member WHERE borrowernumber='$id'");
+
+    if ($sql) {
+        echo "<script>alert('Member deleted successfully');window.location='manage-member.php';</script>";
+    } else {
+        echo "<script>alert('Error deleting member');window.location='manage-member.php';</script>";
+    }
+}
+
+
+
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -126,12 +140,18 @@ else{
                                                         <td class="center">
                                         <?php if($row['status']==1)
                                         {?>
-                                        <a href="manage-member.php?inactive=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to block this Member?');">  <button class="btn btn-danger"><i class="bi bi-toggle-off"></i></button>
+                                        <a href="manage-member.php?inactive=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to block this Member?');">  <button class="btn btn-danger btn-sm"><i class="bi bi-toggle-off"></i></button>
                                         <?php } else {?>
 
-                                            <a href="manage-member.php?active=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to active this Member?');"><button class="btn btn-primary"><i class="bi bi-toggle2-off"></i></button> 
+                                            <a href="manage-member.php?active=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to active this Member?');"><button class="btn btn-primary btn-sm"><i class="bi bi-toggle2-off"></i></button> 
                                             <?php } ?>
-                                          
+
+                                            <!-- DELETE BUTTON -->
+                                            <a href="manage-member.php?delete=<?php echo htmlentities($row['borrowernumber']);?>" 
+                                            onclick="return confirm('Are you sure you want to permanently DELETE this Member?');">
+                                                <button class="btn btn-warning btn-sm"><i class="bi bi-trash"></i></button>
+                                            </a>
+                                                                       
                                             </td>
                                         </tr>
                                     <?php }} ?>                                      

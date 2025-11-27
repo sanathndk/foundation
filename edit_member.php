@@ -151,8 +151,6 @@ if (isset($_POST['btnsave'])) {
 $_SESSION['csrf_token'] = $token;
 ?>
 
-$_SESSION['csrf_token']=$token;
-?>
 <!DOCTYPE html>
 <html lang="en">
     <head>

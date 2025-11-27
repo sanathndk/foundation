@@ -250,7 +250,7 @@ if (isset($_GET['print']) && isset($_GET['ids'])) {
             <div class="barcode-card">
                 <div class="barcode-id">Book ID: <?php echo htmlspecialchars($bookId); ?></div>
                 <img src="<?php echo $barcodeData; ?>" alt="Barcode for <?php echo htmlspecialchars($bookId); ?>" class="barcode-image">
-                <div class="barcode-label">Scan this barcode for book operations</div>
+                <div class="barcode-label">* Sri Lanka Army Head Quarters *</div>
             </div>
             <?php endforeach; ?>
         </div>
