@@ -8,7 +8,7 @@ logAction($dbcon, "User_dashboard");
 
 if(strlen($_SESSION['alogin'])==0)
 {   
-header("Location: index.php"); 
+    header("Location: index.php"); 
 }
 else{
     ?>

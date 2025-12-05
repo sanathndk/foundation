@@ -146,11 +146,11 @@ else{
                                             <a href="manage-member.php?active=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to active this Member?');"><button class="btn btn-primary btn-sm"><i class="bi bi-toggle2-off"></i></button> 
                                             <?php } ?>
 
-                                            <!-- DELETE BUTTON -->
+                                            <!-- DELETE BUTTON 
                                             <a href="manage-member.php?delete=<?php echo htmlentities($row['borrowernumber']);?>" 
                                             onclick="return confirm('Are you sure you want to permanently DELETE this Member?');">
                                                 <button class="btn btn-warning btn-sm"><i class="bi bi-trash"></i></button>
-                                            </a>
+                                            </a>-->
                                                                        
                                             </td>
                                         </tr>
