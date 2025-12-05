@@ -126,7 +126,8 @@ else{
                                                             <td class="text-center"><?php echo htmlentities($cnt);?></td>
 											                <td><a href="edit_member.php?id=<?php echo $row['borrowernumber']?>"> <?php echo $row['cardnumber']?></a></td>
                                                             <td><?php echo $row['title'];?></td>
-                                                            <td><?php echo $row['initials'].' '.$row['surname'];?></td>
+                                                            <td><?php echo $row['surname']?></td>
+                                                            <!-- <td><?php echo $row['initials'].' '.$row['surname'];?></td> -->
                                                             <td><?php echo $row['mobile'];?></td>
                                                             <td><?php echo $row['email'];?></td>
                                                             <td><?php echo $row['categorycode'];?></td>
