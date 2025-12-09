@@ -39,6 +39,7 @@ if(strlen($_SESSION['alogin'])==0){
 				// Find the Item type (book or Magz).
 				$sql1=mysqli_query($dbcon,"SELECT * FROM `catalog` WHERE `booknumber`='$booknumber'");
 				$catalog=mysqli_fetch_assoc($sql1);
+				$bookname = $catalog['title'];
 				$findtype=$catalog['itemtype'];
 				
 				// Find the Item type.
@@ -87,7 +88,13 @@ if(strlen($_SESSION['alogin'])==0){
 					mysqli_stmt_bind_param($update1,'ss',$status, $booknumber);					
 
 					if (mysqli_stmt_execute($update) && mysqli_stmt_execute($update1)) {
-						$error='The book has been <strong>successfully </strong>checked in';
+						$error = "
+								<strong>The book has been successfully checked in!</strong>
+								<div>
+									Book: <strong>$bookname</strong><br>
+									Book ID: <strong>$booknumber</strong><br>
+								</div>";
+						
 					} else{
 						$error='Something went wrong please try again';		
 					}

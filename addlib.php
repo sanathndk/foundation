@@ -211,7 +211,8 @@ if(isset($_POST['btnsave']))
 									</div>
 									<div class="col-sm-4">
 										<button type="submit" class="btn btn-primary btn-md" name="btnsave"><i class="bi bi-house-add-fill"></i> &nbsp;Save</button>
-										<a href="dashboard.php" class="btn btn-secondary btn-md"><i class="bi bi-arrow-left"></i> &nbsp;Back</a>
+										<!-- <a href="dashboard.php" class="btn btn-secondary btn-md"><i class="bi bi-arrow-left"></i> &nbsp;Back</a> -->
+										<a href="dashboard.php" class="btn btn-secondary btn-md"><i class="bi bi-x-circle"></i> Cancel</a>
 									</div>
 									
 								</div>
