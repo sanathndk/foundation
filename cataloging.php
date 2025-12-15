@@ -198,7 +198,7 @@ $_SESSION['csrf_token']=$token;
                             <label for="inputmultiple" class="form-label">Add multiple Books:<i class="text-danger font-weight-bold">*</i></label>
                           </div>
                           <div class="col-sm-3">
-                            <input type="number" class="form-control" id="inputmultiple" name="inputmultiple" min="1" value="1" required>
+                            <input type="number" class="form-control" id="inputmultiple" name="inputmultiple" min="1" value="1"  max="100"required>
                             <small class="text-muted">Enter number of copies to add</small>            
                           </div>
 
@@ -254,7 +254,7 @@ $_SESSION['csrf_token']=$token;
                             <label for="inputISBN" class="form-label">ISBN:</label>
                           </div>
                           <div class="col-sm-4">
-                            <input type="number" class="form-control" id="inputISBN" name="isbn">
+                            <input type="number" class="form-control" id="inputISBN" maxlength="13" name="isbn" placeholder="10 or 13 digits">
                           </div>
                         </div>
 
@@ -263,7 +263,7 @@ $_SESSION['csrf_token']=$token;
                             <label for="inputISSN" class="form-label">ISSN:</label>
                           </div>
                           <div class="col-sm-4">
-                            <input type="text" class="form-control" id="inputISSN" name="issn">
+                            <input type="text" class="form-control" id="inputISSN" maxlength="8" name="issn" placeholder="8 digits">
                           </div>
                       
                           <div class="col-sm-2 text-end">
@@ -372,7 +372,15 @@ $_SESSION['csrf_token']=$token;
                             <label for="inputYear" class="form-label">Year:</label>
                           </div>
                           <div class="col-sm-4">
-                            <input type="year" class="form-control" id="inputYear" name="publicationyear">
+                            <select class="year" class="form-control" id="inputYear" name="publicationyear">
+                                <option value="">Select Year</option>
+                                <?php
+                                    $currentYear = date('Y');
+                                    for ($year = $currentYear; $year >= 1950; $year--) {
+                                        echo "<option value='$year'>$year</option>";
+                                    }
+                                    ?>
+                            </select>
                           </div>
                        
                           <div class="col-sm-2 text-end">        
