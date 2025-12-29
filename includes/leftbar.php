@@ -24,7 +24,7 @@
                 <li>
                     <a href="dashboard.php"><i class="bi bi-speedometer"></i>&nbsp;<span>Dashboard</span> </a>
                 </li>
-                <!-- Catalogs Modules -->
+                <!-- Catalogs Modules
                 <li class="has-children" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
                     <a href="#"><i class="bi bi-book"></i>&nbsp;<span>Catalogue</span> <i class="bi bi-caret-right arrow"></i></a>
                     
@@ -37,9 +37,25 @@
                             <li><a href="ppt.php"><i class="bi bi-file-earmark-pdf"></i>&nbsp;<span>Research & PPT </span></a></li>                                       
                         </ul>
                     </div>
+                </li> -->
+
+                <!-- Catalogs Modules -->
+                <li class="has-children">
+                    <a href="#" class="parent-link">
+                        <i class="bi bi-book"></i>&nbsp;<span>Catalogue</span><i class="bi bi-caret-right arrow"></i></a>
+
+                        <div class="collapse show" id="home-collapse">
+                            <ul class="child-nav" style="display:none;">
+                                <li><a href="cataloging.php"><i class="bi bi-journal-plus"></i>&nbsp; <span>Catalogue </span></a></li>
+                                <li><a href="add-category.php"><i class="bi bi-tags-fill"></i> &nbsp;<span>Categories</span></a></li>      
+                                <li><a href="add-author.php"><i class="bi bi-vector-pen"></i> &nbsp;<span>Author</span></a></li>  
+                                <li><a href="add-publishers.php"><i class="bi bi-printer"></i>&nbsp;<span>Publishers</span></a></li>
+                                <li><a href="ppt.php"><i class="bi bi-file-earmark-pdf"></i>&nbsp;<span>Research & PPT </span></a></li> 
+                            </ul>
+                        </div>
                 </li>
 
-                <!-- Circulations Module -->
+                <!-- Circulations Module 
                 <li class="has-children" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
                     <a href="#"><i class="bi bi-arrow-repeat"></i>&nbsp; <span>Circulations</span> <i class="bi bi-caret-right arrow"></i></a>
                     <div class="collapse" id="dashboard-collapse">
@@ -50,9 +66,24 @@
                             <li><a href="renew_book.php"><i class="bi bi-shuffle"></i> &nbsp;<span>Renew Book</span></a></li>
                         </ul>
                     </div>
+                </li>-->
+
+                <!-- Circulations Module -->
+                <li class="has-children">
+                    <a href="#" class="parent-link">
+                        <i class="bi bi-arrow-repeat"></i>&nbsp;<span>Circulations</span><i class="bi bi-caret-right arrow"></i></a>
+
+                        <div class="collapse show" id="home-collapse">
+                            <ul class="child-nav" style="display:none;">
+                                <li><a href="add_member.php"><i class="bi bi-person-add"></i>&nbsp;<span>Add Member </span></a></li>
+                                <li><a href="checkouts.php"><i class="bi bi-arrow-bar-right"></i>&nbsp; <span>Issue Book</span></a></li>
+                                <li><a href="checkin_book.php"><i class="bi bi-arrow-bar-left"></i>&nbsp; <span>Return Book</span></a></li>
+                                <li><a href="renew_book.php"><i class="bi bi-shuffle"></i> &nbsp;<span>Renew Book</span></a></li> 
+                            </ul>
+                        </div>
                 </li>
 
-                <!-- Report Module -->
+                <!-- Report Module
                 <li class="has-children" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
                     <a href="#"><i class="bi bi-file-earmark-bar-graph"></i> &nbsp;<span>Reports</span> <i class="bi bi-caret-right arrow"></i></a>
                     <div class="collapse" id="orders-collapse">
@@ -62,9 +93,24 @@
                             <li><a href="issued_books.php"><i class="bi bi-arrow-left-right"></i> &nbsp;<span>Circulation Report</span></a></li>                                        
                         </ul>
                     </div>
+                </li> -->
+
+
+                <!-- Report Module -->
+                <li class="has-children">
+                    <a href="#" class="parent-link">
+                        <i class="bi bi-file-earmark-bar-graph"></i>&nbsp;<span>Reports</span><i class="bi bi-caret-right arrow"></i></a>
+
+                        <div class="collapse show" id="home-collapse">
+                            <ul class="child-nav" style="display:none;">
+                                <li><a href="overdue_book.php"><i class="bi bi-box-arrow-up-left"></i>&nbsp; <span>Overdue Reports</span></a></li>                                 
+                                <li><a href="catalog_reports.php"><i class="bi bi-journal-bookmark-fill"></i> &nbsp;<span>Catalogue Report</span></a></li>
+                                <li><a href="issued_books.php"><i class="bi bi-arrow-left-right"></i> &nbsp;<span>Circulation Report</span></a></li>  
+                            </ul>
+                        </div>
                 </li>
 
-                <!-- Administration Module -->
+                <!-- Administration Module 
                 <li class="has-children" data-bs-toggle="collapse" data-bs-toggle="collapse" data-bs-target="#account-collapse" aria-expanded="false">
                     <a href="#"><i class="bi bi-gear-wide-connected"></i> &nbsp;<span>Administration</span> <i class="bi bi-caret-right arrow"></i></a>                    
                     <div class="collapse" id="account-collapse">
@@ -75,10 +121,28 @@
                             <li><a href="add_salutation.php"><i class="bi bi-star-fill"></i>&nbsp;<span>Salutation</span></a></li>
                             <li><a href="add_item.php"><i class="bi bi-diagram-3"></i> &nbsp;<span>Item types</span></a></li>                                           
                             <li><a href="add_fine_rules.php"><i class="bi bi-cash-coin"></i> &nbsp;<span>Fine rules</span></a></li>
-                            <li><a href="add_holiday.php"><i class="bi bi-calendar-date-fill"></i> &nbsp;<span>Holidays</span></a></li>
+                            <li><a href="add_holiday.php"><i class="bi bi-calendar-date-fill"></i> &nbsp;<span>Holidays</span></a></li>-->
                             <!-- <li><a href="user-log-history.php" target="_blank"><i class="bi bi-clock-history"></i>&nbsp;<span>History</span></a></li>                             -->
-                        </ul>
-                    </div>
+                        <!-- </ul>
+                    </div> -->
+
+                <!-- Administration Module -->
+                <li class="has-children">
+                    <a href="#" class="parent-link">
+                        <i class="bi bi-gear-wide-connected"></i>&nbsp;<span>Administration</span><i class="bi bi-caret-right arrow"></i></a>
+
+                        <div class="collapse show" id="home-collapse">
+                            <ul class="child-nav" style="display:none;">
+                                <li><a href="manage-member.php"><i class="bi bi-people-fill"></i>&nbsp;<span>Users</span></a></li>
+                                <li><a href="addlib.php"><i class="bi bi-house-add-fill"></i> &nbsp;<span>Library Information</span></a></li>                                           
+                                <li><a href="add-membergroup.php"><i class="bi bi-person-lines-fill"></i>&nbsp;<span>Member Groups</span></a></li>
+                                <li><a href="add_salutation.php"><i class="bi bi-star-fill"></i>&nbsp;<span>Salutation</span></a></li>
+                                <li><a href="add_item.php"><i class="bi bi-diagram-3"></i> &nbsp;<span>Item types</span></a></li>                                           
+                                <li><a href="add_fine_rules.php"><i class="bi bi-cash-coin"></i> &nbsp;<span>Fine rules</span></a></li>
+                                <li><a href="add_holiday.php"><i class="bi bi-calendar-date-fill"></i> &nbsp;<span>Holidays</span></a></li>  
+                            </ul>
+                        </div>
+                </li>
 
                     <li><a href="change-password.php"><i class="bi bi-key"></i> &nbsp;<span>Change Password</span></a></li>                                           
                 </li>
@@ -90,7 +154,31 @@
     <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/jquery-3.7.0.js"></script>
 
- 
 
 
+<script>
+$(document).ready(function () {
+
+    // MAIN MENU CLICK
+    $('.parent-link').on('click', function (e) {
+        e.preventDefault();
+
+        let parent = $(this).closest('.has-children');
+
+        // Close other menus
+        $('.has-children').not(parent).removeClass('active')
+            .find('.child-nav').slideUp();
+
+        // Toggle current
+        parent.toggleClass('active');
+        parent.find('.child-nav').slideToggle();
+    });
+
+    // SUB MENU CLICK → PAGE LOAD ALLOWED
+    $('.child-nav a').on('click', function () {
+        // nothing blocked → page will load
+    });
+
+});
+</script>
 

@@ -82,6 +82,13 @@ $_SESSION['csrf_token']=$token;
 	<link rel="icon" href="img/logo.png" type="image/png">
 
 	<title>Add Author | Library Management System</title>
+
+	<style>
+	.is-invalid {
+    border-color: #dc3545;
+	}
+	</style>
+
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">
@@ -164,7 +171,7 @@ $_SESSION['csrf_token']=$token;
 										<label for="inputyearborn" class="form-label">Year born:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" class="form-control" id="inputyearborn" name="dob">
+										<input type="number" class="form-control" id="inputyearborn" name="dob"required>
 									</div>
 								</div>                                
 
@@ -173,7 +180,11 @@ $_SESSION['csrf_token']=$token;
 										<label for="inputyeardied" class="form-label">Year died:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" class="form-control" id="inputyeardied" name="dateofdied">
+										<input type="number" class="form-control" id="inputyeardied" name="dateofdied"required>
+											<small class="text-danger d-none" id="diedError">
+												Year died cannot be earlier than year born
+											</small>
+
 									</div>
 								</div>
 
@@ -282,42 +293,82 @@ $_SESSION['csrf_token']=$token;
 	<script>
 		new DataTable('#dataTables');  
 		
-function country(str,resultContainerId) {  
-    var resultContainerId="c";
-    if (str.length == 0) {
-        document.getElementById("resultcountry").innerHTML = "";
-        document.getElementById("resultcountry").style.display = "none";
-        return;
-    } else {
-        var xmlhttp = new XMLHttpRequest();
+		function country(str,resultContainerId) {  
+			var resultContainerId="c";
+			if (str.length == 0) {
+				document.getElementById("resultcountry").innerHTML = "";
+				document.getElementById("resultcountry").style.display = "none";
+				return;
+			} else {
+				var xmlhttp = new XMLHttpRequest();
 
-        xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("resultcountry").innerHTML = this.responseText;
-                document.getElementById("resultcountry").style.display = "block";
-            }
-        };
-        xmlhttp.open("GET", "search.php?q=" + str + "&field=" + resultContainerId, true);
-        xmlhttp.send();
-    }
-}
+				xmlhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						document.getElementById("resultcountry").innerHTML = this.responseText;
+						document.getElementById("resultcountry").style.display = "block";
+					}
+				};
+				xmlhttp.open("GET", "search.php?q=" + str + "&field=" + resultContainerId, true);
+				xmlhttp.send();
+			}
+		}
 
-// Event listener for input changes
-document.getElementById("country").addEventListener("input", function() {
-    country(this.value);
+			// Event listener for input changes
+			document.getElementById("country").addEventListener("input", function() {
+				country(this.value);
 
-});
+			});
 
-// Event listener to handle result item clicks
-document.getElementById("resultcountry").addEventListener("click", function(e) {
-    if (e.target.classList.contains("result-item")) {
-        document.getElementById("country").value = e.target.textContent;
-        this.style.display = "none";
+			// Event listener to handle result item clicks
+			document.getElementById("resultcountry").addEventListener("click", function(e) {
+				if (e.target.classList.contains("result-item")) {
+					document.getElementById("country").value = e.target.textContent;
+					this.style.display = "none";
 
-    }
-});
+				}
+			});
 	</script>
 	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const form = document.querySelector('form[name="signup"]');
+			const bornInput = document.getElementById('inputyearborn');
+			const diedInput = document.getElementById('inputyeardied');
+			const diedError = document.getElementById('diedError');
+
+			form.addEventListener('submit', function (e) {
+				let born = parseInt(bornInput.value) || 0;
+				let died = parseInt(diedInput.value) || 0;
+
+				// reset previous error
+				diedInput.classList.remove('is-invalid');
+				diedError.classList.add('d-none');
+
+				// validation: died < born
+				if (died < born) {
+					e.preventDefault(); // STOP submit
+					diedInput.classList.add('is-invalid');
+					diedError.classList.remove('d-none');
+				}
+			});
+
+			// clear error while typing
+			diedInput.addEventListener('input', function () {
+				this.classList.remove('is-invalid');
+				diedError.classList.add('d-none');
+			});
+		});
+	</script>
+
+
+
+
+
+
+
+
+
+
 </body>
 </html>
 <?php 

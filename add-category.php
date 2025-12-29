@@ -99,7 +99,8 @@ if(strlen($_SESSION['alogin']) == 0){
 										<label for="inputcode" class="form-label">Category Code:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="text" class="form-control" id="inputcode" name="itemcode" required>
+										<input type="text" class="form-control" id="inputcode" name="itemcode" min="0" maxlength="3" required>
+										<small class="text-muted">Add Only 3 Digits</small>
 									</div>
 								</div>
 								<div class="row p-2">
@@ -107,9 +108,11 @@ if(strlen($_SESSION['alogin']) == 0){
 										<label for="inputdescription" class="form-label">Category Name:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="text" class="form-control" id="inputdescription" name="description" required>
+										<input type="text" class="form-control" id="inputdescription" name="description" maxlength="100" required>
+										<small class="text-muted">Add Only 100 Characters</small>
 									</div>
-								</div>	                               
+								</div>	      
+								                         
 								<div class="row p-2">
 									<div class="col-sm-2 text-end"></div>
 									<div class="col-sm-4">
@@ -175,3 +178,5 @@ if(strlen($_SESSION['alogin']) == 0){
 mysqli_close($dbcon);
 } 
 ?>
+
+
