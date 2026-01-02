@@ -22,6 +22,41 @@ if (strlen($_SESSION['alogin']) == 0) {
         $sql = "INSERT INTO `publishersr`(`pubname`, `pubaddress`, `pubcountry`, `pubmobile`, `pubfax`, `pubemail`, `pubwebsite`) VALUES (?,?,?,?,?,?,?)";
         $result = mysqli_prepare($dbcon, $sql);
 
+
+		$errors = [];
+
+		// Validate contact number
+		if (!empty($contactno) && !preg_match('/^\d{7,12}$/', $contactno)) {
+			$errors[] = "Contact number must be 7-12 digits.";
+		}
+
+		// Validate fax number (optional)
+		if (!empty($fax) && !preg_match('/^\d{0,12}$/', $fax)) {
+			$errors[] = "Fax number must contain only digits (max 12).";
+		}
+
+		// Validate email
+		if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			$errors[] = "Invalid email format.";
+		}
+
+		// Validate website URL (optional)
+		if (!empty($web) && !filter_var($web, FILTER_VALIDATE_URL)) {
+			$errors[] = "Invalid website URL.";
+		}
+
+		// Show errors if any
+		if (!empty($errors)) {
+			$errorMessage = implode("\\n", $errors);
+			echo "<script>alert('$errorMessage'); window.history.back();</script>";
+			exit();
+		}
+
+
+		if (!preg_match('/^[A-Za-z]+$/', $name)) {
+		echo "<script>alert('Publisher Name must contain letters only.');window.history.back();</script>";exit();
+		}
+	
 		// Check for duplicate name
 		$check = mysqli_prepare($dbcon, "SELECT pubid FROM publishersr WHERE pubname = ?");
 		mysqli_stmt_bind_param($check, 's', $name);
@@ -45,6 +80,8 @@ if (strlen($_SESSION['alogin']) == 0) {
 			}
 		}
     } 
+		
+
 
     // Delete Record	
     if (isset($_GET['id']) && $_GET['id'] != '') {
@@ -103,10 +140,11 @@ if (strlen($_SESSION['alogin']) == 0) {
 							<fieldset class="border">                                
 							<div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputname" class="form-label">Publisher Name:</label>
+										<label for="inputname" class="form-label">Publisher Name:</label>										
 									</div>
 									<div class="col-sm-4">
 										<input type="text" class="form-control" id="inputname" name="name" required>
+										<small class="text-muted">Enter Only letters</small>
 									</div>
 								
 									<div class="col-sm-2 text-end">
@@ -130,7 +168,8 @@ if (strlen($_SESSION['alogin']) == 0) {
 										<label for="inputcontact" class="form-label">Contact Number:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" class="form-control" id="inputcontact" name="contactno">
+										<input type="number" class="form-control" id="inputcontact" name="contactno" pattern="\d{7,12}" maxlength="12" title="Enter 7-12 digits" required>
+										<small class="text-muted">Enter number of 7-12 digits</small>
 									</div>
 								</div>
 
@@ -139,14 +178,15 @@ if (strlen($_SESSION['alogin']) == 0) {
 										<label for="inputfax" class="form-label">Fax No:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" class="form-control" id="inputfax" name="fax">
+										<input type="number" class="form-control" id="inputfax" name="fax" pattern="\d{0,12}" maxlength="12" title="Only digits allowed">
+										<small class="text-muted">Enter number of Only 12 digits allowed</small>
 									</div>
 								
 									<div class="col-sm-2 text-end">
 										<label for="inputemail" class="form-label">Email:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="email" class="form-control" id="inputemail" name="email">
+										<input type="email" class="form-control" id="inputemail" name="email" placeholder="exampl@gmail.com">
 									</div>
 								</div>                                
 
@@ -155,7 +195,7 @@ if (strlen($_SESSION['alogin']) == 0) {
 										<label for="inputweb" class="form-label">Web site:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="text" class="form-control" id="inputweb" name="web">
+										<input type="text" class="form-control" id="inputweb" name="web" placeholder="https://example.com">
 									</div>
 								</div>
 								<div class="row p-2">
@@ -266,7 +306,15 @@ document.getElementById("resultcountry").addEventListener("click", function(e) {
 
     }
 });
-	</script>
+
+</script>
+
+	<script>
+	document.getElementById("inputname").addEventListener("input", function () {
+    // Allow ONLY letters (A-Z, a-z)
+    this.value = this.value.replace(/[^A-Za-z]/g, "");
+});
+</script>
 	
 </body>
 </html>

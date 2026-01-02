@@ -6,47 +6,80 @@ include('includes/activity.php');
 
 logAction($dbcon, "Add_fine_rules");
 
-if(strlen($_SESSION['alogin'])==0)
-{   
-	header('location:index.php');
+if (strlen($_SESSION['alogin']) == 0) {
+    header('location:index.php');
+    exit;
 }
-else{
-    if (isset($_POST['btnsave'])) {
-    // Save Record
-    $category = $_POST['category'];
-    $itemtype = $_POST['itemtype'];
-    $checkoutallow = $_POST['checkoutallow']; 
-    $library = $_POST['library'];
-    $loanperiod = $_POST['loanperiod'];
-    $fineamount = $_POST['fineamount'];
-    $renewalallow = $_POST['renewalallow'];
-    $renewalperiod = $_POST['renewalperiod'];			
 
-    $sql = "INSERT INTO `finerules`(`category`, `itemtype`, `checkoutallow`, `library`, `loanperiod`, `fineamount`, `renewalallow`, `renewalperiod`) 
-            VALUES (?,?,?,?,?,?,?,?)";
-    $result = mysqli_prepare($dbcon, $sql);
+if (isset($_POST['btnsave'])) {
+
+    $category       = $_POST['category'];
+    $itemtype       = $_POST['itemtype'];
+    $checkoutallow  = $_POST['checkoutallow'];
+    $library        = $_POST['library'];
+    $loanperiod     = $_POST['loanperiod'];
+    $fineamount     = $_POST['fineamount'];
+    $renewalallow   = $_POST['renewalallow'];
+    $renewalperiod  = $_POST['renewalperiod'];
+
+    /* ================= DUPLICATE CHECK ================= */
+    $checkSql = "SELECT id FROM finerules WHERE category = ? AND itemtype = ?";
+    $checkStmt = mysqli_prepare($dbcon, $checkSql);
+    mysqli_stmt_bind_param($checkStmt, "ss", $category, $itemtype);
+    mysqli_stmt_execute($checkStmt);
+    mysqli_stmt_store_result($checkStmt);
+
+    if (mysqli_stmt_num_rows($checkStmt) > 0) {
+        echo "<script>
+                alert('This Member Category and Item Type already exist!');
+                window.location = 'add_fine_rules.php';
+              </script>";
+        exit;
+    }
     
-    if ($result) {
-        mysqli_stmt_bind_param($result, 'ssssssss',
-            $category, $itemtype, $checkoutallow, $library,
-            $loanperiod, $fineamount, $renewalallow, $renewalperiod
+    /* ================= INSERT ================= */
+    $sql = "INSERT INTO finerules
+            (category, itemtype, checkoutallow, library, loanperiod, fineamount, renewalallow, renewalperiod)
+            VALUES (?,?,?,?,?,?,?,?)";
+
+    $stmt = mysqli_prepare($dbcon, $sql);
+
+    if ($stmt) {
+        mysqli_stmt_bind_param(
+            $stmt,
+            "ssssssss",
+            $category,
+            $itemtype,
+            $checkoutallow,
+            $library,
+            $loanperiod,
+            $fineamount,
+            $renewalallow,
+            $renewalperiod
         );
 
-        if (mysqli_stmt_execute($result)) {
-            echo "<script> alert('Fine rule added successfully!');window.location = 'add_fine_rules.php';</script>";
+        if (mysqli_stmt_execute($stmt)) {
+            echo "<script>
+                    alert('Fine rule added successfully!');
+                    window.location = 'add_fine_rules.php';
+                  </script>";
             exit;
         } else {
-            echo "<script>alert(' Error inserting data: " . mysqli_error($dbcon) . "');</script>";
+            echo "<script>alert('Insert error');</script>";
         }
     } else {
-        echo "<script>alert(' Database error: " . mysqli_error($dbcon) . "');</script>";
+        echo "<script>alert('Database error');</script>";
     }
 }
- 
+
+/* ================= DELETE ================= */
 if (isset($_GET['id']) && $_GET['id'] != "") {
     $id = $_GET['id'];
     mysqli_query($dbcon, "DELETE FROM finerules WHERE id='$id'");
-    echo "<script>alert('Fine rule deleted successfully!');window.location = 'add_fine_rules.php';</script>";
+    echo "<script>
+            alert('Fine rule deleted successfully!');
+            window.location = 'add_fine_rules.php';
+          </script>";
     exit;
 }
 	
@@ -103,7 +136,7 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 									</div>
 									<div class="col-sm-4">
 										<select name="category" id="patroncode" class="form-select" required>
-											<option></option>
+											<option> </option>
 										<?php
 											$sql1=mysqli_query($dbcon,"SELECT * FROM `membergroups`");
 											if (mysqli_num_rows($sql1)>0) {
@@ -171,7 +204,7 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 										<label for="inputamount" class="form-label">Fine Amount:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="fineamount" class="form-control" id="inputamount" step="0.00" required min="0">									
+										<input type="number" name="fineamount" class="form-control" id="inputamount" step="1" required min="1">									
 									</div>
 								</div>	
 								<div class="row p-2">
@@ -268,44 +301,44 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 	<script>
 		new DataTable('#dataTables');  
 		
-function country(str,resultContainerId) {  
-    var resultContainerId="c";
-    if (str.length == 0) {
-        document.getElementById("resultcountry").innerHTML = "";
-        document.getElementById("resultcountry").style.display = "none";
-        return;
-    } else {
-        var xmlhttp = new XMLHttpRequest();
+	function country(str,resultContainerId) {  
+		var resultContainerId="c";
+		if (str.length == 0) {
+			document.getElementById("resultcountry").innerHTML = "";
+			document.getElementById("resultcountry").style.display = "none";
+			return;
+		} else {
+			var xmlhttp = new XMLHttpRequest();
 
-        xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("resultcountry").innerHTML = this.responseText;
-                document.getElementById("resultcountry").style.display = "block";
-            }
-        };
-        xmlhttp.open("GET", "search.php?q=" + str + "&field=" + resultContainerId, true);
-        xmlhttp.send();
-    }
-}
+			xmlhttp.onreadystatechange = function() {
+				if (this.readyState == 4 && this.status == 200) {
+					document.getElementById("resultcountry").innerHTML = this.responseText;
+					document.getElementById("resultcountry").style.display = "block";
+				}
+			};
+			xmlhttp.open("GET", "search.php?q=" + str + "&field=" + resultContainerId, true);
+			xmlhttp.send();
+		}
+	}
 
-// Event listener for input changes
-document.getElementById("country").addEventListener("input", function() {
-    country(this.value);
+	// Event listener for input changes
+	document.getElementById("country").addEventListener("input", function() {
+		country(this.value);
 
-});
+	});
 
-// Event listener to handle result item clicks
-document.getElementById("resultcountry").addEventListener("click", function(e) {
-    if (e.target.classList.contains("result-item")) {
-        document.getElementById("country").value = e.target.textContent;
-        this.style.display = "none";
+	// Event listener to handle result item clicks
+	document.getElementById("resultcountry").addEventListener("click", function(e) {
+		if (e.target.classList.contains("result-item")) {
+			document.getElementById("country").value = e.target.textContent;
+			this.style.display = "none";
 
-    }
-});
+		}
+	});
 	</script>
 	
 </body>
 </html>
 <?php 
 mysqli_close($dbcon);
-} ?>
+?>

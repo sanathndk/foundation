@@ -15,6 +15,18 @@ if (strlen($_SESSION['alogin']) == 0) {
         $holiday_date = $_POST['holiday_date'];
         $description  = $_POST['description'];
 
+		// 2. Check duplicate holiday date
+		$check = mysqli_prepare($dbcon,
+			"SELECT id FROM holidays WHERE holiday_date = ?"
+		);
+		mysqli_stmt_bind_param($check, "s", $holiday_date);
+		mysqli_stmt_execute($check);
+		mysqli_stmt_store_result($check);
+
+		if (mysqli_stmt_num_rows($check) > 0) {
+			echo "<script>alert('This holiday date already exists!');window.history.back();</script>";exit();
+		}
+
         // Validation: block past dates
         $today = date('Y-m-d');
         if ($holiday_date < $today) {

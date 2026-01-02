@@ -220,7 +220,7 @@ $_SESSION['csrf_token'] = $token;
                               <label for="Inputdate" class="form-label">Publish Date:</label>
                             </div>
                             <div class="col-sm-4">
-                              <input type="date" class="form-control" id="Inputdate" name="date">
+                              <input type="date" class="form-control" id="Inputdate" name="date" max="<?php echo date('Y-m-d'); ?>">
                             </div>
 
                             <div class="col-sm-2 text-end">
