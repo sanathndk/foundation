@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "View_Manage-member");
 if(strlen($_SESSION['alogin'])==0){   
     header('location:index.php');
 }
@@ -30,6 +33,20 @@ else{
         }
     }
 
+    if (isset($_GET['delete'])) {
+    $id = intval($_GET['delete']);
+
+    $sql = mysqli_query($dbcon, "DELETE FROM member WHERE borrowernumber='$id'");
+
+    if ($sql) {
+        echo "<script>alert('Member deleted successfully');window.location='manage-member.php';</script>";
+    } else {
+        echo "<script>alert('Error deleting member');window.location='manage-member.php';</script>";
+    }
+}
+
+
+
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -41,7 +58,7 @@ else{
     <link rel="stylesheet" href="css/jquery.dataTables.min.css"> 
     <link rel="icon" href="img/logo.png" type="image/png">
 
-    <title>Manage Registed Members | Foundation Library Management System</title>
+    <title>Manage Registed Members | Library Management System</title>
 
 </head>
 <body class="top-navbar-fixed">
@@ -58,7 +75,7 @@ else{
 					<div class="container-fluid">
 						<div class="row page-title-div">
 							<div class="col-md-6">
-								<h2 class="title">Manage Members</h2>
+								<h2 class="title">Registered Members</h2>
 							</div>                                
 						</div>
 						<!-- /.row -->
@@ -67,7 +84,7 @@ else{
 								<ul class="breadcrumb">
 									<li><a href="dashboard.php"><i class="fa fa-home"></i> Home /&nbsp;</a></li>
 									<li><a href="#">Administration /&nbsp; </a></li>
-									<li class="active">Manage Members</li>
+									<li class="active">Registered Members</li>
 								</ul>
 							</div>                               
 						</div>
@@ -81,8 +98,8 @@ else{
                                 <!-- Advanced Tables -->
                                 <div class="panel panel-default">                                
                                     <div class="panel-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-striped table-bordered table-hover" id="dataTables">
+                                        <div class="row justify-content-md-center">
+                                            <table id="memberTable" class="table table-striped table-bordered table-hover">
                                                 <thead>
                                                     <tr>
                                                         <th>Ser</th>
@@ -92,44 +109,12 @@ else{
                                                         <th>Mobile Number</th>
                                                         <th>Email</th>
                                                         <th>Category</th>
+                                                        <th>Service</th>
                                                         <th>Status</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
-                                            <tbody>
-                                                
-                                            <?php 
-                                            $query = mysqli_query($dbcon,"SELECT * from member");
-                                            if(mysqli_num_rows($query) > 0)
-                                            {                                                
-                                                while ($row=mysqli_fetch_array( $query)) 
-                                                {  $cnt++;?>                                      
-                                                        <tr>
-                                                            <td class="text-center"><?php echo htmlentities($cnt);?></td>
-											                <td><a href="edit_member.php?id=<?php echo $row['borrowernumber']?>"> <?php echo $row['cardnumber']?></a></td>
-                                                            <td><?php echo $row['title'];?></td>
-                                                            <td><?php echo $row['initials'].' '.$row['surname'];?></td>
-                                                            <td><?php echo $row['mobile'];?></td>
-                                                            <td><?php echo $row['email'];?></td>
-                                                            <td><?php echo $row['categorycode'];?></td>                                             
-                                                            <td><?php if($row['status']==1)
-                                                            {
-                                                                echo htmlentities("Active");
-                                                            } else {
-                                                            echo htmlentities("Inactive");}
-                                                        ?></td>
-                                                        <td class="center">
-                                        <?php if($row['status']==1)
-                                        {?>
-                                        <a href="manage-member.php?inactive=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to block this Member?');">  <button class="btn btn-danger"><i class="bi bi-toggle-off"></i>&nbsp;Inactive</button>
-                                        <?php } else {?>
-
-                                            <a href="manage-member.php?active=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to active this Member?');"><button class="btn btn-primary"><i class="bi bi-toggle2-off"></i>&nbsp;Active</button> 
-                                            <?php } ?>
-                                          
-                                            </td>
-                                        </tr>
-                                    <?php }} ?>                                      
+                                            <tbody>                                 
                                     </tbody>
                                 </table>
                             </div>                            
@@ -155,21 +140,69 @@ else{
     <script src="js/buttons.colVis.min.js"></script>  
 
     <script>
-		// new DataTable('#dataTables');   
-        $(document).ready(function() {
-        $('#dataTables').DataTable( {
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
-        } );
-    } );
+        $(document).ready(function(){
+            $('#memberTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": "member_ajax.php",
+                "pageLength": 15,
+                "order": [[1, "asc"]],
+                "columnDefs": [
+                    { "className": "text-center", "targets": [0] }
+                ]
+            });
+        });
+    </script>
 
-    // table.buttons().container()
-    // .appendTo( '#dataTables .col-md-6:eq(0)' );
-
-	</script>
 
 </body>
 </html>
 <?php } ?>
+
+
+
+
+
+
+
+
+                                        <!-- <?php 
+                                            $query = mysqli_query($dbcon,"SELECT * from member");
+                                            if(mysqli_num_rows($query) > 0)
+                                            {                                                
+                                                while ($row=mysqli_fetch_array( $query)) 
+                                                {  $cnt++;?>                                      
+                                                        <tr>
+                                                            <td class="text-center"><?php echo htmlentities($cnt);?></td>
+											                <td><a href="edit_member.php?id=<?php echo $row['borrowernumber']?>"> <?php echo $row['cardnumber']?></a></td>
+                                                            <td><?php echo $row['title'];?></td>
+                                                            <td><?php echo $row['surname']?></td>
+                                                            <td><?php echo $row['initials'].' '.$row['surname'];?></td> 
+                                                            <td><?php echo $row['mobile'];?></td>
+                                                            <td><?php echo $row['email'];?></td>
+                                                            <td><?php echo $row['categorycode'];?></td>
+                                                            <td><?php echo $row['service'];?></td>
+                                                            <td><?php if($row['status']==1)
+                                                            {
+                                                                echo htmlentities("Active");
+                                                            } else {
+                                                            echo htmlentities("Inactive");}
+                                                        ?></td>
+                                                        <td class="center">
+                                        <?php if($row['status']==1)
+                                        {?> 
+                                        <a href="manage-member.php?inactive=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to block this Member?');">  <button class="btn btn-danger btn-sm"><i class="bi bi-toggle-off"></i></button>
+                                        <?php } else {?>
+
+                                            <a href="manage-member.php?active=<?php echo htmlentities($row['borrowernumber']);?>" onclick="return confirm('Are you sure you want to active this Member?');"><button class="btn btn-primary btn-sm"><i class="bi bi-toggle2-off"></i></button> 
+                                            <?php } ?> 
+
+                                            <DELETE BUTTON 
+                                            <a href="manage-member.php?delete=<?php echo htmlentities($row['borrowernumber']);?>" 
+                                            onclick="return confirm('Are you sure you want to permanently DELETE this Member?');">
+                                                <button class="btn btn-warning btn-sm"><i class="bi bi-trash"></i></button>
+                                            </a>
+                                                                       
+                                            </td>
+                                        </tr>
+                                    <?php }} ?>      -->

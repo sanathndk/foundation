@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "overdue_book");
 if(strlen($_SESSION['alogin'])==0){   
     header('location:index.php');
 }
@@ -20,7 +23,7 @@ else{
 	<link rel="stylesheet" href="css/jquery.dataTables.min.css">  
     <link rel="icon" href="img/logo.png" type="image/png">
 
-    <title>Overdue Book | Foundation Library Management System</title>
+    <title>Overdue Book | Library Management System</title>
 
 </head>
 <body class="top-navbar-fixed">
@@ -125,7 +128,11 @@ else{
     <script src="js/buttons.colVis.min.js"></script>   -->
 
     <script>
-		// new DataTable('#dataTables');   
+		// new DataTable('#dataTables'); 
+        function loadTable() {
+        if ($.fn.DataTable.isDataTable('#dataTables')) {
+        $('#dataTables').DataTable().clear().destroy();  
+        }
         $(document).ready(function() {
         $('#dataTables').DataTable( {
             dom: 'Bfrtip',
@@ -134,6 +141,7 @@ else{
             ]
         } );
     } );
+}
 
     // table.buttons().container()
     // .appendTo( '#dataTables .col-md-6:eq(0)' );

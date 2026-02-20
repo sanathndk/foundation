@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "View_Dashboard");
 
 if(strlen($_SESSION['alogin'])==0)
 {   
@@ -15,10 +18,12 @@ else{
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Foundation Library Management System</title>
+        <title>Library Management System</title>
         <link rel="icon" href="img/logo.png" type="image/png">
+        
         <script src="js/charts.js"></script>   
         <script src="js/chart.js"></script>
+
     </head>
     <body class="top-navbar-fixed">
         <div class="main-wrapper">
@@ -30,7 +35,7 @@ else{
                         <div class="container-fluid">
                             <div class="row page-title-div">
                                 <div class="col-sm-8">
-                                    <h2 class="title">Foundation Library Management System</h2>                                  
+                                    <h2 class="title">Library Management System</h2>                                  
                                 </div>
                                 <!-- /.col-sm-8 -->
                              </div>
@@ -130,7 +135,7 @@ else{
                                     <!-- Overdue book-->
                                     <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                                         <a class="dashboard-stat bg-danger" href="overdue_book.php">
-                                        <?php 
+                                            <?php 
                                             
                                             $over =mysqli_query($dbcon,"SELECT * from `issuedbook_view` WHERE `RetrunStatus`=0 && `ReturnDate`<= '$sysdate'");
 

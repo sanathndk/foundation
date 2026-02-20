@@ -2,10 +2,13 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "User_dashboard");
 
 if(strlen($_SESSION['alogin'])==0)
 {   
-header("Location: index.php"); 
+    header("Location: index.php"); 
 }
 else{
     ?>
@@ -13,7 +16,7 @@ else{
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Foundation Library System Dashboard</title>
+        <title>Library System Dashboard</title>
         <link rel="icon" href="img/logo.png" type="image/png">
 
     </head>
@@ -89,11 +92,13 @@ else{
                     </div>
                     <!-- /.main-page -->                    
                 </div>
+                
                 <!-- /.content-container -->
             </div>
+            <?php include('includes/footer.php');?>
             <!-- /.content-wrapper -->
         </div>
-        <?php include('includes/footer.php');?>   
+           
 	<!-- <script src="js/search.js"></script> -->
 
 	<script src="js/jquery-3.7.0.js"></script>

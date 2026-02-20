@@ -2,44 +2,96 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
-if(strlen($_SESSION['alogin'])==0)
-{   
-	header('location:index.php');
-}
-else{ 
-	if(isset($_POST['btnsave']))
-	{
-	// Save Record
-		$name=$_POST['name'];
-		$address=$_POST['address'];
-		$country=$_POST['country'];
-		$contactno=$_POST['contactno'];
-		$fax=$_POST['fax'];
-		$email=$_POST['email'];
-		$web=$_POST['web'];
-		
-		$sql="INSERT INTO `publishersr`( `pubname`, `pubaddress`, `pubcountry`, `pubmobile`, `pubfax`, `pubemail`, `pubwebsite`) VALUES (?,?,?,?,?,?,?)";
-		$result=mysqli_prepare($dbcon, $sql);
-		
-		if ($result){
-			mysqli_stmt_bind_param($result,'sssssss',$name,$address,$country,$contactno,$fax,$email,$web);
-			if (mysqli_stmt_execute($result)) {
-				echo "<script>Alert('Record added successfully')</script>";
-				// header('location:add-publishers.php');
-			} else{
-				echo "Error inserting data: " .mysqli_error($dbcon);
-			}
-		} else{
-			echo "Error Connection: " .mysqli_error($dbcon);
+include('includes/activity.php');
+
+logAction($dbcon, "Add_publishers");
+
+if (strlen($_SESSION['alogin']) == 0) {   
+    header('location:index.php');
+} else { 
+    // Save Record
+    if (isset($_POST['btnsave'])) {
+        $name = $_POST['name'];
+        $address = $_POST['address'];
+        $country = $_POST['country'];
+        $contactno = $_POST['contactno'];
+        $fax = $_POST['fax'];
+        $email = $_POST['email'];
+        $web = $_POST['web'];
+
+        $sql = "INSERT INTO `publishersr`(`pubname`, `pubaddress`, `pubcountry`, `pubmobile`, `pubfax`, `pubemail`, `pubwebsite`) VALUES (?,?,?,?,?,?,?)";
+        $result = mysqli_prepare($dbcon, $sql);
+
+
+		$errors = [];
+
+		// Validate contact number
+		if (!empty($contactno) && !preg_match('/^\d{7,12}$/', $contactno)) {
+			$errors[] = "Contact number must be 7-12 digits.";
 		}
+
+		// Validate fax number (optional)
+		if (!empty($fax) && !preg_match('/^\d{0,12}$/', $fax)) {
+			$errors[] = "Fax number must contain only digits (max 12).";
+		}
+
+		// Validate email
+		if (!empty($email) && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			$errors[] = "Invalid email format.";
+		}
+
+		// Validate website URL (optional)
+		if (!empty($web) && !filter_var($web, FILTER_VALIDATE_URL)) {
+			$errors[] = "Invalid website URL.";
+		}
+
+		// Show errors if any
+		if (!empty($errors)) {
+			$errorMessage = implode("\\n", $errors);
+			echo "<script>alert('$errorMessage'); window.history.back();</script>";
+			exit();
+		}
+
+
+		if (!preg_match('/^[A-Za-z]+$/', $name)) {
+		echo "<script>alert('Publisher Name must contain letters only.');window.history.back();</script>";exit();
+		}
+	
+		// Check for duplicate name
+		$check = mysqli_prepare($dbcon, "SELECT pubid FROM publishersr WHERE pubname = ?");
+		mysqli_stmt_bind_param($check, 's', $name);
+		mysqli_stmt_execute($check);
+		mysqli_stmt_store_result($check);
+
+		if (mysqli_stmt_num_rows($check) > 0) {
+			// Name already exists
+			echo "<script>alert('Publisher name already exists!'); window.location='add-publishers.php';</script>";
+			exit();
+		} else {
+			// Proceed with insert
+			$sql = "INSERT INTO publishersr(pubname, pubaddress, pubcountry, pubmobile, pubfax, pubemail, pubwebsite) VALUES (?, ?, ?, ?, ?, ?, ?)";
+			$stmt = mysqli_prepare($dbcon, $sql);
+			mysqli_stmt_bind_param($stmt, 'sssssss', $name, $address, $country, $contactno, $fax, $email, $web);
+			if (mysqli_stmt_execute($stmt)) {
+				echo "<script>alert('Publisher record added successfully!'); window.location='add-publishers.php';</script>";
+				exit();
+			} else {
+				echo "<script>alert('Error inserting data: " . mysqli_error($dbcon) . "');</script>";
+			}
+		}
+    } 
 		
-	}	
-	// Delete Record	
-	if($_GET['id']<>""){
-		$id=$_GET['id'];
-		mysqli_query($dbcon,"delete from publishersr where pubid='$id'");
-	}	
+
+
+    // Delete Record	
+    if (isset($_GET['id']) && $_GET['id'] != '') {
+        $id = $_GET['id'];
+        mysqli_query($dbcon, "DELETE FROM publishersr WHERE pubid='$id'");
+        echo "<script>alert('Publisher record deleted successfully!'); window.location='add-publishers.php';</script>";
+        exit();
+    }
 ?>
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -47,9 +99,9 @@ else{
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">  
 	<link rel="icon" href="img/logo.png" type="image/png">
-
-	<title>Add Publishers | Foundation Library Management System</title>
+	<title>Add Publishers|Library Management System</title>
 </head>
+
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">
 		<!-- ========== TOP NAVBAR ========== -->
@@ -88,10 +140,11 @@ else{
 							<fieldset class="border">                                
 							<div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputname" class="form-label">Publisher Name:</label>
+										<label for="inputname" class="form-label">Publisher Name:</label>										
 									</div>
 									<div class="col-sm-4">
 										<input type="text" class="form-control" id="inputname" name="name" required>
+										<small class="text-muted">Enter Only letters</small>
 									</div>
 								
 									<div class="col-sm-2 text-end">
@@ -115,7 +168,8 @@ else{
 										<label for="inputcontact" class="form-label">Contact Number:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" class="form-control" id="inputcontact" name="contactno">
+										<input type="number" class="form-control" id="inputcontact" name="contactno" pattern="\d{7,12}" maxlength="12" title="Enter 7-12 digits" required>
+										<small class="text-muted">Enter number of 7-12 digits</small>
 									</div>
 								</div>
 
@@ -124,14 +178,15 @@ else{
 										<label for="inputfax" class="form-label">Fax No:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" class="form-control" id="inputfax" name="fax">
+										<input type="number" class="form-control" id="inputfax" name="fax" pattern="\d{0,12}" maxlength="12" title="Only digits allowed">
+										<small class="text-muted">Enter number of Only 12 digits allowed</small>
 									</div>
 								
 									<div class="col-sm-2 text-end">
 										<label for="inputemail" class="form-label">Email:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="email" class="form-control" id="inputemail" name="email">
+										<input type="email" class="form-control" id="inputemail" name="email" placeholder="exampl@gmail.com">
 									</div>
 								</div>                                
 
@@ -140,7 +195,7 @@ else{
 										<label for="inputweb" class="form-label">Web site:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="text" class="form-control" id="inputweb" name="web">
+										<input type="text" class="form-control" id="inputweb" name="web" placeholder="https://example.com">
 									</div>
 								</div>
 								<div class="row p-2">
@@ -153,12 +208,12 @@ else{
 							</fieldset>
 						</form>						
 						<div class="row justify-content-md-center"> 
-							<div class="col-sm-10">
+							<div class="col-sm-8">
 								<h3>List of Publishers</h3>
 							</div>
 						</div>
 						<div class="row justify-content-md-center">							
-							<div class="col-sm-10">			
+							<div class="col-sm-8">		
 								<table class="table table-striped table-bordered table-hover align-middle table-responsive" id="dataTables">										
 									<thead>
 										<tr class="text-center">
@@ -190,8 +245,8 @@ else{
 											<td><?php echo $row["pubmobile"]?></td>
 											<td><?php echo $row["pubemail"]?></td>
 											<td class="text-center">
-												<a href="edit_publishers.php?id=<?php echo $row['pubid']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i>&nbsp;Edit</a>
-												<a href="add-publishers.php?id=<?php echo $row['pubid']; ?>" onclick="return confirm('Are your sure Delete this record?');" class="btn btn-danger btn-sm" name="btndelete"><i class="bi bi-trash3"></i>&nbsp;Delete</a>
+												<a href="edit_publishers.php?id=<?php echo $row['pubid']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i></a>
+												<a href="add-publishers.php?id=<?php echo $row['pubid']; ?>" onclick="return confirm('Are your sure Delete this record?');" class="btn btn-danger btn-sm" name="btndelete"><i class="bi bi-trash3"></i></a>
 											</td>
 										</tr>
 										<?php
@@ -202,12 +257,13 @@ else{
 								</table>	
 							</div>														
 						</div>						
-					</div>					
+					</div>		
+					<?php include('includes/footer.php');?>  
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>   
+	 
 	<!-- <script src="js/search.js"></script> -->
 
 	<script src="js/jquery-3.7.0.js"></script>
@@ -250,7 +306,15 @@ document.getElementById("resultcountry").addEventListener("click", function(e) {
 
     }
 });
-	</script>
+
+</script>
+
+	<script>
+	document.getElementById("inputname").addEventListener("input", function () {
+    // Allow ONLY letters (A-Z, a-z)
+    this.value = this.value.replace(/[^A-Za-z]/g, "");
+});
+</script>
 	
 </body>
 </html>

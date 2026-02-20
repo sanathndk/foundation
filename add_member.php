@@ -1,6 +1,12 @@
 <?php 
 session_start();
+include('includes/functions.php');
 include('includes/config.php');
+include('includes/activity.php');
+
+$autoCardNumber = generateCardNumber($dbcon);
+
+logAction($dbcon, "Add_member");
 error_reporting(0);
 $token=rand();
 
@@ -9,6 +15,7 @@ if(isset($_POST['btnsave'])){
     if ($_SESSION['csrf_token']==$_POST['csrf_token']) {        
 
         $memberphoto=$_FILES['memberphoto'];
+        $service = $_POST['service'];
         $title =$_POST['title'];  
         $cardnumber=$_POST['cardnumber']; 
         $surname=$_POST['surname']; 
@@ -60,35 +67,36 @@ if(isset($_POST['btnsave'])){
         $enrfee=mysqli_fetch_array($fee);
         $enrollmentfee=$enrfee['enrollmentfee'];
 
-        if ($memberphoto['size']<=200000) {
+        if ($memberphoto['size']<=500000) {
             $imagedetails=pathinfo($memberphoto['name']);
             $allwextention=array('jpg','jpeg','png');
 
             if (in_array($imagedetails['extension'],$allwextention)) {
                 $filepath='img/'.uniqid().'.'.$imagedetails['extension'];
                 if (move_uploaded_file($memberphoto['tmp_name'],$filepath)) {
-                    $sql="INSERT INTO `member`(`title`, `cardnumber`, `surname`, `firstname`, `middle_name`, `othernames`, `initials`,`regtnumber`, `dateofbirth`, `gender`, `address`, `address2`, `city`, `state`, `zipcode`, `country`, `mobile`, `mobile2`, `email`, `email2`, `primary_contact_method`, `B_address`, `B_address2`, `B_city`, `B_state`, `B_zipcode`, `B_country`, `altcontactname`, `altcontactmobil`, `altcontactaddress1`, `altcontactaddress2`, `altcontactcity`, `altcontactstate`, `altcontactzipcode`, `altcontactcountry`, `altcontactemail`, `relationship`, `idcard`, `passport`, `branchcode`, `categorycode`, `dateenrolled`, `dateexpiry`, `userid`, `password`, `status`,`img`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    $sql="INSERT INTO `member`(`service`,`title`, `cardnumber`, `surname`, `firstname`, `middle_name`, `othernames`, `initials`,`regtnumber`, `dateofbirth`, `gender`, `address`, `address2`, `city`, `state`, `zipcode`, `country`, `mobile`, `mobile2`, `email`, `email2`, `primary_contact_method`, `B_address`, `B_address2`, `B_city`, `B_state`, `B_zipcode`, `B_country`, `altcontactname`, `altcontactmobil`, `altcontactaddress1`, `altcontactaddress2`, `altcontactcity`, `altcontactstate`, `altcontactzipcode`, `altcontactcountry`, `altcontactemail`, `relationship`, `idcard`, `passport`, `branchcode`, `categorycode`, `dateenrolled`, `dateexpiry`, `userid`, `password`, `status`,`img`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     $result = mysqli_prepare($dbcon, $sql);
 
                     if ($result) {
-                        mysqli_stmt_bind_param($result,'sssssssssssssssssssssssssssssssssssssssssssssss',$title,$cardnumber,$surname,$firstname,$middle_name,$othernames,$initials,$regtnumber,$dateofbirth,$gender,$address,$address2,$city,$state,$zipcode,$country,$mobile,$mobile2,$email,$email2,$primary_contact_method,$B_address,$B_address2,$B_city,$B_state,$B_zipcode,$B_country,$altcontactname,$altcontactmobil,$altcontactaddress1,$altcontactaddress2,$altcontactcity,$altcontactstate,$altcontactzipcode,$altcontactcountry,$altcontactemail,$relationship,$idcard,$passport,$branchcode,$categorycode,$dateenrolled,$dateexpiry,$userid,$password,$status,$filepath);
+                        mysqli_stmt_bind_param($result,'ssssssssssssssssssssssssssssssssssssssssssssssss',$service,$title,$cardnumber,$surname,$firstname,$middle_name,$othernames,$initials,$regtnumber,$dateofbirth,$gender,$address,$address2,$city,$state,$zipcode,$country,$mobile,$mobile2,$email,$email2,$primary_contact_method,$B_address,$B_address2,$B_city,$B_state,$B_zipcode,$B_country,$altcontactname,$altcontactmobil,$altcontactaddress1,$altcontactaddress2,$altcontactcity,$altcontactstate,$altcontactzipcode,$altcontactcountry,$altcontactemail,$relationship,$idcard,$passport,$branchcode,$categorycode,$dateenrolled,$dateexpiry,$userid,$password,$status,$filepath);
                         
                         if (mysqli_stmt_execute($result)) {
-                            $msg = 'Member registed successfuly, <strong>Member id is '.$cardnumber.'</strong><br>Registration fee is <strong>'.number_format($enrollmentfee, 2).'</strong>';  
-                            // header('location:add_member.php');
-                        } else {
-                            $error1 = '<strong>Something went wrong. Please try again<strong>'; 
-                        }
+                            echo "<script>alert('Member registered successfully!\\nMember ID: {$cardnumber}\\nRegistration fee: ".number_format($enrollmentfee,2)."');window.location = 'add_member.php';</script>";
+                        exit();
+                        } 
+                        else {
+                            echo "<script>alert('Something went wrong. Please try again.');</script>";}
+
                     } else{
                         $error1 = '<strong>Error Connection:'.mysqli_error($dbcon).'<strong>'; 
                     }  
                 }
             }else{
-                $error = '<strong>Select an Image File<strong>';    
+                $error = '<strong>Select an Image File (jpg, jpeg, png)<strong>';    
             }
         }
         else{
-            $error = '<strong>Image should be less than 200 KB<strong>'; 
+            $error = '<strong>Image should be less than 500 KB<strong>'; 
         }
         
     }else{
@@ -105,7 +113,8 @@ $_SESSION['csrf_token']=$token;
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
     	<meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" href="img/logo.png" type="image/png">
-        <title>Member Registration | Foundation Library Management System</title>
+        <title>Member Registration | Library Management System</title>
+
     </head>
     <body class="top-navbar-fixed">
         <div class="main-wrapper">
@@ -153,40 +162,75 @@ $_SESSION['csrf_token']=$token;
                                         </div>                              
                                     </div>          
                        
-                                    <div class="row p-2">
-                                        <div class="col-sm-2 text-end">
-                                            <label for="inputSalutation" class="form-label">Member Image</label>       
+                                    <div class="row p-2">                                        
+
+                                        <!-- Service Dropdown -->
+                                            <div class="col-sm-2 text-end">
+                                                <label for="service" class="form-label">Service:<i class="text-danger font-weight-bold">*</i></label>       
+                                            </div>
+                                            <div class="col-sm-2">  
+                                                <select id="service" class="form-select" name="service" required onchange="this.form.submit()">
+                                                    <option value="">Select Service</option>
+                                                    <option value="Ar" <?= ($_POST['service'] ?? '') == 'Ar' ? 'selected' : '' ?>>Army</option>
+                                                    <option value="N"  <?= ($_POST['service'] ?? '') == 'N' ? 'selected' : '' ?>>Navy</option>
+                                                    <option value="A"  <?= ($_POST['service'] ?? '') == 'A' ? 'selected' : '' ?>>Air Force</option>
+                                                    <option value="P"  <?= ($_POST['service'] ?? '') == 'P' ? 'selected' : '' ?>>Police</option>
+                                                </select>      
+                                             
+                                            </div>           
+
+                                            <!-- Salutation (Rank) Dropdown -->
+                                            <div class="col-sm-2 text-end">
+                                                <label for="inputSalutation" class="form-label">Salutation:<i class="text-danger font-weight-bold">*</i></label>       
+                                            </div>
+                                            <div class="col-sm-2">  
+                                                <select id="inputSalutation" class="form-select" name="title" required>
+                                                    <option value="">Select Salutation</option>
+                                                    <?php
+                                                    if (!empty($_POST['service'])) {
+                                                        $service = $_POST['service'];
+                                                        $sql = mysqli_query($dbcon, "SELECT code, `desc` FROM `salutation` WHERE service = '$service'");
+                                                        if (mysqli_num_rows($sql) > 0) {
+                                                            while ($row = mysqli_fetch_assoc($sql)) {
+                                                                $code = htmlspecialchars($row['code']);
+                                                                $desc = htmlspecialchars($row['desc']);
+                                                                $selected = (isset($_POST['title']) && $_POST['title'] == $code) ? 'selected' : '';
+                                                                echo "<option value=\"$code\" $selected>$desc</option>";
+                                                            }
+                                                        }
+                                                    }
+                                                    ?>
+                                                </select>  
+                                                <!-- <select id="inputSalutation" class="form-select" name="title" required>
+                                                    <option value="">-- Select Salutation --</option>
+                                                <?php
+                                                $sql = mysqli_query($dbcon, "SELECT code, `desc` FROM `salutation`");
+                                                if (mysqli_num_rows($sql) > 0) {
+                                                    while ($row = mysqli_fetch_assoc($sql)) {
+                                                        // $code = htmlspecialchars($row['code']);
+                                                        $desc = htmlspecialchars($row['desc']);
+                                                        echo "<option value=\"{$code}\">{$desc}</option>\n";
+                                                    }
+                                                }
+                                                ?>
+                                                </select> -->
+                                            </div>
+                                            <div class="col-sm-2 text-end">
+                                            <label for="inputSalutation" class="form-label">Member Image<i class="text-danger font-weight-bold">*</i></label>       
                                         </div>
-                                        <div class="col-sm-4">       
+                                        <div class="col-sm-2">       
                                             <input type="file" class="form-control" id="memberphoto" name="memberphoto" required>                                            
                                         </div>
-                                    
-                                        <div class="col-sm-2 text-end">
-                                            <label for="inputSalutation" class="form-label">Salutation:<i class="text-danger font-weight-bold">*</i></label>       
-                                        </div>
-                                        <div class="col-sm-2">    
-                                            <select id="inputSalutation" class="form-select"  name="title" required> 
-                                                <option selected></option>
-                                                <?php
-                                                    $sql=mysqli_query($dbcon,"SELECT * FROM `salutation`");  
-                                                    if (mysqli_num_rows($sql)>0) {
-                                                        while($row=mysqli_fetch_assoc($sql)){                                                        
-                                                            echo "<option value='$row[code]'>$row[code]</option>";
-                                                        }
-                                                    }                                          
-                                                ?>
-                                            </select>
-                                        </div>
                                     </div>
+                                   
+                                        
                                     <!-- Error msg Display -->
                                     <div class="row p-2">
-                                        <div class="col-sm-2 text-end">
-                                        </div>
+                                        <div class="col-sm-2 text-end"></div>
                                         <div class="col-sm-4">       
                                              <span class="text-danger font-weight-bold"><?php echo $error?></span> 
                                         </div>                              
                                     </div>
-                                                
                                     <div class="row p-2">
                                         <div class="col-sm-2 text-end">
                                             <label for="inputSurname" class="form-label">Surname:<i class="text-danger font-weight-bold">*</i></label>
@@ -227,7 +271,7 @@ $_SESSION['csrf_token']=$token;
                                         </div>
 
                                         <div class="col-sm-2 text-end">
-                                            <label for="inputregtnumber" class="form-label">Army Number:</label>
+                                            <label for="inputregtnumber" class="form-label">Service Number:</label>
                                         </div>
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control" name="regtnumber" id="inputregtnumber">
@@ -262,6 +306,8 @@ $_SESSION['csrf_token']=$token;
                                             <input type="date" class="form-control" name="dateofbirth" id="inputdob">
                                         </div>
                                     </div>
+
+                                        
                                 </fieldset>
                                 <!--Main address -->
                                 <fieldset class="border p-3">
@@ -513,7 +559,7 @@ $_SESSION['csrf_token']=$token;
                                             <label for="inputCardNo" class="form-label">Card Number:<i class="text-danger font-weight-bold">*</i></label>
                                         </div>
                                         <div class="col-sm-4">
-                                            <input type="text" class="form-control" name="cardnumber" id="inputCardNo" required>  <!--required-->
+                                            <input type="text" class="form-control" name="cardnumber" id="inputCardNo" value="<?php echo $autoCardNumber; ?>" readonly>  <!--required-->
                                         </div>
                                    
                                         <div class="col-sm-2 text-end">        
@@ -619,7 +665,7 @@ $_SESSION['csrf_token']=$token;
                                 </fieldset>
 
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                                    <div class="col-sm-1">     
+                                    <div class="col-sm-2">     
                                         <input type="hidden" name="csrf_token" value="<?php echo $token?>">
                                         <button type="submit" class="btn btn-primary btn-md" name="btnsave"><i class="bi bi-person-plus-fill"></i>&nbsp;Register</button>
                                     </div>
@@ -634,8 +680,44 @@ $_SESSION['csrf_token']=$token;
             </div> 
         </div>   
 	<script src="js/search.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    </body>
+<!-- AJAX to load ranks based on selected service -->
+
+<!-- <script>
+$(function() {
+    $('#service').on('change', function() {
+        const selectedService = $(this).val();
+
+        if (!selectedService) {
+            $('#inputSalutation').html('<option value="">-- Select Salutation --</option>');
+            return;
+        }
+
+        $.ajax({
+            url: 'add_salutation.php',     
+            method: 'POST',
+            data: { service: selectedService },
+            success: function(response) {
+                console.log("AJAX response:", response);
+                $('#inputSalutation').html(response);
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX error:', status, error, xhr.responseText);
+                alert('Could not load ranks. Please try again.');
+            }
+        });
+    });
+}); -->
+</script>
+
+</body>
+</html>
+
+
+
+</body>
 </html>
 <?php 
 mysqli_close($dbcon);

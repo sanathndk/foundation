@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Edit-publishers");
 if(strlen($_SESSION['alogin'])==0)
 {   
 	header('location:index.php');
@@ -25,19 +28,21 @@ else{
 		$sql="UPDATE publishersr SET pubname=?, pubaddress=?, pubcountry=?, pubmobile=?, pubfax=?, pubemail=?, pubwebsite=? WHERE pubid=?";
 		$result=mysqli_prepare($dbcon, $sql);
 		
-		if ($result){
-			mysqli_stmt_bind_param($result,'sssssssi',$name,$address,$country,$contactno,$fax,$email,$web,$id);
-			if (mysqli_stmt_execute($result)) {
-				echo "Record updated successfully";
-				header('location:add-publishers.php');
-			} else{
-				echo "Error inserting data: " .mysqli_error($dbcon);
-			}
-		} else{
-			echo "Error Connection: " .mysqli_error($dbcon);
+		if ($result) {
+		mysqli_stmt_bind_param($result, 'sssssssi', $name, $address, $country, $contactno, $fax, $email, $web, $id);
+		if (mysqli_stmt_execute($result)) {
+			echo "<script>alert('Publisher record updated successfully!'); window.location='add-publishers.php';</script>";
+			exit();
+		} else {
+			echo "<script>alert('Error updating record: " . mysqli_error($dbcon) . "');</script>";
 		}
-		
-	}	
+
+	} else {
+			echo "<script>alert('Database connection error: " . mysqli_error($dbcon) . "');</script>";
+	}
+
+			
+}	
 
 ?>
 <!DOCTYPE html>
@@ -48,7 +53,7 @@ else{
 	<meta name="viewport" content="width=device-width, initial-scale=1">  
 	<link rel="icon" href="img/logo.png" type="image/png">
 
-	<title>Edit Publishers | Foundation Library Management System</title>
+	<title>Edit Publishers | Library Management System</title>
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">
@@ -152,12 +157,14 @@ else{
 								</div>
 							</fieldset>
 						</form>						
-					</div>					
+					</div>
+					<br><br><br><br><br><br>
+					<?php include('includes/footer.php');?>
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>   
+	   
 	<!-- <script src="js/search.js"></script> -->
 
 	<script src="js/jquery-3.7.0.js"></script>

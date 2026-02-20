@@ -1,120 +1,156 @@
 <?php 
 session_start();
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Edit_member");
 error_reporting(0);
-$token=rand();
+$token = rand();
+
 if (isset($_GET['id'])) {
-    $id=$_GET['id'];	
-    $result=mysqli_query($dbcon,"SELECT * FROM member WHERE (borrowernumber = '$id')"); 
-    $row= mysqli_fetch_assoc($result);
+    $id = $_GET['id'];	
+    $result = mysqli_query($dbcon, "SELECT * FROM member WHERE borrowernumber = '$id'"); 
+    $row = mysqli_fetch_assoc($result);
 }    
-if(isset($_POST['btnsave'])){
 
-    if ($_SESSION['csrf_token']==$_POST['csrf_token']) {        
+if (isset($_POST['btnsave'])) {
 
-        $memberphoto=$_FILES['memberphoto'];
-        $title =$_POST['title'];  
-        $cardnumber=$_POST['cardnumber']; 
-        $surname=$_POST['surname']; 
-        $firstname=$_POST['firstname']; 
-        $middle_name=$_POST['middle_name']; 
-        $othernames=$_POST['othernames']; 
-        $initials=$_POST['initials']; 
-        $regtnumber=$_POST['regtnumber']; 
-        $dateofbirth=$_POST['dateofbirth']; 
-        $gender=$_POST['gender']; 
-        $address=$_POST['address']; 
-        $address2=$_POST['address2']; 
-        $city=$_POST['city']; 
-        $state=$_POST['state']; 
-        $zipcode=$_POST['zipcode']; 
-        $country=$_POST['country']; 
-        $mobile=$_POST['mobile']; 
-        $mobile2=$_POST['mobile2']; 
-        $email=$_POST['email']; 
-        $email2=$_POST['email2']; 
-        $primary_contact_method=$_POST['primary_contact_method']; 
-        $B_address=$_POST['B_address']; 
-        $B_address2=$_POST['B_address2']; 
-        $B_city=$_POST['B_city']; 
-        $B_state=$_POST['B_state']; 
-        $B_zipcode=$_POST['B_zipcode']; 
-        $B_country=$_POST['B_country']; 
-        $altcontactname=$_POST['altcontactname']; 
-        $altcontactmobil=$_POST['altcontactmobil']; 
-        $altcontactaddress1=$_POST['altcontactaddress1']; 
-        $altcontactaddress2=$_POST['altcontactaddress2']; 
-        $altcontactcity=$_POST['altcontactcity']; 
-        $altcontactstate=$_POST['altcontactstate']; 
-        $altcontactzipcode=$_POST['altcontactzipcode']; 
-        $altcontactcountry=$_POST['altcontactcountry']; 
-        $altcontactemail=$_POST['altcontactemail']; 
-        $relationship=$_POST['relationship']; 
-        $idcard=$_POST['idcard']; 
-        $passport=$_POST['passport']; 
-        $branchcode=$_POST['branchcode']; 
-        $categorycode=$_POST['categorycode']; 
-        $dateenrolled=$_POST['dateenrolled']; 
-        $dateexpiry=$_POST['dateexpiry'];     
-        $userid=$_POST['userid']; 
-        $password=md5($_POST['password']); 
-        $status=1;
+    if ($_SESSION['csrf_token'] == $_POST['csrf_token']) {        
 
+        // Collect form data
+        $memberphoto = $_FILES['memberphoto'];
+        $title = $_POST['title'];  
+        $cardnumber = $_POST['cardnumber']; 
+        $surname = $_POST['surname']; 
+        $firstname = $_POST['firstname']; 
+        $middle_name = $_POST['middle_name']; 
+        $othernames = $_POST['othernames']; 
+        $initials = $_POST['initials']; 
+        $regtnumber = $_POST['regtnumber']; 
+        $dateofbirth = $_POST['dateofbirth']; 
+        $gender = $_POST['gender']; 
+        $address = $_POST['address']; 
+        $address2 = $_POST['address2']; 
+        $city = $_POST['city']; 
+        $state = $_POST['state']; 
+        $zipcode = $_POST['zipcode']; 
+        $country = $_POST['country']; 
+        $mobile = $_POST['mobile']; 
+        $mobile2 = $_POST['mobile2']; 
+        $email = $_POST['email']; 
+        $email2 = $_POST['email2']; 
+        $primary_contact_method = $_POST['primary_contact_method']; 
+        $B_address = $_POST['B_address']; 
+        $B_address2 = $_POST['B_address2']; 
+        $B_city = $_POST['B_city']; 
+        $B_state = $_POST['B_state']; 
+        $B_zipcode = $_POST['B_zipcode']; 
+        $B_country = $_POST['B_country']; 
+        $altcontactname = $_POST['altcontactname']; 
+        $altcontactmobil = $_POST['altcontactmobil']; 
+        $altcontactaddress1 = $_POST['altcontactaddress1']; 
+        $altcontactaddress2 = $_POST['altcontactaddress2']; 
+        $altcontactcity = $_POST['altcontactcity']; 
+        $altcontactstate = $_POST['altcontactstate']; 
+        $altcontactzipcode = $_POST['altcontactzipcode']; 
+        $altcontactcountry = $_POST['altcontactcountry']; 
+        $altcontactemail = $_POST['altcontactemail']; 
+        $relationship = $_POST['relationship']; 
+        $idcard = $_POST['idcard']; 
+        $passport = $_POST['passport']; 
+        $branchcode = $_POST['branchcode']; 
+        $categorycode = $_POST['categorycode']; 
+        $dateenrolled = $_POST['dateenrolled']; 
+        $dateexpiry = $_POST['dateexpiry'];     
+        $userid = $_POST['userid']; 
+        $password = md5($_POST['password']); 
+        $status = 1;
+
+        // If no photo uploaded
         if (empty($memberphoto['size'])) {
-            $sql="UPDATE `member` SET `title`=?,`cardnumber`=?,`surname`=?,`firstname`=?,`middle_name`=?,`othernames`=?,`initials`=?,`regtnumber`=?,`dateofbirth`=?,`gender`=?,`address`=?,`address2`=?,`city`=?,`state`=?,`zipcode`=?,`country`=?,`mobile`=?,`mobile2`=?,`email`=?,`email2`=?,`primary_contact_method`=?,`B_address`=?,`B_address2`=?,`B_city`=?,`B_state`=?,`B_zipcode`=?,`B_country`=?,`altcontactname`=?,`altcontactmobil`=?,`altcontactaddress1`=?,`altcontactaddress2`=?,`altcontactcity`=?,`altcontactstate`=?,`altcontactzipcode`=?,`altcontactcountry`=?,`altcontactemail`=?,`relationship`=?,`idcard`=?,`passport`=?,`branchcode`=?,`categorycode`=?,`dateenrolled`=?,`dateexpiry`=?,`userid`=?,`password`=?,`status`=? WHERE `borrowernumber`=?";
+            $sql = "UPDATE `member` SET `title`=?,`cardnumber`=?,`surname`=?,`firstname`=?,`middle_name`=?,`othernames`=?,`initials`=?,`regtnumber`=?,`dateofbirth`=?,`gender`=?,`address`=?,`address2`=?,`city`=?,`state`=?,`zipcode`=?,`country`=?,`mobile`=?,`mobile2`=?,`email`=?,`email2`=?,`primary_contact_method`=?,`B_address`=?,`B_address2`=?,`B_city`=?,`B_state`=?,`B_zipcode`=?,`B_country`=?,`altcontactname`=?,`altcontactmobil`=?,`altcontactaddress1`=?,`altcontactaddress2`=?,`altcontactcity`=?,`altcontactstate`=?,`altcontactzipcode`=?,`altcontactcountry`=?,`altcontactemail`=?,`relationship`=?,`idcard`=?,`passport`=?,`branchcode`=?,`categorycode`=?,`dateenrolled`=?,`dateexpiry`=?,`userid`=?,`password`=?,`status`=? WHERE `borrowernumber`=?";
+
             $result = mysqli_prepare($dbcon, $sql);
 
             if ($result) {
-                mysqli_stmt_bind_param($result,'ssssssssssssssssssssssssssssssssssssssssssssssi',$title,$cardnumber,$surname,$firstname,$middle_name,$othernames,$initials,$regtnumber,$dateofbirth,$gender,$address,$address2,$city,$state,$zipcode,$country,$mobile,$mobile2,$email,$email2,$primary_contact_method,$B_address,$B_address2,$B_city,$B_state,$B_zipcode,$B_country,$altcontactname,$altcontactmobil,$altcontactaddress1,$altcontactaddress2,$altcontactcity,$altcontactstate,$altcontactzipcode,$altcontactcountry,$altcontactemail,$relationship,$idcard,$passport,$branchcode,$categorycode,$dateenrolled,$dateexpiry,$userid,$password,$status,$id);
-                
-                if (mysqli_stmt_execute($result)) {
-                    $msg = 'Member Update successfuly.';  
-                    header('location:dashboard.php');
-                } else {
-                    $error1 = '<strong>Something went wrong. Please try again<strong>'; 
-                }
-            } else{
-                $error1 = '<strong>Error Connection:'.mysqli_error($dbcon).'<strong>'; 
-            }  
-        }elseif ($memberphoto['size']<=200000) {
-            $imagedetails=pathinfo($memberphoto['name']);
-            $allwextention=array('jpg','jpeg','png');
+                mysqli_stmt_bind_param($result, 
+                    'ssssssssssssssssssssssssssssssssssssssssssssssi',
+                    $title, $cardnumber, $surname, $firstname, $middle_name, $othernames, $initials,
+                    $regtnumber, $dateofbirth, $gender, $address, $address2, $city, $state, $zipcode,
+                    $country, $mobile, $mobile2, $email, $email2, $primary_contact_method, $B_address,
+                    $B_address2, $B_city, $B_state, $B_zipcode, $B_country, $altcontactname,
+                    $altcontactmobil, $altcontactaddress1, $altcontactaddress2, $altcontactcity,
+                    $altcontactstate, $altcontactzipcode, $altcontactcountry, $altcontactemail,
+                    $relationship, $idcard, $passport, $branchcode, $categorycode, $dateenrolled,
+                    $dateexpiry, $userid, $password, $status, $id
+                );
 
-            if (in_array($imagedetails['extension'],$allwextention)) {
-                $filepath='img/'.uniqid().'.'.$imagedetails['extension'];
-                if (move_uploaded_file($memberphoto['tmp_name'],$filepath)) {
-                  
-                    $sql="UPDATE `member` SET `title`=?,`cardnumber`=?,`surname`=?,`firstname`=?,`middle_name`=?,`othernames`=?,`initials`=?,`regtnumber`=?,`dateofbirth`=?,`gender`=?,`address`=?,`address2`=?,`city`=?,`state`=?,`zipcode`=?,`country`=?,`mobile`=?,`mobile2`=?,`email`=?,`email2`=?,`primary_contact_method`=?,`B_address`=?,`B_address2`=?,`B_city`=?,`B_state`=?,`B_zipcode`=?,`B_country`=?,`altcontactname`=?,`altcontactmobil`=?,`altcontactaddress1`=?,`altcontactaddress2`=?,`altcontactcity`=?,`altcontactstate`=?,`altcontactzipcode`=?,`altcontactcountry`=?,`altcontactemail`=?,`relationship`=?,`idcard`=?,`passport`=?,`branchcode`=?,`categorycode`=?,`dateenrolled`=?,`dateexpiry`=?,`userid`=?,`password`=?,`status`=?,`img`=? WHERE `borrowernumber`=?";
+                if (mysqli_stmt_execute($result)) {
+                    echo "<script>alert('Member updated successfully!'); window.location='dashboard.php';</script>";
+                    exit;
+                } else {
+                    $error1 = '<strong>Something went wrong. Please try again.</strong>';
+                }
+            } else {
+                $error1 = '<strong>Database prepare error: '.mysqli_error($dbcon).'</strong>'; 
+            }  
+
+        } elseif ($memberphoto['size'] <= 200000) {
+            // Image validation
+            $imagedetails = pathinfo($memberphoto['name']);
+            $allowed_extensions = array('jpg','jpeg','png');
+
+            if (in_array(strtolower($imagedetails['extension']), $allowed_extensions)) {
+                $filepath = 'img/'.uniqid().'.'.$imagedetails['extension'];
+                
+                if (move_uploaded_file($memberphoto['tmp_name'], $filepath)) {
+                    $sql = "UPDATE `member` SET 
+                    `title`=?,`cardnumber`=?,`surname`=?,`firstname`=?,`middle_name`=?,`othernames`=?,`initials`=?,`regtnumber`=?,`dateofbirth`=?,`gender`=?,`address`=?,`address2`=?,`city`=?,`state`=?,`zipcode`=?,`country`=?,`mobile`=?,`mobile2`=?,`email`=?,`email2`=?,`primary_contact_method`=?,`B_address`=?,`B_address2`=?,`B_city`=?,`B_state`=?,`B_zipcode`=?,`B_country`=?,`altcontactname`=?,`altcontactmobil`=?,`altcontactaddress1`=?,`altcontactaddress2`=?,`altcontactcity`=?,`altcontactstate`=?,`altcontactzipcode`=?,`altcontactcountry`=?,`altcontactemail`=?,`relationship`=?,`idcard`=?,`passport`=?,`branchcode`=?,`categorycode`=?,`dateenrolled`=?,`dateexpiry`=?,`userid`=?,`password`=?,`status`=?,`img`=?
+                    WHERE `borrowernumber`=?";
+
                     $result = mysqli_prepare($dbcon, $sql);
 
                     if ($result) {
-                        mysqli_stmt_bind_param($result,'sssssssssssssssssssssssssssssssssssssssssssssssi',$title,$cardnumber,$surname,$firstname,$middle_name,$othernames,$initials,$regtnumber,$dateofbirth,$gender,$address,$address2,$city,$state,$zipcode,$country,$mobile,$mobile2,$email,$email2,$primary_contact_method,$B_address,$B_address2,$B_city,$B_state,$B_zipcode,$B_country,$altcontactname,$altcontactmobil,$altcontactaddress1,$altcontactaddress2,$altcontactcity,$altcontactstate,$altcontactzipcode,$altcontactcountry,$altcontactemail,$relationship,$idcard,$passport,$branchcode,$categorycode,$dateenrolled,$dateexpiry,$userid,$password,$status,$filepath,$id);
-                        
-                        if (mysqli_stmt_execute($result)) {
-                            $msg = 'Member Update successfuly.';  
-                            header('location:dashboard.php');
-                        } else {
-                            $error1 = '<strong>Something went wrong. Please try again<strong>'; 
-                        }
-                    } else{
-                        $error1 = '<strong>Error Connection:'.mysqli_error($dbcon).'<strong>'; 
-                    }  
-                }
-            }else{
-                $error = '<strong>Select an Image File<strong>';    
-            }
-        }
-        else{
-            $error = '<strong>Image should be less than 200 KB<strong>'; 
-        }
-        
-    }else{
-        $error1 = '<strong>Invalied Authentication<strong>'; 
-    }
+                        mysqli_stmt_bind_param($result,
+                            'ssssssssssssssssssssssssssssssssssssssssssssssssi',
+                            $title, $cardnumber, $surname, $firstname, $middle_name, $othernames, $initials,
+                            $regtnumber, $dateofbirth, $gender, $address, $address2, $city, $state, $zipcode,
+                            $country, $mobile, $mobile2, $email, $email2, $primary_contact_method, $B_address,
+                            $B_address2, $B_city, $B_state, $B_zipcode, $B_country, $altcontactname,
+                            $altcontactmobil, $altcontactaddress1, $altcontactaddress2, $altcontactcity,
+                            $altcontactstate, $altcontactzipcode, $altcontactcountry, $altcontactemail,
+                            $relationship, $idcard, $passport, $branchcode, $categorycode, $dateenrolled,
+                            $dateexpiry, $userid, $password, $status, $filepath,   
+                            $id
+                        );
 
+                        if (mysqli_stmt_execute($result)) {
+                            echo "<script>alert('Member updated successfully with image!'); window.location='dashboard.php';</script>";
+                            exit;
+                        } else {
+                            $error1 = '<strong>Something went wrong while updating image data: ' . mysqli_stmt_error($result) . '</strong>';
+                        }
+                    } else {
+                        $error1 = '<strong>Prepare statement failed: ' . mysqli_error($dbcon) . '</strong>'; 
+                    }
+
+                } else {
+                    $error1 = '<strong>Failed to upload image file.</strong>';
+                }
+            } else {
+                $error = '<strong>Invalid image format. Only JPG, JPEG, PNG allowed.</strong>';    
+            }
+        } else {
+            $error = '<strong>Image should be less than 200 KB.</strong>'; 
+        }
+    } else {
+        $error1 = '<strong>Invalid Authentication.</strong>'; 
+    }
 }
-$_SESSION['csrf_token']=$token;
+
+$_SESSION['csrf_token'] = $token;
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -122,7 +158,7 @@ $_SESSION['csrf_token']=$token;
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
     	<meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="icon" href="img/logo.png" type="image/png">
-        <title>Member Registation | Foundation Library Management System</title>
+        <title>Member Registation | Library Management System</title>
     </head>
     <body class="top-navbar-fixed">
         <div class="main-wrapper">
@@ -253,7 +289,7 @@ $_SESSION['csrf_token']=$token;
                                         </div>
 
                                         <div class="col-sm-2 text-end">
-                                            <label for="inputregtnumber" class="form-label">Army Number:</label>
+                                            <label for="inputregtnumber" class="form-label">Service Number:</label>
                                         </div>
                                         <div class="col-sm-4">
                                             <input type="text" class="form-control" name="regtnumber" id="inputregtnumber" value="<?php echo $row['regtnumber']?>">

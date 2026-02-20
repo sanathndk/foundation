@@ -1,6 +1,9 @@
 <?php 
 session_start();
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "User_profile");
 error_reporting(0);
 
 if (isset($_GET['id'])) {

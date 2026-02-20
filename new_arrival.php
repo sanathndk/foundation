@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "new_arrival");
 if(strlen($_SESSION['alogin'])==0)
     {   
 header('location:index.php');
@@ -19,7 +22,7 @@ else{
     <meta name="author" content="AS Indika" />
     <link rel="icon" href="img/logo.png" type="image/png">
 
-    <title>New Arrivals | Foundation Library Management System</title>
+    <title>New Arrivals | Library Management System</title>
 
 </head>
 <body class="top-navbar-fixed">

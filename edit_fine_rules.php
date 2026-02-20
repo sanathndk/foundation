@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Edit_fine_rules");
 if(strlen($_SESSION['alogin'])==0)
 {   
 	header('location:index.php');
@@ -49,7 +52,7 @@ else{
 	<meta name="viewport" content="width=device-width, initial-scale=1">  
 	<link rel="icon" href="img/logo.png" type="image/png">
 
-	<title>Edit Fine Rules | Foundation Library Management System</title>
+	<title>Edit Fine Rules | Library Management System</title>
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">
@@ -112,7 +115,7 @@ else{
 										<label for="checkoutallow" class="form-label">Current checkouts allowed:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="checkoutallow" class="form-control" id="checkoutallow" value="<?php echo $rul['checkoutallow'];?>" required>                                
+										<input type="number" name="checkoutallow" class="form-control" id="checkoutallow" value="<?php echo $rul['checkoutallow'];?>" required min="0">                                
                                     </div>
 									
 									<div class="col-sm-2 text-end">
@@ -139,14 +142,14 @@ else{
 									</div>
 
 									<div class="col-sm-4">
-										<input type="number" name="loanperiod" class="form-control" id="inputloanperiod" value="<?php echo $rul['loanperiod'];?>" required>
+										<input type="number" name="loanperiod" class="form-control" id="inputloanperiod" value="<?php echo $rul['loanperiod'];?>" required min="0">
                                     </div>
 									
 									<div class="col-sm-2 text-end">
 										<label for="inputamount" class="form-label">Fine amount:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="fineamount" class="form-control" id="inputamount" step="0.00" value="<?php echo $rul['fineamount'];?>" required>									
+										<input type="number" name="fineamount" class="form-control" id="inputamount" step="0.00" value="<?php echo $rul['fineamount'];?>" required min="0">									
 									</div>
 								</div>	
 								<div class="row p-2">
@@ -154,14 +157,14 @@ else{
 										<label for="inputrenallowed" class="form-label">Renewals allowed:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="renewalallow" class="form-control" id="inputrenallowed" value="<?php echo $rul['renewalallow'];?>" required>
+										<input type="number" name="renewalallow" class="form-control" id="inputrenallowed" value="<?php echo $rul['renewalallow'];?>" required min="0">
 									</div>
 									
 									<div class="col-sm-2 text-end">
 										<label for="inputrenperiod" class="form-label">Renewal period (Days):</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="renewalperiod" class="form-control" id="inputrenperiod" value="<?php echo $rul['renewalperiod'];?>" required>									
+										<input type="number" name="renewalperiod" class="form-control" id="inputrenperiod" value="<?php echo $rul['renewalperiod'];?>" required min="0">									
 									</div>
 								</div>	
 								<div class="d-grid gap-2 d-md-flex justify-content-md-center">
@@ -171,17 +174,22 @@ else{
                                 </div>
 					 
 							</fieldset>
-						</form>						
-											
-					</div>					
+						</form>												
+					</div>	
+					<?php include('includes/footer.php');?>  
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>   
 	
+	<script src="js/jquery-3.7.0.js"></script>
+	<script src="js/jquery.dataTables.min.js"></script>
+	<script>
+		new DataTable('#dataTables');  
+	</script>
 </body>
 </html>
 <?php 
 mysqli_close($dbcon);
-} ?>
+} 
+?>

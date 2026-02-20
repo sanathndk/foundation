@@ -1,6 +1,9 @@
 <?php
 session_start();
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "change-password");
 error_reporting(0);
 $token=rand();
 if(strlen($_SESSION['alogin'])==0) {   
@@ -56,7 +59,7 @@ else{
     <meta name="author" content="AS Indika" />
     <link rel="icon" href="img/logo.png" type="image/png">
 
-    <title>Change Password | Foundation Library Management System</title>
+    <title>Change Password | Library Management System</title>
    
   <style>
     .errorWrap {
@@ -143,7 +146,7 @@ return true;
 
             <div class="row p-2">
               <div class="col-sm-2 text-end">
-                <label class="form-label">Enter New Password</label>
+                <label class="form-label">New Password:</label>
               </div>
               <div class="col-sm-4">
                 <input class="form-control" type="password" name="newpassword" autocomplete="off" required  />
@@ -153,16 +156,18 @@ return true;
 
             <div class="row p-2">
               <div class="col-sm-2 text-end">
-                <label class="form-label">Confirm Password </label>
+                <label class="form-label">Confirm Password: </label>
               </div>
               <div class="col-sm-4">
                 <input class="form-control"  type="password" name="confirmpassword" autocomplete="off" required  />
-                <button type="submit" name="change" class="btn btn-danger">Chnage </button>
+                <button type="submit" name="change" class="btn btn-danger">Change </button>
               </div>
             </div>
             </fieldset>
           </form>
         </div>
+        <br><br><br><br><br><br><br><br>
+        <?php include('includes/footer.php');?>
       </div>
     </div>
   </div>  
@@ -170,7 +175,7 @@ return true;
            
   </div>
      <!-- CONTENT-WRAPPER SECTION END-->
- <?php include('includes/footer.php');?>
+ 
 
 </body>
 </html>

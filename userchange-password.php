@@ -1,6 +1,9 @@
 <?php
 session_start();
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Userchange_password");
 error_reporting(0);
 $token=rand();
 if(strlen($_SESSION['alogin'])==0) {   
@@ -55,8 +58,9 @@ else{
     <meta name="description" content="" />
     <meta name="author" content="AS Indika" />
     <link rel="icon" href="img/logo.png" type="image/png">
+    
 
-    <title>Change Password | Foundation Library Management System</title>
+    <title>Change Password |Library Management System</title>
    
   <style>
     .errorWrap {
@@ -161,6 +165,8 @@ return true;
             </fieldset>
           </form>
         </div>
+        <br><br><br><br><br><br><br><br>
+        <?php include('includes/footer.php');?>
       </div>
     </div>
   </div>  
@@ -168,7 +174,7 @@ return true;
            
   </div>
      <!-- CONTENT-WRAPPER SECTION END-->
- <?php include('includes/footer.php');?>
+ 
 
 </body>
 </html>

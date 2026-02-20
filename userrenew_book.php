@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "User_bookrenew");
 $token=rand();
 if(strlen($_SESSION['alogin'])==0){   
 	header('location:index.php');
@@ -68,9 +71,8 @@ $_SESSION['csrf_token']=$token;
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Renew a Book | Foundation Library Management System</title>
+    <title>Renew a Book |Library Management System</title>
 	<link rel="icon" href="img/logo.png" type="image/png">
-
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">       
@@ -131,12 +133,14 @@ $_SESSION['csrf_token']=$token;
 							</fieldset>														
 						</form>						
 				</div> 
+				<br><br><br><br><br><br><br><br><br><br><br><br>
+				<?php include('includes/footer.php');?>
 			</div>
 		</div>
 	</div>
 
 	<div class="col"> 
-		<?php include('includes/footer.php');?>                    
+		                    
 	</div>   	
 
 </body>

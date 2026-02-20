@@ -1,10 +1,12 @@
 <?php 
 
-$dbcon=mysqli_connect('localhost','root','','foundation');
+$dbcon=mysqli_connect('localhost','root','','dscsc_lib');
 
 if(!$dbcon) {
    echo "<script>alert ('DB Not connected'.mysqli_error($dbcon))</script>";
 }
+
+$dbcon->set_charset("utf8mb4");
 
 // Function to secure against Cross-Site Scripting (XSS) attacks
 // function secureXSS($text){

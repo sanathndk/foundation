@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "cateloging");
 $token=rand();
 
 if(strlen($_SESSION['alogin'])==0)
@@ -12,9 +15,12 @@ else{
 	if(isset($_POST['btnsave'])){
 
     if ($_SESSION['csrf_token']==$_POST['csrf_token']) {
-      // Save Record
+      // Get number of books to add
+      $numberOfBooks = isset($_POST['inputmultiple']) ? intval($_POST['inputmultiple']) : 1;
+      
+      // Get all form data
       $image=$_FILES['image'];      
-      $booknumber=$_POST['booknumber'];
+      $baseBooknumber=$_POST['booknumber'];
       $itemtype=$_POST['itemtype'];
       $title=$_POST['title'];
       $isbn=$_POST['isbn'];
@@ -37,55 +43,92 @@ else{
       $status=$_POST['status'];
       $checkedin=1;
       
-    // Find the Book ID is already taken?
-      $sql = "SELECT * FROM catalog WHERE booknumber = '$booknumber'";
-      $result = mysqli_query($dbcon, $sql);
-      $count = mysqli_num_rows($result);
-
-    if ($count > 0) {
-      $error = "Sorry, the Number '$booknumber' is already taken.";
-    } else {   
+      // Counters for success and errors
+      $successCount = 0;
+      $errorMessages = array();
+      $successMessages = array();
+      
+      // Loop to add multiple books
+      for($i = 0; $i < $numberOfBooks; $i++) {
+        // Generate unique book number for each copy
+        if($i == 0) {
+          $booknumber = $baseBooknumber;
+        } else {
+          // Auto-increment book number (you can customize this logic)
+          $booknumber = $baseBooknumber . '-' . ($i + 1);
+        }
         
-      if (empty($image['size'])) {
-        $sql="INSERT INTO `catalog`(`booknumber`, `itemtype`, `title`, `isbn`, `issn`, `author`, `author2`, `Language`, `category`, `editionnumber`, `classificationNo`, `ItemNo`, `publisher`, `placeofpublisher`, `publicationyear`, `volume`, `pages`, `price`, `dateacquired`, `collectioncode`, `status`, `checkedin`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        $result=mysqli_prepare($dbcon, $sql);
-          mysqli_stmt_bind_param($result,'ssssssssssssssssssssss', $booknumber, $itemtype, $title, $isbn, $issn, $author, $author2, $language, $category, $editionnumber, $classificationNo, $itemno, $publisher, $placeofpublisher, $publicationyear, $volume, $pages, $price, $dateacquired, $collectioncode, $status, $checkedin);
-          
-          if (mysqli_stmt_execute($result)) {
-            $msg = 'Book registed successfuly. <strong>Book id is '.$booknumber.'<strong>'; 
-            // header('location:cataloging.php');
-          } else{
-              $error1 = '<strong>Something went wrong please try again<strong>'; 
-          }       
-      }elseif ($image['size']<=200000) {
+        // Check if book number already exists
+        $sql = "SELECT * FROM catalog WHERE booknumber = '$booknumber'";
+        $result = mysqli_query($dbcon, $sql);
+        $count = mysqli_num_rows($result);
 
-            $imagedetails=pathinfo($image['name']);
-            $allwextention=array('jpg','jpeg','png');
+        if ($count > 0) {
+          $errorMessages[] = "Book number '$booknumber' already exists";
+          continue; // Skip this iteration
+        }
+        
+        // Handle image upload (only for first book or if you want same image for all)
+        $filepath = '';
+        if ($i == 0 && !empty($image['size'])) {
+          if ($image['size'] <= 200000) {
+            $imagedetails = pathinfo($image['name']);
+            $allwextention = array('jpg','jpeg','png');
 
-            if (in_array($imagedetails['extension'],$allwextention)) {
-              $filepath='img/'.uniqid().'.'.$imagedetails['extension'];
-              if (move_uploaded_file($image['tmp_name'],$filepath)) {
-                $sql="INSERT INTO `catalog`(`booknumber`, `itemtype`, `title`, `isbn`, `issn`, `author`, `author2`, `Language`, `category`, `editionnumber`, `classificationNo`, `ItemNo`, `publisher`, `placeofpublisher`, `publicationyear`, `volume`, `pages`, `price`, `dateacquired`, `collectioncode`, `status`, `checkedin`, `img`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-                $result=mysqli_prepare($dbcon, $sql);
-                  mysqli_stmt_bind_param($result,'sssssssssssssssssssssss', $booknumber, $itemtype, $title, $isbn, $issn, $author, $author2, $language, $category, $editionnumber, $classificationNo, $itemno, $publisher, $placeofpublisher, $publicationyear, $volume, $pages, $price, $dateacquired, $collectioncode, $status, $checkedin, $filepath);
-                  
-                  if (mysqli_stmt_execute($result)) {
-                    $msg = 'Book registed successfuly. <strong>Book id is '.$booknumber.'<strong>'; 
-                    // header('location:cataloging.php');
-                  } else{
-                      $error1 = '<strong>Something went wrong please try again<strong>'; 
-                  }               
+            if (in_array($imagedetails['extension'], $allwextention)) {
+              $filepath = 'img/' . uniqid() . '.' . $imagedetails['extension'];
+              if (!move_uploaded_file($image['tmp_name'], $filepath)) {
+                $filepath = '';
+                $errorMessages[] = "Failed to upload image";
               }
-          }else{
-            $error1 = '<strong>Should be add image file only<strong>'; 
+            } else {
+              $errorMessages[] = "Invalid image format";
+            }
+          } else {
+            $errorMessages[] = "Image size should be less than 200 KB";
           }
-
-        }else{
-          $error1 = '<strong>Image should be less than 200 KB<strong>'; 
-        }        
+        }
+        
+        // Insert book into database
+        if(empty($filepath)) {
+          $sql = "INSERT INTO `catalog`(`booknumber`, `itemtype`, `title`, `isbn`, `issn`, `author`, `author2`, `Language`, `category`, `editionnumber`, `classificationNo`, `ItemNo`, `publisher`, `placeofpublisher`, `publicationyear`, `volume`, `pages`, `price`, `dateacquired`, `collectioncode`, `status`, `checkedin`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          $stmt = mysqli_prepare($dbcon, $sql);
+          mysqli_stmt_bind_param($stmt,'ssssssssssssssssssssss', $booknumber, $itemtype, $title, $isbn, $issn, $author, $author2, $language, $category, $editionnumber, $classificationNo, $itemno, $publisher, $placeofpublisher, $publicationyear, $volume, $pages, $price, $dateacquired, $collectioncode, $status, $checkedin);
+        } else {
+          $sql = "INSERT INTO `catalog`(`booknumber`, `itemtype`, `title`, `isbn`, `issn`, `author`, `author2`, `Language`, `category`, `editionnumber`, `classificationNo`, `ItemNo`, `publisher`, `placeofpublisher`, `publicationyear`, `volume`, `pages`, `price`, `dateacquired`, `collectioncode`, `status`, `checkedin`, `img`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          $stmt = mysqli_prepare($dbcon, $sql);
+          mysqli_stmt_bind_param($stmt,'sssssssssssssssssssssss', $booknumber, $itemtype, $title, $isbn, $issn, $author, $author2, $language, $category, $editionnumber, $classificationNo, $itemno, $publisher, $placeofpublisher, $publicationyear, $volume, $pages, $price, $dateacquired, $collectioncode, $status, $checkedin, $filepath);
+        }
+        
+        if (mysqli_stmt_execute($stmt)) {
+          $successCount++;
+          $successMessages[] = $booknumber;
+        } else {
+          $errorMessages[] = "Failed to add book '$booknumber'";
+        }
+        mysqli_stmt_close($stmt);
       }
-    }else{
-          echo "<script>Alert('Invalied Authantication'))<script>";	
+      
+      // Display results
+      if($successCount > 0) {
+        $msg = "<strong>Successfully added $successCount book(s)!</strong><br>";
+        $msg .= "Book IDs: " . implode(", ", $successMessages);
+        
+        // Store book IDs for barcode generation
+        $allBookIds = implode(",", $successMessages);
+        echo "<script>
+                if(confirm('Books added successfully! Do you want to download all barcodes now?')) {
+                    window.open('barcode_generator.php?print=1&ids=" . urlencode($allBookIds) . "', '_blank');
+                }
+              </script>";
+      }
+      
+      if(count($errorMessages) > 0) {
+        $error1 = "<strong>Errors:</strong><br>" . implode("<br>", $errorMessages);
+      }
+      
+    } else {
+      echo "<script>alert('Invalid Authentication')</script>";	
     }
 	}	
 $_SESSION['csrf_token']=$token;
@@ -97,7 +140,7 @@ $_SESSION['csrf_token']=$token;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="img/logo.png" type="image/png">
-  	<title>Cataloging | Foundation Library Management System</title>
+  	<title>Cataloging |  Library Management System</title>
 </head>
 <body>
 <body class="top-navbar-fixed">
@@ -149,20 +192,31 @@ $_SESSION['csrf_token']=$token;
                           <div class="col-sm-2 text-end"></div>
                           <div class="col-sm-2 text-end">         
                             <input type="file" class="form-control" id="image" name="image">
-                          </div>               
+                          </div>     
+
+                          <div class="col-sm-4 text-end">
+                            <label for="inputmultiple" class="form-label">Add multiple Books:<i class="text-danger font-weight-bold">*</i></label>
+                          </div>
+                          <div class="col-sm-3">
+                            <input type="number" class="form-control" id="inputmultiple" name="inputmultiple" min="1" value="1"  max="100"required>
+                            <small class="text-muted">Enter number of copies to add</small>            
+                          </div>
+
                         </div>  
+
                         <div class="row p-2">  
                           <div class="col-sm-2 text-end"></div>
-                          <div class="col-sm-4 text-danger">         
+                          <div class="col-sm-8 text-danger">         
                             <span><?php echo $error1?></span>
                           </div>               
                         </div> 
                         <div class="row p-2">
                           <div class="col-sm-2 text-end">
-                            <label for="inputType" class="form-label">Item  Type:</label>       
+                            <label for="inputType" class="form-label">Item Type:</label>       
                           </div>
                           <div class="col-sm-4">        
-                            <select id="inputType" class="form-select" name ="itemtype" required> 
+                            <select id="inputType" class="form-select" name ="itemtype" onchange="getBarcode(this.value)"> 
+                            <option value="" selected>Select Item Type</option>
                             <!-- Load Item Type in database -->
                               <?php
                                 $sql=mysqli_query($dbcon, "SELECT * FROM `itemtypes`");
@@ -186,10 +240,11 @@ $_SESSION['csrf_token']=$token;
 
                         <div class="row p-2">
                           <div class="col-sm-2 text-end">
-                            <label for="inputBarcode" class="form-label">Barcode:<i class="text-danger font-weight-bold">*</i></label>
+                            <label for="inputBarcode" class="form-label">Base Barcode:<i class="text-danger font-weight-bold">*</i></label>
                           </div>
                           <div class="col-sm-4">
                             <input type="text" class="form-control" id="inputBarcode" name="booknumber" required>
+                            <small class="text-muted">Multiple books will use: BASE, BASE-2, BASE-3, etc.</small>
                             <?php if (isset($error)): ?>
                                <span class="badge bg-danger fs-6"><?php echo $error; ?></span>
                            <?php endif; ?>
@@ -199,7 +254,7 @@ $_SESSION['csrf_token']=$token;
                             <label for="inputISBN" class="form-label">ISBN:</label>
                           </div>
                           <div class="col-sm-4">
-                            <input type="number" class="form-control" id="inputISBN" name="isbn">
+                            <input type="number" class="form-control" id="inputISBN" maxlength="13" name="isbn" placeholder="10 or 13 digits">
                           </div>
                         </div>
 
@@ -208,7 +263,7 @@ $_SESSION['csrf_token']=$token;
                             <label for="inputISSN" class="form-label">ISSN:</label>
                           </div>
                           <div class="col-sm-4">
-                            <input type="text" class="form-control" id="inputISSN" name="issn">
+                            <input type="text" class="form-control" id="inputISSN" maxlength="8" name="issn" placeholder="8 digits">
                           </div>
                       
                           <div class="col-sm-2 text-end">
@@ -277,7 +332,7 @@ $_SESSION['csrf_token']=$token;
                             <label for="inputClasfNo" class="form-label">Classification number:<i class="text-danger font-weight-bold">*</i></label>
                           </div>
                           <div class="col-sm-4">
-                            <input type="number" class="form-control" id="inputClasfNo" placeholder="898.02" step="0.01" value="<?php echo $row['categorycode'] ?>" name="classificationNo" required> 
+                            <input type="number" class="form-control" id="inputClasfNo" placeholder="898.02" step="0.01" name="classificationNo" required> 
                           </div>
                        
                           <div class="col-sm-2 text-end">        
@@ -317,7 +372,15 @@ $_SESSION['csrf_token']=$token;
                             <label for="inputYear" class="form-label">Year:</label>
                           </div>
                           <div class="col-sm-4">
-                            <input type="year" class="form-control" id="inputYear" name="publicationyear">
+                            <select class="year" class="form-control" id="inputYear" name="publicationyear">
+                                <option value="">Select Year</option>
+                                <?php
+                                    $currentYear = date('Y');
+                                    for ($year = $currentYear; $year >= 1950; $year--) {
+                                        echo "<option value='$year'>$year</option>";
+                                    }
+                                    ?>
+                            </select>
                           </div>
                        
                           <div class="col-sm-2 text-end">        
@@ -374,10 +437,49 @@ $_SESSION['csrf_token']=$token;
                               <option value="L">Lost</option>
                               <option value="D">Damage</option> 
                             </select>
-                          </div>            
+                          </div>      
+                          
+                                
+                            <div class="col-sm-4 text-end">
+                              <label for="inputBarcode" class="form-label">Generate Barcodes:</label>  
+                            </div>
+                                <div class="col-sm-4">
+                                    <button type="button" onclick="downloadSingleBarcode()" class="btn btn-secondary btn-md">Download Single</button>
+                                    <button type="button" onclick="previewBarcodes()" class="btn btn-info btn-md">Preview All</button>
+                                      <script>
+                                      function downloadSingleBarcode() {
+                                          let bookId = document.getElementById("inputBarcode").value.trim();
+                                          if (bookId === "") {
+                                              alert("Please enter the Book Number first.");
+                                              return;
+                                          }
+                                          window.open("barcode_generator.php?print=1&ids=" + encodeURIComponent(bookId), '_blank');
+                                      }
+                                      
+                                      function previewBarcodes() {
+                                          let baseBookId = document.getElementById("inputBarcode").value.trim();
+                                          let numBooks = parseInt(document.getElementById("inputmultiple").value) || 1;
+                                          
+                                          if (baseBookId === "") {
+                                              alert("Please enter the Book Number first.");
+                                              return;
+                                          }
+                                          
+                                          // Generate all book IDs
+                                          let bookIds = [baseBookId];
+                                          for(let i = 1; i < numBooks; i++) {
+                                              bookIds.push(baseBookId + '-' + (i + 1));
+                                          }
+                                          
+                                          // Open barcode generator with all IDs
+                                          window.open("barcode_generator.php?print=1&ids=" + encodeURIComponent(bookIds.join(',')), '_blank');
+                                      }
+                                      </script>
+                                </div>
+                            </div>                                
                         </div>
                       </fieldset>     
-
+                      
                       <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                         <div class="col-sm-1">  
                           <input type="hidden" name="csrf_token" value="<?php echo $token?>">      
@@ -391,6 +493,23 @@ $_SESSION['csrf_token']=$token;
       </div>
     </div>
   </div> 
+
+  <script>
+    function getBarcode(typeCode) {
+        if (typeCode == "") {
+            document.getElementById("inputBarcode").value = "";
+            return;
+        }
+
+        const xhttp = new XMLHttpRequest();
+        xhttp.onload = function () {
+            document.getElementById("inputBarcode").value = this.responseText;
+        }
+        xhttp.open("GET", "itemtype_barcode.php?type=" + typeCode, true);
+        xhttp.send();
+    }
+</script>
+
 
 <script src="js/search.js"></script>
 

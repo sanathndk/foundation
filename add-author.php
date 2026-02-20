@@ -2,44 +2,64 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Add_author");
 $token=rand();
 if(strlen($_SESSION['alogin'])==0)
 {   
 	header('location:index.php');
 }
 else{ 
-	if(isset($_POST['btnsave'])){
-		if ($_SESSION['csrf_token']==$_POST['csrf_token']) {
-			// Save Record
-			$name=$_POST['name'];
-			$address=$_POST['address']; 
-			$country=$_POST['country']; 
-			$mobile=$_POST['mobile']; 
-			$email=$_POST['email']; 
-			$dob=$_POST['dob']; 
-			$dateofdied=$_POST['dateofdied']; 
-			$bio=$_POST['bio'];
-			$publications=$_POST['publications']; 
-			$awards=$_POST['awards']; 
-			$ref=$_POST['ref'];
-				
-			$sql="INSERT INTO `author`(`name`, `address`, `country`, `mobile`, `email`, `dob`, `dateofdied`, `bio`, `publications`, `awards`, `ref`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
-			$result=mysqli_prepare($dbcon, $sql);
-			
-			if ($result){
-				mysqli_stmt_bind_param($result,'sssssssssss',$name, $address, $country, $mobile, $email, $dob, $dateofdied, $bio, $publications, $awards, $ref);
-				if (mysqli_stmt_execute($result)) {
-					echo "<script>Alert('Record added successfully')</script>";
-					// header('location:add-publishers.php');
-				} else{
-					echo "Error inserting data: " .mysqli_error($dbcon);
-				}
-			} else{
-				echo "Error Connection: " .mysqli_error($dbcon);
-			}
-		}else{
-			echo "<script>Alert('Invalid authentication')</script>";
-		}
+	if (isset($_POST['btnsave'])) {
+    if ($_SESSION['csrf_token'] == $_POST['csrf_token']) {
+        // Get form data
+        $name = trim($_POST['name']);
+        $address = $_POST['address'];
+        $country = $_POST['country'];
+        $mobile = $_POST['mobile'];
+        $email = $_POST['email'];
+        $dob = $_POST['dob'];
+        $dateofdied = $_POST['dateofdied'];
+        $bio = $_POST['bio'];
+        $publications = $_POST['publications'];
+        $awards = $_POST['awards'];
+        $ref = $_POST['ref'];
+
+        // 🔍 Check if author name already exists
+        $check = mysqli_prepare($dbcon, "SELECT COUNT(*) FROM author WHERE name = ?");
+        mysqli_stmt_bind_param($check, 's', $name);
+        mysqli_stmt_execute($check);
+        mysqli_stmt_bind_result($check, $count);
+        mysqli_stmt_fetch($check);
+        mysqli_stmt_close($check);
+
+        if ($count > 0) {
+            //  Duplicate found
+            echo "<script>alert('This author name already exists! Please use a different name.');</script>";
+        } else {
+            //  Insert new record
+            $sql = "INSERT INTO `author`(`name`, `address`, `country`, `mobile`, `email`, `dob`, `dateofdied`, `bio`, `publications`, `awards`, `ref`)
+                    VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+            $result = mysqli_prepare($dbcon, $sql);
+
+            if ($result) {
+                mysqli_stmt_bind_param($result, 'sssssssssss', $name, $address, $country, $mobile, $email, $dob, $dateofdied, $bio, $publications, $awards, $ref);
+                if (mysqli_stmt_execute($result)) {
+                    echo "<script>alert('Author added successfully!');window.location.href='add-author.php';</script>";
+                    exit();
+                } else {
+                    echo "<script>alert('Error inserting data: " . mysqli_error($dbcon) . "');</script>";
+                }
+            } else {
+                echo "<script>alert('Error preparing statement: " . mysqli_error($dbcon) . "');</script>";
+            }
+        }
+    } else {
+        echo "<script>alert('Invalid authentication!');</script>";
+    }
+
+
 	// Delete Record	
 	}elseif($_GET['id']<>""){
 		$id=$_GET['id'];
@@ -61,7 +81,14 @@ $_SESSION['csrf_token']=$token;
 	<meta name="viewport" content="width=device-width, initial-scale=1">    
 	<link rel="icon" href="img/logo.png" type="image/png">
 
-	<title>Add Author | Foundation Library Management System</title>
+	<title>Add Author | Library Management System</title>
+
+	<style>
+	.is-invalid {
+    border-color: #dc3545;
+	}
+	</style>
+
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">
@@ -144,7 +171,7 @@ $_SESSION['csrf_token']=$token;
 										<label for="inputyearborn" class="form-label">Year born:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" class="form-control" id="inputyearborn" name="dob">
+										<input type="number" class="form-control" id="inputyearborn" name="dob"required>
 									</div>
 								</div>                                
 
@@ -153,7 +180,11 @@ $_SESSION['csrf_token']=$token;
 										<label for="inputyeardied" class="form-label">Year died:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" class="form-control" id="inputyeardied" name="dateofdied">
+										<input type="number" class="form-control" id="inputyeardied" name="dateofdied"required>
+											<small class="text-danger d-none" id="diedError">
+												Year died cannot be earlier than year born
+											</small>
+
 									</div>
 								</div>
 
@@ -199,12 +230,12 @@ $_SESSION['csrf_token']=$token;
 							</fieldset>
 						</form>						
 						<div class="row justify-content-md-center"> 
-							<div class="col-sm-10">
+							<div class="col-sm-8">
 								<h3>List of Author</h3>
 							</div>
 						</div>
 						<div class="row justify-content-md-center">							
-							<div class="col-sm-10">			
+							<div class="col-sm-8">			
 								<table class="table table-striped table-bordered table-hover align-middle table-responsive" id="dataTables">										
 									<thead>
 										<tr class="text-center">
@@ -235,8 +266,8 @@ $_SESSION['csrf_token']=$token;
 											<td><?php echo $row["mobile"]?></td>
 											<td><?php echo $row["email"]?></td>
 											<td class="text-center">
-												<a href="edit_author.php?id=<?php echo $row['authorid']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i>&nbsp;Edit</a>
-												<a href="add-author.php?id=<?php echo $row['authorid']; ?>" onclick="return confirm('Are your sure Delete this record?');" class="btn btn-danger btn-sm" name="btndelete"><i class="bi bi-trash3"></i>&nbsp;Delete</a>
+												<a href="edit_author.php?id=<?php echo $row['authorid']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i></a>
+												<a href="add-author.php?id=<?php echo $row['authorid']; ?>" onclick="return confirm('Are your sure Delete this record?');" class="btn btn-danger btn-sm" name="btndelete"><i class="bi bi-trash3"></i></a>
 											</td>
 										</tr>
 										<?php
@@ -247,12 +278,13 @@ $_SESSION['csrf_token']=$token;
 								</table>	
 							</div>														
 						</div>						
-					</div>					
+					</div>	
+					<?php include('includes/footer.php');?> 				
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>   
+	  
 	<!-- <script src="js/search.js"></script> -->
 
 	<script src="js/jquery-3.7.0.js"></script>
@@ -261,42 +293,82 @@ $_SESSION['csrf_token']=$token;
 	<script>
 		new DataTable('#dataTables');  
 		
-function country(str,resultContainerId) {  
-    var resultContainerId="c";
-    if (str.length == 0) {
-        document.getElementById("resultcountry").innerHTML = "";
-        document.getElementById("resultcountry").style.display = "none";
-        return;
-    } else {
-        var xmlhttp = new XMLHttpRequest();
+		function country(str,resultContainerId) {  
+			var resultContainerId="c";
+			if (str.length == 0) {
+				document.getElementById("resultcountry").innerHTML = "";
+				document.getElementById("resultcountry").style.display = "none";
+				return;
+			} else {
+				var xmlhttp = new XMLHttpRequest();
 
-        xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("resultcountry").innerHTML = this.responseText;
-                document.getElementById("resultcountry").style.display = "block";
-            }
-        };
-        xmlhttp.open("GET", "search.php?q=" + str + "&field=" + resultContainerId, true);
-        xmlhttp.send();
-    }
-}
+				xmlhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						document.getElementById("resultcountry").innerHTML = this.responseText;
+						document.getElementById("resultcountry").style.display = "block";
+					}
+				};
+				xmlhttp.open("GET", "search.php?q=" + str + "&field=" + resultContainerId, true);
+				xmlhttp.send();
+			}
+		}
 
-// Event listener for input changes
-document.getElementById("country").addEventListener("input", function() {
-    country(this.value);
+			// Event listener for input changes
+			document.getElementById("country").addEventListener("input", function() {
+				country(this.value);
 
-});
+			});
 
-// Event listener to handle result item clicks
-document.getElementById("resultcountry").addEventListener("click", function(e) {
-    if (e.target.classList.contains("result-item")) {
-        document.getElementById("country").value = e.target.textContent;
-        this.style.display = "none";
+			// Event listener to handle result item clicks
+			document.getElementById("resultcountry").addEventListener("click", function(e) {
+				if (e.target.classList.contains("result-item")) {
+					document.getElementById("country").value = e.target.textContent;
+					this.style.display = "none";
 
-    }
-});
+				}
+			});
 	</script>
 	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const form = document.querySelector('form[name="signup"]');
+			const bornInput = document.getElementById('inputyearborn');
+			const diedInput = document.getElementById('inputyeardied');
+			const diedError = document.getElementById('diedError');
+
+			form.addEventListener('submit', function (e) {
+				let born = parseInt(bornInput.value) || 0;
+				let died = parseInt(diedInput.value) || 0;
+
+				// reset previous error
+				diedInput.classList.remove('is-invalid');
+				diedError.classList.add('d-none');
+
+				// validation: died < born
+				if (died < born) {
+					e.preventDefault(); // STOP submit
+					diedInput.classList.add('is-invalid');
+					diedError.classList.remove('d-none');
+				}
+			});
+
+			// clear error while typing
+			diedInput.addEventListener('input', function () {
+				this.classList.remove('is-invalid');
+				diedError.classList.add('d-none');
+			});
+		});
+	</script>
+
+
+
+
+
+
+
+
+
+
 </body>
 </html>
 <?php 

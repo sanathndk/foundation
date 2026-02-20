@@ -1,6 +1,10 @@
 <?php
 session_start();
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "login");
+
 $token=rand();
 if(isset($_POST['login'])){
 
@@ -22,6 +26,19 @@ if(isset($_POST['login'])){
           $_SESSION['user_group'] = $row['categorycode'];
           $_SESSION['user_name'] = $row['initials'].' '.$row['surname'];
           $_SESSION['image'] = $row['img'];
+
+          $ip = $_SERVER['REMOTE_ADDR']; // Get user IP
+          $loginTime = date('Y-m-d H:i:s'); // Current time
+          $sessionId = session_id(); // Unique session
+          $_SESSION['session_id'] = $sessionId; // Save for logout
+
+          // Insert login info into user_logs
+          $logSql = "INSERT INTO user_logs (username, ip_address, login_time, session_id) 
+                    VALUES (?, ?, ?, ?)";
+          $logStmt = $dbcon->prepare($logSql);
+          $logStmt->bind_param("ssss", $row['userid'], $ip, $loginTime, $sessionId);
+          $logStmt->execute();
+
           
           if ($_SESSION['user_group']=="Staff") {
             header('Location: dashboard.php');
@@ -40,147 +57,98 @@ if(isset($_POST['login'])){
   }
 }
 $_SESSION['csrf_token']=$token;
-
 ?>
-
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="auto">
+<html lang="en" data-bs-theme="dark">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="AS Indika">
-    <meta name="generator" content="Hugo 0.118.2">
-    <title>User Loging | Foundation Library Management System</title>   
-    <link rel="icon" href="img/logo.png" type="image/png">
-    <link href="css/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">   
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-      
-    <style>
-      html,
-      body {
-        height: 100%;
-        background-color: #3c3c3c;
-        color:white;
-      }
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login |  Library Management System</title>
+  <link rel="icon" href="img/logo.png" type="image/png">
 
-      .form-signin {
-        max-width: 330px;
-        padding: 1rem;
-      }
+  <!-- Bootstrap CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
 
-      .form-signin .form-floating:focus-within {
-        z-index: 2;
-      }
+  <!-- Bootstrap Icons -->
+  <link href="font/bootstrap-icons.css" rel="stylesheet">
 
-      .form-signin input[type="email"] {
-        margin-bottom: -1px;
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-      }
+  <!-- AdminLTE (Optional if needed) -->
+  <link rel="stylesheet" href="css/adminlte.css">
 
-      .form-signin input[type="password"] {
-        margin-bottom: 10px;
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
-      }
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
+  <style>
+    body {
+      background-color: #3c3c3c;
+      color: white;
+    }
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
+    .login-container {
+      max-width: 400px;
+      margin: auto;
+      padding: 2rem;
+      background-color: #212529;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+    }
 
-      .b-example-divider {
-        width: 100%;
-        height: 3rem;
-        background-color: rgba(0, 0, 0, .1);
-        border: solid rgba(0, 0, 0, .15);
-        border-width: 1px 0;
-        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-      }
+    .login-container img {
+      max-width: 60%;
+      margin-bottom: 1rem;
+    }
 
-      .b-example-vr {
-        flex-shrink: 0;
-        width: 1.5rem;
-        height: 100vh;
-      }
+    .login-container .form-control:focus {
+      box-shadow: none;
+    }
 
-      .bi {
-        vertical-align: -.125em;
-        fill: currentColor;
-      }
-
-      .nav-scroller {
-        position: relative;
-        z-index: 2;
-        height: 2.75rem;
-        overflow-y: hidden;
-      }
-
-      .nav-scroller .nav {
-        display: flex;
-        flex-wrap: nowrap;
-        padding-bottom: 1rem;
-        margin-top: -1px;
-        overflow-x: auto;
-        text-align: center;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      .bd-mode-toggle {
-        z-index: 1500;
-      }
-
-      .bd-mode-toggle .dropdown-menu .active .bi {
-        display: block !important;
-      }
-      </style>
+    .login-container p {
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
-<body class="d-flex align-items-center py-4">    
-    <main class="form-signin w-100 m-auto">   
+<body class="d-flex align-items-center min-vh-100">
+  <main class="login-container text-center">
 
-        <form method="post">
-            <div class="col-md-auto text-center">
-                <img class="mb-4" src="img/logo.png" alt="Foundation" width="72" height="68">
-            </div>
-            <h1 class="h3 mb-3 fw-normal">Sign in</h1>
+    <form method="post">
+      <img src="img/Army_Logo.png" alt="Army Logo">
 
-            <div class="form-floating">
-              <input type="text" class="form-control" id="floatingInput" name="username" required placeholder="username">
-              <label for="floatingInput">User Name</label>
-            </div>
-            <div class="form-floating">
-              <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" required>
-              <label for="floatingPassword">Password</label>
-              <input type="hidden" name="csrf_token" value="<?php echo $token?>">
-            </div>
+      <h5 class="mb-3">User Login</h5>
 
-            <div class="form-check text-start my-3">
-              <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
-              <label class="form-check-label" for="flexCheckDefault">Remember me </label>
-            </div>
-            <button class="btn btn-primary w-100 py-2" type="submit" name="login">Sign in</button>
-        </form>
-        <div class="form-floating text-center">
-        <br>
-          <?php if (isset($error)): ?>
-            <p class="badge bg-danger fs-6"><?php echo $error; ?></p>
-          <?php endif; ?>
-          <p class="mt-5 mb-3">&copy;Foundation - 2023</p>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="floatingUsername" name="username" placeholder="Username" required>
+        <label for="floatingUsername">User Name</label>
+      </div>
+
+      <div class="form-floating mb-3">
+        <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" required>
+        <label for="floatingPassword">Password</label>
+      </div>
+
+      <input type="hidden" name="csrf_token" value="<?php echo $token; ?>">
+
+      <div class="form-check text-start mb-3">
+        <input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
+        <label class="form-check-label" for="rememberMe">Remember me</label>
+      </div>
+
+      <button class="btn btn-primary w-100" type="submit" name="login">
+        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+      </button>
+
+      <?php if (isset($error)): ?>
+        <div class="alert alert-danger mt-3 py-1" role="alert">
+          <?php echo $error; ?>
         </div>
+      <?php endif; ?>
 
-    </main>
+      <p class="mt-4 text-muted small">Software Solution by Dte of IT - SL Army</p>
+    </form>
+
+  </main>
+
+  <!-- Bootstrap Bundle JS -->
+  <script src="/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 
 <?php
     // Close the database connection

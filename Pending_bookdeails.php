@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Pending_bookdeails");
 if(strlen($_SESSION['alogin'])==0){   
     header('location:index.php');
 }
@@ -19,7 +22,7 @@ else{
     <link rel="stylesheet" href="css/jquery.dataTables.min.css">  
     <link rel="icon" href="img/logo.png" type="image/png">
 
-    <title>Total Issued Books | Foundation Library Management System</title>
+    <title>Total Issued Books | Library Management System</title>
 
 </head>
 <body class="top-navbar-fixed">
@@ -64,10 +67,8 @@ else{
                                                 <thead>
                                                     <tr>
                                                         <th>Ser</th>
-                                                        <th>Book ID</th>
-                                                        <th>Book Name</th>
-                                                        <th>Member Name</th>
-                                                        <th>ISBN </th>
+                                                        <th>Member ID</th>
+                                                        <th>Book ID</th>                                                   
                                                         <th>Issued Date</th>
                                                         <th>Return Date</th>
                                                     </tr>
@@ -76,17 +77,15 @@ else{
                                                 
                                             <?php 
 
-                                            $query = mysqli_query($dbcon,"SELECT * from `issuedbook_view` WHERE `RetrunStatus`=0");
+                                            $query = mysqli_query($dbcon,"SELECT * from `issuedbook` WHERE `RetrunStatus`=0");
                                             if(mysqli_num_rows($query) > 0)
                                             {                                                
                                                 while ($row=mysqli_fetch_array($query)) 
                                                 {  $cnt++;?>                                      
                                                 <tr>
                                                     <td class="text-center"><?php echo htmlentities($cnt);?></td>
-                                                    <td><?php echo $row['booknumber'];?></td>
-                                                    <td><?php echo $row['title'];?></td>                                                    
-                                                    <td><?php echo $row['initials'].' '.$row['surname'];?></td>
-                                                    <td><?php echo $row['isbn'];?></td>
+                                                    <td><?php echo $row['membernumber'];?></td>
+                                                    <td><?php echo $row['booknumber'];?></td>                                                          
                                                     <td><?php echo $row['IssuesDate'];?></td>
                                                     <td><?php echo $row['ReturnDate'];?></td>                                                                                        
                                                 </tr>
@@ -123,6 +122,7 @@ else{
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ]
+             
         } );
     } );
 

@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Add_membergroup");
 if(strlen($_SESSION['alogin'])==0)
 {   
 	header('location:index.php');
@@ -14,21 +17,29 @@ else{
 		$description=$_POST['description'];
 		$enrollmentfee=$_POST['enrollmentfee'];
 		$limitation=$_POST['limitation'];		
+
+		if(strlen($description) > 100) {
+        echo "<script>alert('Description cannot exceed 100 characters.'); window.history.back();</script>";
+        exit();
+    }
 		
 		$sql="INSERT INTO `membergroups`(`categorycode`, `description`, `enrollmentfee`, `limitation`) VALUES (?,?,?,?)";
 		$result=mysqli_prepare($dbcon, $sql);
 		
 		if ($result){
 			mysqli_stmt_bind_param($result,'ssss',$categorycode, $description, $enrollmentfee, $limitation);
+
 			if (mysqli_stmt_execute($result)) {
-				echo "Record updated successfully";
-				header('location:add-membergroup.php');
+				echo "<script>alert('Record added successfully!');window.location = 'add-membergroup.php';</script>";
+				exit();
+				
 			} else{
-				echo "Error inserting data: " .mysqli_error($dbcon);
+				echo "<script>alert(' Error inserting data: " . mysqli_error($dbcon) . "');</script>";
 			}
 		} else{
-			echo "Error Connection: " .mysqli_error($dbcon);
+			echo "<script>alert(' Database error: " . mysqli_error($dbcon) . "');</script>";
 		}
+
 	// Delete Record		
 	}elseif($_GET['id']<>""){
 		$id=$_GET['id'];
@@ -49,7 +60,7 @@ else{
 	<meta name="viewport" content="width=device-width, initial-scale=1">    
 	<link rel="icon" href="img/logo.png" type="image/png">
 
-	<title>Add Member Groups | Foundation Library Management System</title>
+	<title>Add Member Groups | Library Management System</title>
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">
@@ -89,7 +100,7 @@ else{
 							<fieldset class="border">                                
 							<div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputcategorycode" class="form-label">Group code:</label>
+										<label for="inputcategorycode" class="form-label">Group Code:</label>
 									</div>
 									<div class="col-sm-4">
 										<input type="text" class="form-control" id="inputcategorycode" name="categorycode" required>
@@ -99,20 +110,20 @@ else{
 										<label for="inputdescription" class="form-label">Description:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="text" class="form-control" id="inputdescription" name="description" required>
+										<input type="text" class="form-control" id="inputdescription" name="description" required maxlength="100" placeholder="Enter Description (max 100 characters)">
 									</div>
 								</div>		
 
                                 <div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputenrollmentfee" class="form-label">Enrollment fee:</label>
+										<label for="inputenrollmentfee" class="form-label">Enrollment Fee:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="enrollmentfee" class="form-control" id="enrollmentfee" step="0.00" required>
+										<input type="number" name="enrollmentfee" class="form-control" id="enrollmentfee" step="0.00" required min="0">
 									</div>
 								
 									<div class="col-sm-2 text-end">
-										<label for="inputlimitation" class="form-label">Library limitations:</label>
+										<label for="inputlimitation" class="form-label">Library Limitations:</label>
 									</div>
 									<div class="col-sm-4">
 
@@ -175,8 +186,8 @@ else{
 											<td><?php echo $row["enrollmentfee"]?></td>
 											<td><?php echo $row["limitation"]?></td>
 											<td class="text-center">
-												<a href="edit_membergroup.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i>&nbsp;Edit</a>
-												<a href="add-membergroup.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are your sure Delete this record?');" name="btndelete"><i class="bi bi-trash3"></i>&nbsp;Delete</a>
+												<a href="edit_membergroup.php?id=<?php echo $row['id']; ?>" class="btn btn-warning btn-sm" name="btnedit"><i class="bi bi-pencil-square"></i></a>
+												<a href="add-membergroup.php?id=<?php echo $row['id']; ?>" class="btn btn-danger btn-sm" onclick="return confirm('Are your sure Delete this record?');" name="btndelete"><i class="bi bi-trash3"></i></a>
 											</td>
 										</tr>
 										<?php
@@ -186,57 +197,28 @@ else{
 									</tbody>
 								</table>	
 							</div>														
-						</div>						
-					</div>					
+						</div> 
+					</div>			
+					<?php include('includes/footer.php');?>		
 				</div> 			
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>   
+	
 	<!-- <script src="js/search.js"></script> -->
+	 <script>
+		// Example: letters only
+		document.getElementById('inputcategorycode').addEventListener('keypress', function(e) {
+			if(!/[a-zA-Z]/.test(e.key)) {
+				e.preventDefault();
+			}
+		});
+	</script>
+
 
 	<script src="js/jquery-3.7.0.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
 
-	<script>
-		new DataTable('#dataTables');  
-		
-function country(str,resultContainerId) {  
-    var resultContainerId="c";
-    if (str.length == 0) {
-        document.getElementById("resultcountry").innerHTML = "";
-        document.getElementById("resultcountry").style.display = "none";
-        return;
-    } else {
-        var xmlhttp = new XMLHttpRequest();
-
-        xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                document.getElementById("resultcountry").innerHTML = this.responseText;
-                document.getElementById("resultcountry").style.display = "block";
-            }
-        };
-        xmlhttp.open("GET", "search.php?q=" + str + "&field=" + resultContainerId, true);
-        xmlhttp.send();
-    }
-}
-
-// Event listener for input changes
-document.getElementById("country").addEventListener("input", function() {
-    country(this.value);
-
-});
-
-// Event listener to handle result item clicks
-document.getElementById("resultcountry").addEventListener("click", function(e) {
-    if (e.target.classList.contains("result-item")) {
-        document.getElementById("country").value = e.target.textContent;
-        this.style.display = "none";
-
-    }
-});
-	</script>
-	
 </body>
 </html>
 <?php 

@@ -2,6 +2,9 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "Edit-membergroup");
 
 if(strlen($_SESSION['alogin'])==0)
 {   
@@ -45,7 +48,7 @@ else{
 	<meta name="viewport" content="width=device-width, initial-scale=1">   
 	<link rel="icon" href="img/logo.png" type="image/png">
 
-	<title>Edit Member Groups | Foundation Library Management System</title>
+	<title>Edit Member Groups |  Library Management System</title>
 </head>
 <body class="top-navbar-fixed">
 	<div class="main-wrapper">
@@ -85,7 +88,7 @@ else{
 							<fieldset class="border">                                
 							<div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputcategorycode" class="form-label">Group code:</label>
+										<label for="inputcategorycode" class="form-label">Group Code:</label>
 									</div>
 									<div class="col-sm-4">
 										<input type="text" class="form-control" id="inputcategorycode" name="categorycode" value="<?php echo $result['categorycode']?>" disabled required>
@@ -101,14 +104,14 @@ else{
 
                                 <div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputenrollmentfee" class="form-label">Enrollment fee:</label>
+										<label for="inputenrollmentfee" class="form-label">Enrollment Fee:</label>
 									</div>
 									<div class="col-sm-4">
-										<input type="number" name="enrollmentfee" class="form-control" id="enrollmentfee" value="<?php echo $result['enrollmentfee']?>" step="0.00" required>
+										<input type="number" name="enrollmentfee" class="form-control" id="enrollmentfee" value="<?php echo $result['enrollmentfee']?>" step="0.00" required min="0">
 									</div>
 								
 									<div class="col-sm-2 text-end">
-										<label for="inputlimitation" class="form-label">Library limitations:</label>
+										<label for="inputlimitation" class="form-label">Library Limitations:</label>
 									</div>
 									<div class="col-sm-4">
 
@@ -133,12 +136,16 @@ else{
 					 
 							</fieldset>
 						</form>												
-					</div>					
+					</div>
+					<br><br><br><br><br><br><br><br><br><br><br>
+			
+					<?php include('includes/footer.php');?> 
 				</div> 			
+				
 			</div>
 		</div>	
 	</div>	   
-	<?php include('includes/footer.php');?>   
+	  
 	<!-- <script src="js/search.js"></script> -->
 
 	<script src="js/jquery-3.7.0.js"></script>

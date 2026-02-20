@@ -2,23 +2,25 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+
+logAction($dbcon, "catelog_reports");
 if(strlen($_SESSION['alogin'])==0)
     {   
 header('location:index.php');
 }
 else{ 
 
-
 ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="" />
-    <meta name="author" content="AS Indika" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="" >
+    <meta name="author" content="AS Indika" >
     <link rel="icon" href="img/logo.png" type="image/png">     
-    <title>Manage Cataloging | Foundation Library Management System</title>
+    <title>Manage Cataloging | Library Management System</title>
 
 </head>
 <body class="top-navbar-fixed">
@@ -56,17 +58,17 @@ else{
                         <div class="row">
                             <div class="col-md-12">
                                 <!-- Advanced Tables -->
-                                <div class="panel panel-default">                                
+                                <div class="panel panel-default">
                                     <div class="panel-body">
                                         <div class="table-responsive">
-                                             <table class="table table-sm table-striped table-bordered table-hover" id="dataTables">
-                                                <thead >
-                                                    <tr >
+                                            <table class="table table-sm table-striped table-bordered table-hover" id="catalogTable">
+                                                <thead>
+                                                    <tr>
                                                         <th class="text-center">Ser</th>
                                                         <th class="text-center">Book ID</th>
                                                         <th class="text-center">Name</th>
                                                         <th class="text-center">Item Type</th>
-                                                        <th class="text-center">ISBN </th>
+                                                        <th class="text-center">ISBN</th>
                                                         <th class="text-center">Author</th>
                                                         <th class="text-center">DDC No</th>
                                                         <th class="text-center">Publisher</th>
@@ -74,9 +76,12 @@ else{
                                                         <th class="text-center">Action</th>
                                                     </tr>
                                                 </thead>
-                                            <tbody>
-                                                
-                                            <?php 
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                            <!-- <?php 
                                             $query = mysqli_query($dbcon,"SELECT * from catalog");
                                             if(mysqli_num_rows($query) > 0)
                                             {
@@ -106,25 +111,25 @@ else{
                                                             }                                                            
                                                         ?>                                                       
                                                         </td>
-
                                                         <td class="center">                                       
-                                                            <a href="edit_cataloging.php?id=<?php echo htmlentities($row['booknumber']);?>" onclick="return confirm('Are you sure you want to edit this book?');">  <button class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i>&nbsp;Edit</button>
-                                          
-                                            </td>
-                                        </tr>
-                                    <?php }} ?>                                      
+                                                            <a href="edit_cataloging.php?id=<?php echo htmlentities($row['booknumber']);?>" onclick="return confirm('Are you sure you want to edit this book?');">  <button class="btn btn-warning btn-sm"><i class="bi bi-pencil-square"></i></button>                                         
+                                                        </td>
+                                                    </tr>
+                                        <?php }} ?>                                       -->
                                     </tbody>
-                                </table>
+                                </table>                
                             </div>                            
                         </div>
                     </div>
                     <!--End Advanced Tables -->
+                    
                 </div>
+                <?php include('includes/footer.php');?>
             </div>            
         </div>
     </div>
      <!-- CONTENT-WRAPPER SECTION END-->
-  <?php include('includes/footer.php');?>
+  
     <script src="js/jquery-3.7.0.js"></script>
 	<script src="js/jquery.dataTables.min.js"></script>
     <script src="js/dataTables.buttons.min.js"></script>
@@ -138,23 +143,19 @@ else{
     <script src="js/buttons.colVis.min.js"></script>       
     
     <script>
-		// new DataTable('#dataTables');   
-        $(document).ready(function() {
-        $('#dataTables').DataTable( {
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
+    $(document).ready(function(){
+        $('#catalogTable').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": "catalog_ajax.php",
+            "pageLength": 15,
+            "order": [[1, "asc"]],
+            "columnDefs": [
+                { "className": "text-center", "targets": [0, 1, 9] }
             ]
-        } );
-    } );
-
-    // table.buttons().container()
-    // .appendTo( '#dataTables .col-md-6:eq(0)' );
-
-	</script>
-
-
-
+        });
+    });
+    </script>
 
 </body>
 </html>

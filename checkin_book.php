@@ -2,10 +2,14 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+include('includes/helper.php');
+
+logAction($dbcon, "checkin_book");
 if(strlen($_SESSION['alogin'])==0){   
 	header('location:index.php');
 }else{ 
-	$token=rand();
+	$_SESSION['csrf_token'] = $token;
 	if(isset($_POST['btnCheckin'])){
 		// if(!empty($_POST["bookid"])) {
 
@@ -35,25 +39,35 @@ if(strlen($_SESSION['alogin'])==0){
 				// Find the Item type (book or Magz).
 				$sql1=mysqli_query($dbcon,"SELECT * FROM `catalog` WHERE `booknumber`='$booknumber'");
 				$catalog=mysqli_fetch_assoc($sql1);
+				$bookname = $catalog['title'];
 				$findtype=$catalog['itemtype'];
 				
 				// Find the Item type.
 				$sql2=mysqli_query($dbcon,"SELECT * FROM `finerules` WHERE `category`='$category' && itemtype = '$findtype'");
 				$finerules=mysqli_fetch_assoc($sql2);
 				$fineamount=$finerules['fineamount'];
+
+				$loanPeriod = 7; // get from finerules table
+				$issueDate = date('Y-m-d'); // book issued today
+
+				$dueDate = calculateDueDate($issueDate, $loanPeriod, $dbcon);
+
+				// Save due date in issuedbook table
+				$stmt = $dbcon->prepare("UPDATE issuedbook SET ReturnDate=? WHERE issueid=?");
+				$stmt->bind_param("si", $dueDate, $issueId);
+				$stmt->execute();
+				$stmt->close();
+
 				
 				if ($returndate<$sysdate){
 
-					// Calculate Date differnts
-					$diff = strtotime($sysdate) - strtotime($returndate);
-					$noofdate = floor($diff / (60 * 60 * 24));		
-
-					// Calculate fine Amount
-					$totfineamount=$fineamount*$noofdate;
+					// Fine Calculation using helper function
+					$totfineamount = calculateFine($returndate, $sysdate, $fineamount, $dbcon);
+					
 					
 					// Status Change in issuedbook Table
-					$update=mysqli_prepare($dbcon,"UPDATE `issuedbook` SET `RetrunStatus`=?,`fine`=? WHERE `booknumber`=?");				
-					mysqli_stmt_bind_param($update,'sss',$status, $totfineamount,$booknumber);					
+					$update=mysqli_prepare($dbcon,"UPDATE `issuedbook` SET `RetrunStatus`=?, `fine`=? WHERE `booknumber`=?");
+					mysqli_stmt_bind_param($update,'iis',$status, $totfineamount, $booknumber);
 
 					// Status Change in Catalog Table
 					$update1=mysqli_prepare($dbcon,"UPDATE `catalog` SET `checkedin`=? WHERE `booknumber`=?");				
@@ -74,7 +88,13 @@ if(strlen($_SESSION['alogin'])==0){
 					mysqli_stmt_bind_param($update1,'ss',$status, $booknumber);					
 
 					if (mysqli_stmt_execute($update) && mysqli_stmt_execute($update1)) {
-						$error='The book has been <strong>successfully </strong>checked in';
+						$error = "
+								<strong>The book has been successfully checked in!</strong>
+								<div>
+									Book: <strong>$bookname</strong><br>
+									Book ID: <strong>$booknumber</strong><br>
+								</div>";
+						
 					} else{
 						$error='Something went wrong please try again';		
 					}
@@ -94,7 +114,7 @@ $_SESSION['csrf_token']=$token;
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Check in | Foundation Library Management System</title>
+    <title>Check in | Library Management System</title>
 
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -168,13 +188,15 @@ $_SESSION['csrf_token']=$token;
 							</fieldset>														
 						</form>					
 					</div>
+					<br><br><br><br><br><br><br><br><br><br><br><br>
+					<?php include('includes/footer.php');?> 
 				</div> 
 			</div>
 		</div>
 	</div>
 
 	<div class="col"> 
-		<?php include('includes/footer.php');?>                    
+		                   
 	</div>   
 </body>
 </html>

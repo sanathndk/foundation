@@ -2,6 +2,10 @@
 session_start();
 error_reporting(0);
 include('includes/config.php');
+include('includes/activity.php');
+include('helper.php');
+
+logAction($dbcon, "Book Renew");
 $token=rand();
 if(strlen($_SESSION['alogin'])==0){   
 	header('location:index.php');
@@ -127,14 +131,16 @@ $_SESSION['csrf_token']=$token;
 									</div>
 								</div>	
 							</fieldset>														
-						</form>						
+						</form>					
 				</div> 
-			</div>
+				<br><br><br><br><br><br><br><br><br><br><br><br>
+				<?php include('includes/footer.php');?>  
+			</div>			
 		</div>
 	</div>
 
 	<div class="col"> 
-		<?php include('includes/footer.php');?>                    
+		                  
 	</div>   	
 
 </body>
