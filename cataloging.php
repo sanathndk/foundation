@@ -20,7 +20,9 @@ else{
       
       // Get all form data
       $image=$_FILES['image'];      
-      $baseBooknumber=$_POST['booknumber'];
+      $idGenerationMode = $_POST['id_generation_mode']; // 'auto' or 'manual'
+      $baseBooknumber = $_POST['booknumber'];
+      $manualBookIds = isset($_POST['manual_book_ids']) ? $_POST['manual_book_ids'] : '';
       $itemtype=$_POST['itemtype'];
       $title=$_POST['title'];
       $isbn=$_POST['isbn'];
@@ -48,13 +50,24 @@ else{
       $errorMessages = array();
       $successMessages = array();
       
+      // Process manual book IDs if provided
+      $manualIdsArray = array();
+      if($idGenerationMode == 'manual' && !empty($manualBookIds)) {
+        // Split by comma or new line
+        $manualIdsArray = preg_split('/[\s,]+/', $manualBookIds);
+        $manualIdsArray = array_filter($manualIdsArray); // Remove empty values
+        $manualIdsArray = array_slice($manualIdsArray, 0, $numberOfBooks); // Limit to number of books
+      }
+      
       // Loop to add multiple books
       for($i = 0; $i < $numberOfBooks; $i++) {
-        // Generate unique book number for each copy
-        if($i == 0) {
+        // Generate or use manual book number
+        if($idGenerationMode == 'manual' && isset($manualIdsArray[$i]) && !empty($manualIdsArray[$i])) {
+          $booknumber = trim($manualIdsArray[$i]);
+        } else if($i == 0) {
           $booknumber = $baseBooknumber;
         } else {
-          // Auto-increment book number (you can customize this logic)
+          // Auto-increment book number
           $booknumber = $baseBooknumber . '-' . ($i + 1);
         }
         
@@ -140,9 +153,32 @@ $_SESSION['csrf_token']=$token;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="img/logo.png" type="image/png">
-  	<title>Cataloging |  Library Management System</title>
+    <title>Cataloging | Library Management System</title>
+    <style>
+        .mode-switch {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .mode-option {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .manual-ids-area {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        .help-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+    </style>
 </head>
-<body>
 <body class="top-navbar-fixed">
   <div class="main-wrapper">
       <!-- ========== TOP NAVBAR ========== -->
@@ -193,16 +229,59 @@ $_SESSION['csrf_token']=$token;
                           <div class="col-sm-2 text-end">         
                             <input type="file" class="form-control" id="image" name="image">
                           </div>     
+                          
+                          <div class="col-sm-2 text-end">
+                            <label class="form-label">ID Generation Mode:<i class="text-danger font-weight-bold">*</i></label>
+                          </div>
+                          <div class="col-sm-2">
+                            
+                              <label class="mode-option">
+                                <input type="radio" name="id_generation_mode" value="auto" checked onclick="toggleIdMode()"> Auto Generate
+                              </label>
+                              <label class="mode-option">
+                                <input type="radio" name="id_generation_mode" value="manual" onclick="toggleIdMode()"> Manual Entry
+                              </label>                           
+                          </div>
 
-                          <div class="col-sm-4 text-end">
+                          <div class="col-sm-2 text-end">
                             <label for="inputmultiple" class="form-label">Add multiple Books:<i class="text-danger font-weight-bold">*</i></label>
                           </div>
-                          <div class="col-sm-3">
-                            <input type="number" class="form-control" id="inputmultiple" name="inputmultiple" min="1" value="1"  max="100"required>
+                          <div class="col-sm-2">
+                            <input type="number" class="form-control" id="inputmultiple" name="inputmultiple" min="1" value="1" max="100" required>
                             <small class="text-muted">Enter number of copies to add</small>            
                           </div>
-
                         </div>  
+
+                        <!-- ID Generation Mode Selection -->
+                        <div class="row p-2">
+                          
+                        </div>
+
+                        <!-- Auto Generate Section -->
+                        <div id="auto-mode-section">
+                          <div class="row p-2">
+                            <div class="col-sm-2 text-end">
+                              <label for="inputBarcode" class="form-label">Base Barcode:<i class="text-danger font-weight-bold">*</i></label>
+                            </div>
+                            <div class="col-sm-4">
+                              <input type="text" class="form-control" id="inputBarcode" name="booknumber">
+                              <small class="text-muted">Multiple books will use: BASE, BASE-2, BASE-3, etc.</small>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Manual Entry Section -->
+                        <div id="manual-mode-section" style="display:none;">
+                          <div class="row p-2">
+                            <div class="col-sm-2 text-end">
+                              <label for="manualBookIds" class="form-label">Book IDs/Barcodes:<i class="text-danger font-weight-bold">*</i></label>
+                            </div>
+                            <div class="col-sm-8">
+                              <textarea class="form-control" id="manualBookIds" name="manual_book_ids" rows="5" placeholder="Enter book IDs manually"></textarea>
+                              <small class="help-text">Enter unique book IDs.</small>
+                            </div>
+                          </div>
+                        </div>
 
                         <div class="row p-2">  
                           <div class="col-sm-2 text-end"></div>
@@ -210,17 +289,16 @@ $_SESSION['csrf_token']=$token;
                             <span><?php echo $error1?></span>
                           </div>               
                         </div> 
+                        
                         <div class="row p-2">
                           <div class="col-sm-2 text-end">
                             <label for="inputType" class="form-label">Item Type:</label>       
                           </div>
                           <div class="col-sm-4">        
-                            <select id="inputType" class="form-select" name ="itemtype" onchange="getBarcode(this.value)"> 
-                            <option value="" selected>Select Item Type</option>
-                            <!-- Load Item Type in database -->
+                            <select id="inputType" class="form-select" name="itemtype" onchange="getBarcode(this.value)"> 
+                              <option value="" selected>Select Item Type</option>
                               <?php
                                 $sql=mysqli_query($dbcon, "SELECT * FROM `itemtypes`");
-
                                 if (mysqli_num_rows($sql)>0) {
                                   while ($row=mysqli_fetch_array($sql)) {
                                     echo "<option value='" . $row['itemcode'] . "'>" . $row['description'] . "</option>";
@@ -240,43 +318,30 @@ $_SESSION['csrf_token']=$token;
 
                         <div class="row p-2">
                           <div class="col-sm-2 text-end">
-                            <label for="inputBarcode" class="form-label">Base Barcode:<i class="text-danger font-weight-bold">*</i></label>
-                          </div>
-                          <div class="col-sm-4">
-                            <input type="text" class="form-control" id="inputBarcode" name="booknumber" required>
-                            <small class="text-muted">Multiple books will use: BASE, BASE-2, BASE-3, etc.</small>
-                            <?php if (isset($error)): ?>
-                               <span class="badge bg-danger fs-6"><?php echo $error; ?></span>
-                           <?php endif; ?>
-                          </div>
-                       
-                          <div class="col-sm-2 text-end">
                             <label for="inputISBN" class="form-label">ISBN:</label>
                           </div>
                           <div class="col-sm-4">
                             <input type="number" class="form-control" id="inputISBN" maxlength="13" name="isbn" placeholder="10 or 13 digits">
                           </div>
-                        </div>
-
-                        <div class="row p-2">
+                        
                           <div class="col-sm-2 text-end">
                             <label for="inputISSN" class="form-label">ISSN:</label>
                           </div>
                           <div class="col-sm-4">
                             <input type="text" class="form-control" id="inputISSN" maxlength="8" name="issn" placeholder="8 digits">
                           </div>
-                      
-                          <div class="col-sm-2 text-end">
-                            <label for="inputauthor" class="form-label">Author:<i class="text-danger font-weight-bold">*</i></label>
-                          </div>
-                            <div class="col-sm-4">
-                              <input type="search" name="author" class="form-control" title="Enter search keyword" id="author" required> 
-                              <div id="resultauthor"></div>
-                              <a href="add-author.php" target="_blank">Add Author</a>
-                          </div>
                         </div>
 
                         <div class="row p-2">
+                          <div class="col-sm-2 text-end">
+                            <label for="inputauthor" class="form-label">Author:<i class="text-danger font-weight-bold">*</i></label>
+                          </div>
+                          <div class="col-sm-4">
+                            <input type="search" name="author" class="form-control" title="Enter search keyword" id="author" required> 
+                            <div id="resultauthor"></div>
+                            <a href="add-author.php" target="_blank">Add Author</a>
+                          </div>
+                        
                           <div class="col-sm-2 text-end">
                             <label for="x" class="form-label">Author 2:</label>
                           </div>
@@ -284,7 +349,9 @@ $_SESSION['csrf_token']=$token;
                             <input type="search" name="author2" class="form-control" title="Enter search keyword" id="author2">
                             <div id="resultauthor2"></div>
                           </div>
-                        
+                        </div>
+
+                        <div class="row p-2">
                           <div class="col-sm-2 text-end">
                             <label for="inputLanguage" class="form-label">Language:<i class="text-danger font-weight-bold">*</i></label>
                           </div>
@@ -305,16 +372,13 @@ $_SESSION['csrf_token']=$token;
                           </div>
                           <div class="col-sm-4">        
                             <select id="inputCategory" class="form-select" name="category">
-                            <!-- Load Category type of Database -->
-                            <?php
+                              <?php
                                 $sql=mysqli_query($dbcon, "SELECT * FROM `category`");
-
                                 if (mysqli_num_rows($sql)>0) {
                                   while ($row=mysqli_fetch_array($sql)) {
                                     echo "<option value='" . $row['categorycode'] . "'>" .$row['description'] . "(".$row['categorycode'].")"."</option>";
                                   }
                                 }
-                               
                               ?>
                             </select>
                           </div>
@@ -347,7 +411,7 @@ $_SESSION['csrf_token']=$token;
 
                       <!-- Publication & Physical Description   -->
                       <fieldset class="border p-3">
-                        <legend class="w-auto">Publication & Physical Description  :</legend>
+                        <legend class="w-auto">Publication & Physical Description:</legend>
 
                         <div class="row p-2">
                           <div class="col-sm-2 text-end">        
@@ -373,13 +437,13 @@ $_SESSION['csrf_token']=$token;
                           </div>
                           <div class="col-sm-4">
                             <select class="year" class="form-control" id="inputYear" name="publicationyear">
-                                <option value="">Select Year</option>
-                                <?php
-                                    $currentYear = date('Y');
-                                    for ($year = $currentYear; $year >= 1950; $year--) {
-                                        echo "<option value='$year'>$year</option>";
-                                    }
-                                    ?>
+                              <option value="">Select Year</option>
+                              <?php
+                                $currentYear = date('Y');
+                                for ($year = $currentYear; $year >= 1950; $year--) {
+                                  echo "<option value='$year'>$year</option>";
+                                }
+                              ?>
                             </select>
                           </div>
                        
@@ -387,7 +451,7 @@ $_SESSION['csrf_token']=$token;
                             <label for="inputSeriesName" class="form-label">Series Name:</label>
                           </div>
                           <div class="col-sm-4">
-                            <input type="text" class="form-control" id="inputSeriesName" name="volume" >
+                            <input type="text" class="form-control" id="inputSeriesName" name="volume">
                           </div>
                         </div>
 
@@ -432,51 +496,12 @@ $_SESSION['csrf_token']=$token;
                           </div>
                           <div class="col-sm-2">        
                             <select id="inputStatus" class="form-select" required name="status">
-                              <option selected value="A">Availabale</option>
-                              <option value="N">Not Availabale</option>
+                              <option selected value="A">Available</option>
+                              <option value="N">Not Available</option>
                               <option value="L">Lost</option>
                               <option value="D">Damage</option> 
                             </select>
                           </div>      
-                          
-                                
-                            <div class="col-sm-4 text-end">
-                              <label for="inputBarcode" class="form-label">Generate Barcodes:</label>  
-                            </div>
-                                <div class="col-sm-4">
-                                    <button type="button" onclick="downloadSingleBarcode()" class="btn btn-secondary btn-md">Download Single</button>
-                                    <button type="button" onclick="previewBarcodes()" class="btn btn-info btn-md">Preview All</button>
-                                      <script>
-                                      function downloadSingleBarcode() {
-                                          let bookId = document.getElementById("inputBarcode").value.trim();
-                                          if (bookId === "") {
-                                              alert("Please enter the Book Number first.");
-                                              return;
-                                          }
-                                          window.open("barcode_generator.php?print=1&ids=" + encodeURIComponent(bookId), '_blank');
-                                      }
-                                      
-                                      function previewBarcodes() {
-                                          let baseBookId = document.getElementById("inputBarcode").value.trim();
-                                          let numBooks = parseInt(document.getElementById("inputmultiple").value) || 1;
-                                          
-                                          if (baseBookId === "") {
-                                              alert("Please enter the Book Number first.");
-                                              return;
-                                          }
-                                          
-                                          // Generate all book IDs
-                                          let bookIds = [baseBookId];
-                                          for(let i = 1; i < numBooks; i++) {
-                                              bookIds.push(baseBookId + '-' + (i + 1));
-                                          }
-                                          
-                                          // Open barcode generator with all IDs
-                                          window.open("barcode_generator.php?print=1&ids=" + encodeURIComponent(bookIds.join(',')), '_blank');
-                                      }
-                                      </script>
-                                </div>
-                            </div>                                
                         </div>
                       </fieldset>     
                       
@@ -488,13 +513,32 @@ $_SESSION['csrf_token']=$token;
                       </div>
                     </form>
                   </div>           
-                    <!-- CONTENT-WRAPPER SECTION END-->
+                  <!-- CONTENT-WRAPPER SECTION END-->
                 <?php include('includes/footer.php');?>
       </div>
     </div>
   </div> 
 
   <script>
+    function toggleIdMode() {
+      var mode = document.querySelector('input[name="id_generation_mode"]:checked').value;
+      var autoSection = document.getElementById('auto-mode-section');
+      var manualSection = document.getElementById('manual-mode-section');
+      var baseBarcode = document.getElementById('inputBarcode');
+      
+      if (mode === 'auto') {
+        autoSection.style.display = 'block';
+        manualSection.style.display = 'none';
+        baseBarcode.required = true;
+        document.getElementById('manualBookIds').required = false;
+      } else {
+        autoSection.style.display = 'none';
+        manualSection.style.display = 'block';
+        baseBarcode.required = false;
+        document.getElementById('manualBookIds').required = true;
+      }
+    }
+    
     function getBarcode(typeCode) {
         if (typeCode == "") {
             document.getElementById("inputBarcode").value = "";
@@ -508,10 +552,41 @@ $_SESSION['csrf_token']=$token;
         xhttp.open("GET", "itemtype_barcode.php?type=" + typeCode, true);
         xhttp.send();
     }
-</script>
+    
+    // Validate manual IDs count on form submission
+    document.querySelector('form').addEventListener('submit', function(e) {
+      var mode = document.querySelector('input[name="id_generation_mode"]:checked').value;
+      var numBooks = parseInt(document.getElementById('inputmultiple').value);
+      
+      if (mode === 'manual') {
+        var manualIds = document.getElementById('manualBookIds').value.trim();
+        if (manualIds === '') {
+          alert('Please enter manual book IDs');
+          e.preventDefault();
+          return false;
+        }
+        
+        // Count the IDs
+        var idsArray = manualIds.split(/[\s,]+/).filter(function(id) { return id.trim() !== ''; });
+        if (idsArray.length < numBooks) {
+          alert('You have entered ' + idsArray.length + ' book ID(s) but requested ' + numBooks + ' copies. Please enter at least ' + numBooks + ' book IDs.');
+          e.preventDefault();
+          return false;
+        }
+      } else if (mode === 'auto') {
+        var baseBarcode = document.getElementById('inputBarcode').value.trim();
+        if (baseBarcode === '') {
+          alert('Please enter a base barcode for auto-generation');
+          e.preventDefault();
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  </script>
 
-
-<script src="js/search.js"></script>
+  <script src="js/search.js"></script>
 
 </body>
 </html>

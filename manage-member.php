@@ -98,23 +98,34 @@ else{
                                 <!-- Advanced Tables -->
                                 <div class="panel panel-default">                                
                                     <div class="panel-body">
-                                        <div class="row justify-content-md-center">
-                                            <table id="memberTable" class="table table-striped table-bordered table-hover">
+                                        <div class="table-responsive">
+                                            <table id="memberTable" class="table table-sm table-striped table-bordered table-hover">
                                                 <thead>
                                                     <tr>
                                                         <th>Ser</th>
                                                         <th>Member ID</th>
+                                                        <th>Reg No</th>
                                                         <th>Salutation</th>
-                                                        <th>Name </th>
+                                                        <th>Name</th>
                                                         <th>Mobile Number</th>
                                                         <th>Email</th>
                                                         <th>Category</th>
                                                         <th>Service</th>
+                                                        <!-- <th>Fine Note</th> -->
                                                         <th>Status</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
-                                            <tbody>                                 
+                                            <tbody>
+                                                <!-- <td>
+                                                    <?php 
+                                                        // if($row['fine_pending']==1){
+                                                        //     echo "<span style='color:red;font-weight:bold'>".$row['fine_comment']."</span>";
+                                                        // }else{
+                                                        //     echo "-";
+                                                        // }
+                                                    ?>
+                                                </td>                                  -->
                                     </tbody>
                                 </table>
                             </div>                            
@@ -148,7 +159,7 @@ else{
                 "pageLength": 15,
                 "order": [[1, "asc"]],
                 "columnDefs": [
-                    { "className": "text-center", "targets": [0] }
+                    { "className": "text-center", "targets": [0,1,9] }
                 ]
             });
         });

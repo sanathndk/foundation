@@ -3,7 +3,7 @@ session_start();
 error_reporting(0);
 include('includes/config.php');
 include('includes/activity.php');
-include('helper.php');
+include('includes/helper.php');
 
 logAction($dbcon, "Book Renew");
 $token=rand();
@@ -30,33 +30,63 @@ else{
 				$sql2=mysqli_query($dbcon,"SELECT * FROM `catalog` WHERE `booknumber`='$booknumber'");
 				$catalog=mysqli_fetch_assoc($sql2);
 				$findtype=$catalog['itemtype'];
-				
-				// Find the Item type.
+				$bookname=$catalog['title'];   // <-- BOOK NAME
+
+				// Find the Fine rules
 				$sql3=mysqli_query($dbcon,"SELECT * FROM `finerules` WHERE `category`='$category' && itemtype = '$findtype'");
 				$finerules=mysqli_fetch_assoc($sql3);
 				$renewalperiod=$finerules['renewalperiod'];
 				$renewalallow=$finerules['renewalallow'];
 
+				//No paid messages
+				$sql=mysqli_query($dbcon,"SELECT fine_pending,fine_comment 
+					FROM member WHERE cardnumber='$membernumber'");
+
+					$row=mysqli_fetch_assoc($sql);
+
+					if($row['fine_pending']==1){
+
+					echo "<div style='color:red;font-weight:bold'>
+					⚠ MEMBER HAS UNPAID FINE <br>
+					".$row['fine_comment']."
+					</div>";
+
+					}
+
 				if ($noofrenew<$renewalallow) {
+
 					$noofrenew=$noofrenew+1;
 					$retrunstatus=0;
-					//Calculate returnd date
-					$returndate = date("Y-m-d", strtotime($renewalperiod."days", strtotime($returndate)));
 
-					$result=mysqli_prepare($dbcon,"UPDATE `issuedbook` SET `ReturnDate`=?,`noofrenew`=? WHERE `booknumber`=? and `RetrunStatus`=?");
+					// Calculate new return date
+					$returndate = date("Y-m-d", strtotime($renewalperiod." days", strtotime($returndate)));
+
+					$result=mysqli_prepare($dbcon,"UPDATE `issuedbook` 
+					SET `ReturnDate`=?,`noofrenew`=? 
+					WHERE `booknumber`=? and `RetrunStatus`=?");
+
 					mysqli_stmt_bind_param($result,'ssss',$returndate,$noofrenew,$booknumber,$retrunstatus);
 
 					if (mysqli_stmt_execute($result)) {
-						$error = "The $booknumber is renewed: <strong>$returndate</strong> ";		
-						
+
+						$error = "
+						<strong>Book Renewed Successfully!</strong>
+						<div>
+							Book: <strong>$bookname</strong><br>
+							Book ID: <strong>$booknumber</strong><br>
+							New Return Date: <strong>$returndate</strong>
+						</div>";
+
 					}else{
-						$error='Something went wrong please try again' .mysqli_error($dbcon);			
-					}				
+						$error='Something went wrong please try again' .mysqli_error($dbcon);
+					}
+
 				}else{
-					$error = "<strong>Maximum</strong> number of times renew";					
+					$error = "<strong>Maximum</strong> number of times renew";
 				}
+
 			}else {
-				$error = "<strong>$booknumber </strong> already check in.";		
+				$error = "<strong>$booknumber </strong> already check in.";
 			}
 		}else{
 			$error = "Invalid <strong>authentication</strong>";	

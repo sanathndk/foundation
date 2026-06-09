@@ -22,7 +22,7 @@
                 </li>                            
                     <li><a href="userrenew_book.php"><i class="bi bi-shuffle"></i> &nbsp;<span>Renew</span></a></li>
                     <!-- <li><a href="userresearchfill.php"><i class="bi bi-file-earmark-pdf"></i> &nbsp;<span>Research</span></a></li> -->
-                    <li><a href="userppt.php"><i class="bi bi-file-earmark-ppt"></i> &nbsp;<span>Research & PPT </span></a></li>
+                    <!-- <li><a href="userppt.php"><i class="bi bi-file-earmark-ppt"></i> &nbsp;<span>Research & PPT </span></a></li> -->
                     <li><a href="userchange-password.php"><i class="bi bi-key"></i> &nbsp;<span>Change Password</span></a></li>                                           
                 </li>
             </div>

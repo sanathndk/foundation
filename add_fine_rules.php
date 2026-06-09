@@ -132,7 +132,7 @@ if (isset($_GET['id']) && $_GET['id'] != "") {
 							<fieldset class="border">                                
 							<div class="row p-2">
 									<div class="col-sm-2 text-end">
-										<label for="inputcategorycode" class="form-label">Member Category:</label>
+										<label for="inputcategorycode" class="form-label">Member Category:<i class="text-danger font-weight-bold">*</i></label>
 									</div>
 									<div class="col-sm-4">
 										<select name="category" id="patroncode" class="form-select" required>

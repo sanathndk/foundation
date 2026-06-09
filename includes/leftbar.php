@@ -50,7 +50,7 @@
                                 <li><a href="add-category.php"><i class="bi bi-tags-fill"></i> &nbsp;<span>Categories</span></a></li>      
                                 <li><a href="add-author.php"><i class="bi bi-vector-pen"></i> &nbsp;<span>Author</span></a></li>  
                                 <li><a href="add-publishers.php"><i class="bi bi-printer"></i>&nbsp;<span>Publishers</span></a></li>
-                                <li><a href="ppt.php"><i class="bi bi-file-earmark-pdf"></i>&nbsp;<span>Research & PPT </span></a></li> 
+                                <!-- <li><a href="ppt.php"><i class="bi bi-file-earmark-pdf"></i>&nbsp;<span>Research & PPT </span></a></li>  -->
                             </ul>
                         </div>
                 </li>
@@ -105,7 +105,8 @@
                             <ul class="child-nav" style="display:none;">
                                 <li><a href="overdue_book.php"><i class="bi bi-box-arrow-up-left"></i>&nbsp; <span>Overdue Reports</span></a></li>                                 
                                 <li><a href="catalog_reports.php"><i class="bi bi-journal-bookmark-fill"></i> &nbsp;<span>Catalogue Report</span></a></li>
-                                <li><a href="issued_books.php"><i class="bi bi-arrow-left-right"></i> &nbsp;<span>Circulation Report</span></a></li>  
+                                <li><a href="issued_books.php"><i class="bi bi-arrow-left-right"></i> &nbsp;<span>Circulation Report</span></a></li> 
+                                <li><a href="member_history.php"><i class="bi bi-people-fill" ></i> &nbsp;<span>Member History Report</span></a></li>
                             </ul>
                         </div>
                 </li>
