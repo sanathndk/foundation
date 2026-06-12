@@ -60,6 +60,7 @@ if (isset($_POST['btnsave'])) {
         $passport = $_POST['passport']; 
         $branchcode = $_POST['branchcode']; 
         $categorycode = $_POST['categorycode']; 
+        $establishment=$_POST['establishment'];
         $dateenrolled = $_POST['dateenrolled']; 
         $dateexpiry = $_POST['dateexpiry'];     
         $userid = $_POST['userid']; 
@@ -68,20 +69,20 @@ if (isset($_POST['btnsave'])) {
 
         // If no photo uploaded
         if (empty($memberphoto['size'])) {
-            $sql = "UPDATE `member` SET `title`=?,`cardnumber`=?,`surname`=?,`firstname`=?,`middle_name`=?,`othernames`=?,`initials`=?,`regtnumber`=?,`dateofbirth`=?,`gender`=?,`address`=?,`address2`=?,`city`=?,`state`=?,`zipcode`=?,`country`=?,`mobile`=?,`mobile2`=?,`email`=?,`email2`=?,`primary_contact_method`=?,`B_address`=?,`B_address2`=?,`B_city`=?,`B_state`=?,`B_zipcode`=?,`B_country`=?,`altcontactname`=?,`altcontactmobil`=?,`altcontactaddress1`=?,`altcontactaddress2`=?,`altcontactcity`=?,`altcontactstate`=?,`altcontactzipcode`=?,`altcontactcountry`=?,`altcontactemail`=?,`relationship`=?,`idcard`=?,`passport`=?,`branchcode`=?,`categorycode`=?,`dateenrolled`=?,`dateexpiry`=?,`userid`=?,`password`=?,`status`=? WHERE `borrowernumber`=?";
+            $sql = "UPDATE `member` SET `title`=?,`cardnumber`=?,`surname`=?,`firstname`=?,`middle_name`=?,`othernames`=?,`initials`=?,`regtnumber`=?,`dateofbirth`=?,`gender`=?,`address`=?,`address2`=?,`city`=?,`state`=?,`zipcode`=?,`country`=?,`mobile`=?,`mobile2`=?,`email`=?,`email2`=?,`primary_contact_method`=?,`B_address`=?,`B_address2`=?,`B_city`=?,`B_state`=?,`B_zipcode`=?,`B_country`=?,`altcontactname`=?,`altcontactmobil`=?,`altcontactaddress1`=?,`altcontactaddress2`=?,`altcontactcity`=?,`altcontactstate`=?,`altcontactzipcode`=?,`altcontactcountry`=?,`altcontactemail`=?,`relationship`=?,`idcard`=?,`passport`=?,`branchcode`=?,`categorycode`=?,`establishment`=?,`dateenrolled`=?,`dateexpiry`=?,`userid`=?,`password`=?,`status`=? WHERE `borrowernumber`=?";
 
             $result = mysqli_prepare($dbcon, $sql);
 
             if ($result) {
                 mysqli_stmt_bind_param($result, 
-                    'ssssssssssssssssssssssssssssssssssssssssssssssi',
+                    'sssssssssssssssssssssssssssssssssssssssssssssssi',
                     $title, $cardnumber, $surname, $firstname, $middle_name, $othernames, $initials,
                     $regtnumber, $dateofbirth, $gender, $address, $address2, $city, $state, $zipcode,
                     $country, $mobile, $mobile2, $email, $email2, $primary_contact_method, $B_address,
                     $B_address2, $B_city, $B_state, $B_zipcode, $B_country, $altcontactname,
                     $altcontactmobil, $altcontactaddress1, $altcontactaddress2, $altcontactcity,
                     $altcontactstate, $altcontactzipcode, $altcontactcountry, $altcontactemail,
-                    $relationship, $idcard, $passport, $branchcode, $categorycode, $dateenrolled,
+                    $relationship, $idcard, $passport, $branchcode, $categorycode, $establishment,$dateenrolled,
                     $dateexpiry, $userid, $password, $status, $id
                 );
 
@@ -105,21 +106,21 @@ if (isset($_POST['btnsave'])) {
                 
                 if (move_uploaded_file($memberphoto['tmp_name'], $filepath)) {
                     $sql = "UPDATE `member` SET 
-                    `title`=?,`cardnumber`=?,`surname`=?,`firstname`=?,`middle_name`=?,`othernames`=?,`initials`=?,`regtnumber`=?,`dateofbirth`=?,`gender`=?,`address`=?,`address2`=?,`city`=?,`state`=?,`zipcode`=?,`country`=?,`mobile`=?,`mobile2`=?,`email`=?,`email2`=?,`primary_contact_method`=?,`B_address`=?,`B_address2`=?,`B_city`=?,`B_state`=?,`B_zipcode`=?,`B_country`=?,`altcontactname`=?,`altcontactmobil`=?,`altcontactaddress1`=?,`altcontactaddress2`=?,`altcontactcity`=?,`altcontactstate`=?,`altcontactzipcode`=?,`altcontactcountry`=?,`altcontactemail`=?,`relationship`=?,`idcard`=?,`passport`=?,`branchcode`=?,`categorycode`=?,`dateenrolled`=?,`dateexpiry`=?,`userid`=?,`password`=?,`status`=?,`img`=?
+                    `title`=?,`cardnumber`=?,`surname`=?,`firstname`=?,`middle_name`=?,`othernames`=?,`initials`=?,`regtnumber`=?,`dateofbirth`=?,`gender`=?,`address`=?,`address2`=?,`city`=?,`state`=?,`zipcode`=?,`country`=?,`mobile`=?,`mobile2`=?,`email`=?,`email2`=?,`primary_contact_method`=?,`B_address`=?,`B_address2`=?,`B_city`=?,`B_state`=?,`B_zipcode`=?,`B_country`=?,`altcontactname`=?,`altcontactmobil`=?,`altcontactaddress1`=?,`altcontactaddress2`=?,`altcontactcity`=?,`altcontactstate`=?,`altcontactzipcode`=?,`altcontactcountry`=?,`altcontactemail`=?,`relationship`=?,`idcard`=?,`passport`=?,`branchcode`=?,`categorycode`=?,`establishment`=?,`dateenrolled`=?,`dateexpiry`=?,`userid`=?,`password`=?,`status`=?,`img`=?
                     WHERE `borrowernumber`=?";
 
                     $result = mysqli_prepare($dbcon, $sql);
 
                     if ($result) {
                         mysqli_stmt_bind_param($result,
-                            'ssssssssssssssssssssssssssssssssssssssssssssssssi',
+                            'sssssssssssssssssssssssssssssssssssssssssssssssssi',
                             $title, $cardnumber, $surname, $firstname, $middle_name, $othernames, $initials,
                             $regtnumber, $dateofbirth, $gender, $address, $address2, $city, $state, $zipcode,
                             $country, $mobile, $mobile2, $email, $email2, $primary_contact_method, $B_address,
                             $B_address2, $B_city, $B_state, $B_zipcode, $B_country, $altcontactname,
                             $altcontactmobil, $altcontactaddress1, $altcontactaddress2, $altcontactcity,
                             $altcontactstate, $altcontactzipcode, $altcontactcountry, $altcontactemail,
-                            $relationship, $idcard, $passport, $branchcode, $categorycode, $dateenrolled,
+                            $relationship, $idcard, $passport, $branchcode, $categorycode, $establishment, $dateenrolled,
                             $dateexpiry, $userid, $password, $status, $filepath,   
                             $id
                         );
@@ -649,6 +650,16 @@ $_SESSION['csrf_token'] = $token;
                                             ?>
                                             </select>
                                         </div>
+
+                                        <div class="col-sm-2"></div>
+
+                                        <div class="col-sm-2 text-end">        
+                                            <label for="inputEst" class="form-label">Establishment:</label>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control" name="establishment" id="inputEst" value="<?php echo $row['establishment']?>">
+                                        </div>
+
                                     </div>
 
                                     <div class="row p-2">

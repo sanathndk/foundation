@@ -9,8 +9,9 @@ $columns = [
 4 => 'surname',
 5 => 'mobile',
 6 => 'email',
-7 => 'categorycode',
-8 => 'service',
+7 => 'establishment',
+8 => 'categorycode',
+9 => 'service',
 // 9 => 'fine_pending',
 10 => 'status'
 ];
@@ -29,7 +30,8 @@ regtnumber LIKE '%$searchValue%' OR
 cardnumber LIKE '%$searchValue%' OR
 surname LIKE '%$searchValue%' OR
 mobile LIKE '%$searchValue%' OR
-email LIKE '%$searchValue%'
+email LIKE '%$searchValue%' OR
+establishment LIKE '%$searchValue%' 
 )";
 }
 
@@ -86,6 +88,7 @@ $nested[] = $row['title'];
 $nested[] = $row['surname'];
 $nested[] = $row['mobile'];
 $nested[] = $row['email'];
+$nested[] = $row['establishment'];
 $nested[] = $row['categorycode'];
 $nested[] = $row['service'];
 // $nested[] = $fineNote;

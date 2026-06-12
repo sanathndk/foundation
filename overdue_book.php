@@ -70,6 +70,8 @@ else{
                                                         <th>Ser</th>
                                                         <th>Book ID</th>
                                                         <th>Book Name</th>
+                                                        <th>Member ID</th>
+                                                        <th>Member Rank</th>
                                                         <th>Member Name</th>
                                                         <th>ISBN </th>
                                                         <th>Issued Date</th>
@@ -88,7 +90,9 @@ else{
                                                 <tr>
                                                     <td class="text-center"><?php echo htmlentities($cnt);?></td>
                                                     <td><?php echo $row['booknumber'];?></td>
-                                                    <td><?php echo $row['title'];?></td>                                                    
+                                                    <td><?php echo $row['title'];?></td>
+                                                    <td><?php echo $row['membercard']; ?></td>
+                                                    <td><?php echo $row['memberrank']; ?></td>                                                    
                                                     <td><?php echo $row['initials'].' '.$row['surname'];?></td>
                                                     <td><?php echo $row['isbn'];?></td>
                                                     <td><?php echo $row['IssuesDate'];?></td>

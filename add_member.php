@@ -4,7 +4,7 @@ include('includes/functions.php');
 include('includes/config.php');
 include('includes/activity.php');
 
-$autoCardNumber = generateCardNumber($dbcon);
+// $autoCardNumber = generateCardNumber($dbcon);
 
 logAction($dbcon, "Add_member");
 error_reporting(0);
@@ -57,6 +57,7 @@ if(isset($_POST['btnsave'])){
         $passport=$_POST['passport']; 
         $branchcode=$_POST['branchcode']; 
         $categorycode=$_POST['categorycode']; 
+        $establishment=$_POST['establishment'];
         $dateenrolled=$_POST['dateenrolled']; 
         $dateexpiry=$_POST['dateexpiry'];     
         $userid=$_POST['userid']; 
@@ -66,41 +67,88 @@ if(isset($_POST['btnsave'])){
         $fee=mysqli_query($dbcon,"SELECT * FROM `membergroups` WHERE `categorycode`='$categorycode'") or die(mysqli_error($dbcon));
         $enrfee=mysqli_fetch_array($fee);
         $enrollmentfee=$enrfee['enrollmentfee'];
+        $filepath = '';
 
-        if ($memberphoto['size']<=500000) {
-            $imagedetails=pathinfo($memberphoto['name']);
-            $allwextention=array('jpg','jpeg','png');
+        $checkCard = mysqli_query($dbcon, "SELECT cardnumber FROM member WHERE cardnumber='$cardnumber'");
 
-            if (in_array($imagedetails['extension'],$allwextention)) {
-                $filepath='img/'.uniqid().'.'.$imagedetails['extension'];
-                if (move_uploaded_file($memberphoto['tmp_name'],$filepath)) {
-                    $sql="INSERT INTO `member`(`service`,`title`, `cardnumber`, `surname`, `firstname`, `middle_name`, `othernames`, `initials`,`regtnumber`, `dateofbirth`, `gender`, `address`, `address2`, `city`, `state`, `zipcode`, `country`, `mobile`, `mobile2`, `email`, `email2`, `primary_contact_method`, `B_address`, `B_address2`, `B_city`, `B_state`, `B_zipcode`, `B_country`, `altcontactname`, `altcontactmobil`, `altcontactaddress1`, `altcontactaddress2`, `altcontactcity`, `altcontactstate`, `altcontactzipcode`, `altcontactcountry`, `altcontactemail`, `relationship`, `idcard`, `passport`, `branchcode`, `categorycode`, `dateenrolled`, `dateexpiry`, `userid`, `password`, `status`,`img`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-                    $result = mysqli_prepare($dbcon, $sql);
+        if(mysqli_num_rows($checkCard) > 0){
+            $error1 = '<strong>Card Number already exists!</strong>';
+        }
 
-                    if ($result) {
-                        mysqli_stmt_bind_param($result,'ssssssssssssssssssssssssssssssssssssssssssssssss',$service,$title,$cardnumber,$surname,$firstname,$middle_name,$othernames,$initials,$regtnumber,$dateofbirth,$gender,$address,$address2,$city,$state,$zipcode,$country,$mobile,$mobile2,$email,$email2,$primary_contact_method,$B_address,$B_address2,$B_city,$B_state,$B_zipcode,$B_country,$altcontactname,$altcontactmobil,$altcontactaddress1,$altcontactaddress2,$altcontactcity,$altcontactstate,$altcontactzipcode,$altcontactcountry,$altcontactemail,$relationship,$idcard,$passport,$branchcode,$categorycode,$dateenrolled,$dateexpiry,$userid,$password,$status,$filepath);
-                        
-                        if (mysqli_stmt_execute($result)) {
-                            echo "<script>alert('Member registered successfully!\\nMember ID: {$cardnumber}\\nRegistration fee: ".number_format($enrollmentfee,2)."');window.location = 'add_member.php';</script>";
-                        exit();
-                        } 
-                        else {
-                            echo "<script>alert('Something went wrong. Please try again.');</script>";}
+if(!empty($_FILES['memberphoto']['name'])){
 
-                    } else{
-                        $error1 = '<strong>Error Connection:'.mysqli_error($dbcon).'<strong>'; 
-                    }  
+    if($memberphoto['size'] <= 500000){
+
+        $imagedetails = pathinfo($memberphoto['name']);
+        $allwextention = array('jpg','jpeg','png');
+
+        if(in_array(strtolower($imagedetails['extension']), $allwextention)){
+
+            $filepath = 'img/'.uniqid().'.'.$imagedetails['extension'];
+
+            if(!move_uploaded_file($memberphoto['tmp_name'], $filepath)){
+                $error = '<strong>Image upload failed</strong>';
+            }
+
+        } else {
+            $error = '<strong>Select an Image File (jpg, jpeg, png)</strong>';
+        }
+
+    } else {
+        $error = '<strong>Image should be less than 500 KB</strong>';
+    }
+}
+
+        if(empty($error) && empty($error1)){
+
+            $sql="INSERT INTO `member`
+            (`service`,`title`,`cardnumber`,`surname`,`firstname`,`middle_name`,
+            `othernames`,`initials`,`regtnumber`,`dateofbirth`,`gender`,`address`,
+            `address2`,`city`,`state`,`zipcode`,`country`,`mobile`,`mobile2`,
+            `email`,`email2`,`primary_contact_method`,`B_address`,`B_address2`,
+            `B_city`,`B_state`,`B_zipcode`,`B_country`,`altcontactname`,
+            `altcontactmobil`,`altcontactaddress1`,`altcontactaddress2`,
+            `altcontactcity`,`altcontactstate`,`altcontactzipcode`,
+            `altcontactcountry`,`altcontactemail`,`relationship`,`idcard`,
+            `passport`,`branchcode`,`categorycode`,`establishment`,
+            `dateenrolled`,`dateexpiry`,`userid`,`password`,`status`,`img`)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+            $result = mysqli_prepare($dbcon, $sql);
+
+            if($result){
+
+                mysqli_stmt_bind_param(
+                    $result,
+                    'sssssssssssssssssssssssssssssssssssssssssssssssss',
+                    $service,$title,$cardnumber,$surname,$firstname,$middle_name,
+                    $othernames,$initials,$regtnumber,$dateofbirth,$gender,$address,
+                    $address2,$city,$state,$zipcode,$country,$mobile,$mobile2,
+                    $email,$email2,$primary_contact_method,$B_address,$B_address2,
+                    $B_city,$B_state,$B_zipcode,$B_country,$altcontactname,
+                    $altcontactmobil,$altcontactaddress1,$altcontactaddress2,
+                    $altcontactcity,$altcontactstate,$altcontactzipcode,
+                    $altcontactcountry,$altcontactemail,$relationship,$idcard,
+                    $passport,$branchcode,$categorycode,$establishment,
+                    $dateenrolled,$dateexpiry,$userid,$password,$status,$filepath
+                );
+
+                if(mysqli_stmt_execute($result)){
+
+                    echo "<script>
+                        alert('Member registered successfully!\\nMember ID: {$cardnumber}\\nRegistration fee: ".number_format($enrollmentfee,2)."');
+                        window.location='add_member.php';
+                    </script>";
+                    exit();
+
+                }else{
+                    echo "<script>alert('Something went wrong. Please try again.');</script>";
                 }
+
             }else{
-                $error = '<strong>Select an Image File (jpg, jpeg, png)<strong>';    
+                $error1 = '<strong>Error Connection: '.mysqli_error($dbcon).'</strong>';
             }
         }
-        else{
-            $error = '<strong>Image should be less than 500 KB<strong>'; 
-        }
-        
-    }else{
-        $error1 = '<strong>Invalied Authentication<strong>'; 
     }
 
 }
@@ -216,10 +264,12 @@ $_SESSION['csrf_token']=$token;
                                                 </select> -->
                                             </div>
                                             <div class="col-sm-2 text-end">
-                                            <label for="inputSalutation" class="form-label">Member Image<i class="text-danger font-weight-bold">*</i></label>       
+                                            <label for="inputSalutation" class="form-label">Member Image</label>  
+                                            <!-- <i class="text-danger font-weight-bold">*</i>      -->
                                         </div>
                                         <div class="col-sm-2">       
-                                            <input type="file" class="form-control" id="memberphoto" name="memberphoto" required>                                            
+                                            <input type="file" class="form-control" id="memberphoto" name="memberphoto" >      
+                                            <!-- required -->
                                         </div>
                                     </div>
                                    
@@ -384,10 +434,10 @@ $_SESSION['csrf_token']=$token;
 
                                     <div class="row p-2">
                                         <div class="col-sm-2 text-end">        
-                                            <label for="inputPriEmail" class="form-label">Primary Email:<i class="text-danger font-weight-bold">*</i></label>
+                                            <label for="inputPriEmail" class="form-label">Primary Email:</label>
                                         </div>
                                         <div class="col-sm-4">
-                                            <input type="email" class="form-control" name="email" id="inputPriEmail" required>  <!--required-->
+                                            <input type="email" class="form-control" name="email" id="inputPriEmail">  <!--required-->
                                         </div>
                                     
                                         <div class="col-sm-2 text-end">        
@@ -400,10 +450,10 @@ $_SESSION['csrf_token']=$token;
 
                                     <div class="row p-2">
                                         <div class="col-sm-2 text-end">
-                                            <label for="inputMainConMethod" class="form-label">Main Contact Method:<i class="text-danger font-weight-bold">*</i></label>       
+                                            <label for="inputMainConMethod" class="form-label">Main Contact Method:</label>       
                                         </div>
                                         <div class="col-sm-2">        
-                                        <select id="inputMainConMethod" class="form-select" name="primary_contact_method" required>  <!--required-->
+                                        <select id="inputMainConMethod" class="form-select" name="primary_contact_method" >  <!--required-->
                                             <option selected value="PM">Primary Mobile</option>
                                             <option value="SM">Secondary Mobile</option>
                                             <option value="PE">Primary Email</option>
@@ -559,7 +609,9 @@ $_SESSION['csrf_token']=$token;
                                             <label for="inputCardNo" class="form-label">Card Number:<i class="text-danger font-weight-bold">*</i></label>
                                         </div>
                                         <div class="col-sm-4">
-                                            <input type="text" class="form-control" name="cardnumber" id="inputCardNo" value="<?php echo $autoCardNumber; ?>" readonly>  <!--required-->
+                                            <input type="text" class="form-control" name="cardnumber" id="inputCardNo" required>
+
+                                            <!-- <input type="text" class="form-control" name="cardnumber" id="inputCardNo" value="<?php echo $autoCardNumber; ?>" readonly> this line auto number generator required -->
                                         </div>
                                    
                                         <div class="col-sm-2 text-end">        
@@ -612,6 +664,17 @@ $_SESSION['csrf_token']=$token;
                                                 }
                                             ?>
                                             </select>
+                                        </div>
+
+                                        <div class="col-sm-2">
+                                            
+                                        </div>
+
+                                        <div class="col-sm-2 text-end">        
+                                            <label for="inputEst" class="form-label">Establishment:</label>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control" name="establishment" id="inputEst">
                                         </div>
                                     </div>
 

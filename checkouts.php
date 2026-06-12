@@ -75,6 +75,7 @@ if(isset($_POST['btncheckouts']) && isset($_SESSION['csrf_token']) && isset($_PO
         } 
         else {
             $member = mysqli_fetch_assoc($sql1);
+            $rank = $member['title'];
             $member_id   = $member['cardnumber'];
             $membername  = $member['surname']." ".$member['firstname'];
             $category    = $member['categorycode'];
@@ -190,8 +191,10 @@ if(isset($_POST['btncheckouts']) && isset($_SESSION['csrf_token']) && isset($_PO
                                 $_SESSION['success_msg'] = "
                                     <div class='border p-2 mt-3'>
                                         <b>Checkout Successful!</b><br><br>
-                                        Member: <strong>$membername</strong><br>
-                                        Member ID: <strong>$member_id</strong><br><br>
+                                        Member ID: <strong>$member_id</strong><br>
+                                        Member Rank: <strong>$rank</strong><br>
+                                        Member Name: <strong>$membername</strong><br><br>
+                                        
                                         Book: <strong>$bookname</strong><br>
                                         Book ID: <strong>$booknumber</strong><br><br>
                                         Return Date: <strong>$returndate</strong>

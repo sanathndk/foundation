@@ -62,7 +62,12 @@ if(isset($_POST['btnCheckin'])){
             // Member info
             $sql1 = mysqli_query($dbcon,"SELECT * FROM `member` WHERE `cardnumber`='$membernumber'");
             $member = mysqli_fetch_assoc($sql1);
+
             $category = $member['categorycode'];
+            $rank = $member['title'];
+            $cardnumber = $member['cardnumber'];
+            $name = $member['surname'] . ' '  . ' ' . $member['initials'];
+            
 
             // Book info
             $sql2 = mysqli_query($dbcon,"SELECT * FROM `catalog` WHERE `booknumber`='$booknumber'");
@@ -186,6 +191,9 @@ if(isset($_POST['btnCheckin'])){
 
                                         <?php if(isset($success) && $success == 1): ?>
                                             <div class='border p-2 mt-3'>
+                                                <strong>Member ID:</strong> <?php echo htmlspecialchars($cardnumber); ?><br>
+                                                <strong>Member Rank:</strong> <?php echo htmlspecialchars($rank); ?><br>
+                                                <strong>Member Name:</strong> <?php echo htmlspecialchars($name); ?><br>
                                                 <strong>Book ID:</strong> <?php echo htmlspecialchars($booknumber); ?><br>
                                                 <strong>Book Name:</strong> <?php echo htmlspecialchars($bookname); ?><br>
 
