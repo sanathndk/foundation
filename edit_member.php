@@ -383,67 +383,34 @@ $_SESSION['csrf_token'] = $token;
                                 <fieldset class="border p-3">
                                     <legend class="w-auto">Contact information:</legend>
 
-                                    <div class="row p-2">
-                                        <div class="col-sm-2 text-end">        
-                                            <label for="inputPriMob" class="form-label">Primary Mobile:<i class="text-danger font-weight-bold">*</i></label>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <input type="number" class="form-control" name="mobile" id="inputPriMob" value="<?php echo $row['mobile']?>" required >  
-                                        </div>
-                                   
-                                        <div class="col-sm-2 text-end">        
-                                            <label for="inputSecMob" class="form-label">Secondary Mobile:</label>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <input type="number" class="form-control" name="mobile2" id="inputSecMob" value="<?php echo $row['mobile2']?>">
-                                        </div>
-                                    </div>
+                                    
 
                                     <div class="row p-2">
                                         <div class="col-sm-2 text-end">        
-                                            <label for="inputPriEmail" class="form-label">Primary Email:<i class="text-danger font-weight-bold">*</i></label>
+                                            <label for="inputPriEmail" class="form-label">Primary Email:</label>
                                         </div>
                                         <div class="col-sm-4">
-                                            <input type="email" class="form-control" name="email" id="inputPriEmail" value="<?php echo $row['email']?>" required>  
+                                            <input type="email" class="form-control" name="email" id="inputPriEmail">  <!--required-->
                                         </div>
                                     
                                         <div class="col-sm-2 text-end">        
                                             <label for="inputSecEmail" class="form-label">Secondary Email:</label>
                                         </div>
                                         <div class="col-sm-4">
-                                            <input type="email" class="form-control" name="email2" id="inputSecEmail" value="<?php echo $row['email2']?>">
+                                            <input type="email" class="form-control" name="email2" id="inputSecEmail">
                                         </div>
                                     </div>        
 
                                     <div class="row p-2">
                                         <div class="col-sm-2 text-end">
-                                            <label for="inputMainConMethod" class="form-label">Main Contact Method:<i class="text-danger font-weight-bold">*</i></label>       
+                                            <label for="inputMainConMethod" class="form-label">Main Contact Method:</label>       
                                         </div>
                                         <div class="col-sm-2">        
-                                        <select id="inputMainConMethod" class="form-select" name="primary_contact_method" required>  
-                                        <?php
-                                            if ($row['primary_contact_method']=='PM') {
-                                                echo "<option value='$row[primary_contact_method]'>Primary Mobile</option>";
-                                                echo "<option value='SM'>Secondary Mobile</option>";
-                                                echo "<option value='PE'>Primary Email</option>";
-                                                echo "<option value='SE'>Secondary Email</option>";
-                                            } elseif ($row['primary_contact_method']=='SE') {
-                                                echo "<option value='$row[primary_contact_method]'>Secondary Mobile</option>";
-                                                echo "<option value='PM'>Primary Mobile</option>";
-                                                echo "<option value='PE'>Primary Email</option>";
-                                                echo "<option value='SE'>Secondary Email</option>";                                                          
-                                            } elseif ($row['primary_contact_method']=='PE') {
-                                                echo "<option value='$row[primary_contact_method]'>Primary Email</option>";
-                                                echo "<option value='PM'>Primary Mobile</option>";
-                                                echo "<option value='SM'>Secondary Mobile</option>";
-                                                echo "<option value='SE'>Secondary Email</option>";                                                                   
-                                            } elseif ($row['primary_contact_method']=='SE') {
-                                                echo "<option value='$row[primary_contact_method]'>Secondary Email</option>";
-                                                echo "<option value='PM'>Primary Mobile</option>";
-                                                echo "<option value='PE'>Primary Email</option>";
-                                                echo "<option value='SM'>Secondary Mobile</option>";                                          
-                                            }
-                                            ?>                                 
+                                        <select id="inputMainConMethod" class="form-select" name="primary_contact_method" >  <!--required-->
+                                            <option selected value="PM">Primary Mobile</option>
+                                            <option value="SM">Secondary Mobile</option>
+                                            <option value="PE">Primary Email</option>
+                                            <option value="SE">Secondary Email</option>
                                         </select>
                                         </div>
                                     </div>

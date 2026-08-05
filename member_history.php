@@ -168,7 +168,7 @@ if(isset($_SESSION['error_msg'])){
                                 <br>
                                 <div class="row justify-content-center">
                                     <div class="col-md-4">
-                                        <input type="text" name="membernumber" class="form-control" placeholder="Search Reg Number or Name" value="<?php echo htmlentities($searchMember); ?>">
+                                        <input type="text" name="membernumber" class="form-control" placeholder="Search Member ID, Reg Number or Name" value="<?php echo htmlentities($searchMember); ?>">
                                     </div>
                                     <div class="col-md-2">
                                         <button type="submit" class="btn btn-primary">Search</button>
@@ -222,13 +222,18 @@ if(isset($_SESSION['error_msg'])){
                                                 // Search condition
                                                 $params = [];
                                                 if($searchMember != ""){
-                                                    $sql .= " WHERE (m.regtnumber LIKE ? 
-                                                                OR m.initials LIKE ? 
-                                                                OR m.surname LIKE ? 
-                                                                OR m.firstname LIKE ?)";
+                                                    $sql .= " WHERE (
+                                                            m.cardnumber LIKE ?
+                                                            OR m.regtnumber LIKE ?
+                                                            OR SUBSTRING_INDEX(m.cardnumber,'/',-1) LIKE ?
+                                                            OR SUBSTRING_INDEX(m.regtnumber,'/',-1) LIKE ?
+                                                            OR m.initials LIKE ?
+                                                            OR m.surname LIKE ?
+                                                            OR m.firstname LIKE ?
+                                                        )";
                                                     
                                                     $search = "%".$searchMember."%";
-                                                    $params = [$search, $search, $search, $search];
+                                                    $params = [$search, $search, $search, $search, $search ,$search ,$search];
                                                 }
 
                                                 // Order
@@ -243,7 +248,7 @@ if(isset($_SESSION['error_msg'])){
                                                 else {
 
                                                     if(!empty($params)){
-                                                        mysqli_stmt_bind_param($stmt, "ssss", ...$params);
+                                                        mysqli_stmt_bind_param($stmt, "sssssss", ...$params);
                                                     }
 
                                                     mysqli_stmt_execute($stmt);

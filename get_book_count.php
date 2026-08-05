@@ -9,10 +9,13 @@ if(isset($_POST['memberID'])) {
 
     // 🔍 Check if member exists
     $check = mysqli_query($dbcon, "
-        SELECT * FROM member 
-        WHERE cardnumber='$memberID' 
-        OR regtnumber='$memberID'
+    SELECT * FROM member 
+    WHERE cardnumber='$memberID'
+    OR regtnumber='$memberID'
+    OR SUBSTRING_INDEX(cardnumber, '/', -1)='$memberID'
+    OR SUBSTRING_INDEX(regtnumber, '/', -1)='$memberID'
     ");
+    
 
     if(mysqli_num_rows($check) > 0){
 

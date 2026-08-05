@@ -21,6 +21,8 @@ if(isset($_POST['btnupdate'])) {
     $bookimage = $_FILES['bookimage'];      
     $itemtype = $_POST['itemtype'];
     $title = $_POST['title'];
+    $oldBooknumber = $_GET['id'];      // Original barcode
+    $newBooknumber = $_POST['booknumber']; // Edited barcode
     $isbn = $_POST['isbn'];
     $issn = $_POST['issn'];
     $author = $_POST['author'];
@@ -42,10 +44,10 @@ if(isset($_POST['btnupdate'])) {
     $checkedin = $result['checkedin'];
 
     if (empty($bookimage['size'])) {
-        $sql1 = "UPDATE `catalog` SET `itemtype`=?, `title`=?, `isbn`=?, `issn`=?, `author`=?, `author2`=?, `Language`=?, `category`=?, `editionnumber`=?, `classificationNo`=?, `ItemNo`=?, `publisher`=?, `placeofpublisher`=?, `publicationyear`=?, `volume`=?, `pages`=?, `price`=?, `dateacquired`=?, `collectioncode`=?, `status`=?, `checkedin`=? WHERE `booknumber`=?";
+        $sql1 = "UPDATE `catalog` SET `booknumber`=?,`itemtype`=?, `title`=?, `isbn`=?, `issn`=?, `author`=?, `author2`=?, `Language`=?, `category`=?, `editionnumber`=?, `classificationNo`=?, `ItemNo`=?, `publisher`=?, `placeofpublisher`=?, `publicationyear`=?, `volume`=?, `pages`=?, `price`=?, `dateacquired`=?, `collectioncode`=?, `status`=?, `checkedin`=? WHERE `booknumber`=?";
         $stmt = mysqli_prepare($dbcon, $sql1);
-        mysqli_stmt_bind_param($stmt,'ssssssssssssssssssssss', $itemtype, $title, $isbn, $issn, $author, $author2, $language, $category, $editionnumber, $classificationNo, $itemno, $publisher, $placeofpublisher, $publicationyear, $volume, $pages, $price, $dateacquired, $collectioncode, $status, $checkedin, $booknumber);
-
+        
+        mysqli_stmt_bind_param($stmt,'sssssssssssssssssssssss',$newBooknumber,$itemtype,$title,$isbn,$issn,$author,$author2,$language,$category,$editionnumber,$classificationNo,$itemno,$publisher,$placeofpublisher,$publicationyear,$volume,$pages,$price,$dateacquired,$collectioncode,$status,$checkedin,$oldBooknumber);
         if (mysqli_stmt_execute($stmt)) {
             echo "<script>
                     alert('Record updated successfully');
@@ -63,10 +65,9 @@ if(isset($_POST['btnupdate'])) {
         if (in_array(strtolower($imagedetails['extension']), $allowed)) {
             $filepath = 'img/' . uniqid() . '.' . $imagedetails['extension'];
             if (move_uploaded_file($bookimage['tmp_name'], $filepath)) {
-                $sql1 = "UPDATE `catalog` SET `itemtype`=?, `title`=?, `isbn`=?, `issn`=?, `author`=?, `author2`=?, `Language`=?, `category`=?, `editionnumber`=?, `classificationNo`=?, `ItemNo`=?, `publisher`=?, `placeofpublisher`=?, `publicationyear`=?, `volume`=?, `pages`=?, `price`=?, `dateacquired`=?, `collectioncode`=?, `status`=?, `checkedin`=?, `img`=? WHERE `booknumber`=?";
+                $sql1 = "UPDATE `catalog` SET `booknumber`=?,,`itemtype`=?, `title`=?, `isbn`=?, `issn`=?, `author`=?, `author2`=?, `Language`=?, `category`=?, `editionnumber`=?, `classificationNo`=?, `ItemNo`=?, `publisher`=?, `placeofpublisher`=?, `publicationyear`=?, `volume`=?, `pages`=?, `price`=?, `dateacquired`=?, `collectioncode`=?, `status`=?, `checkedin`=?, `img`=? WHERE `booknumber`=?";
                 $stmt = mysqli_prepare($dbcon, $sql1);
-                mysqli_stmt_bind_param($stmt,'sssssssssssssssssssssss', $itemtype, $title, $isbn, $issn, $author, $author2, $language, $category, $editionnumber, $classificationNo, $itemno, $publisher, $placeofpublisher, $publicationyear, $volume, $pages, $price, $dateacquired, $collectioncode, $status, $checkedin, $filepath, $booknumber);
-
+                mysqli_stmt_bind_param($stmt,'ssssssssssssssssssssssss',$newBooknumber,$itemtype,$title,$isbn,$issn,$author,$author2,$language,$category,$editionnumber,$classificationNo,$itemno,$publisher,$placeofpublisher,$publicationyear,$volume,$pages,$price,$dateacquired,$collectioncode,$status,$checkedin,$filepath,$oldBooknumber);
                 if (mysqli_stmt_execute($stmt)) {
                     echo "<script>
                             alert('Record updated successfully with image');
@@ -170,8 +171,8 @@ if(isset($_POST['btnupdate'])) {
                             <label>Barcode: *</label>
                           </div>
                           <div class="col-sm-4">
-                            <input type="text" class="form-control" value="<?php echo htmlspecialchars($result['booknumber']); ?>" disabled>
-                            <input type="hidden" name="booknumber" value="<?php echo htmlspecialchars($result['booknumber']); ?>">
+                            <input type="text" class="form-control" name="booknumber" value="<?php echo htmlspecialchars($result['booknumber']); ?>">
+                            
                           </div>
                           <div class="col-sm-2 text-end">
                             <label>ISBN:</label>

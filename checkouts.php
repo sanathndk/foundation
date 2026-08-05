@@ -4,6 +4,10 @@ error_reporting(0);
 include('includes/config.php');
 include('includes/activity.php');
 
+include "send_mail.php";
+
+
+
 logAction($dbcon, "checkouts");
 $token = rand();
 
@@ -11,6 +15,44 @@ if (strlen($_SESSION['alogin']) == 0) {
     header('location:index.php');
     exit;
 }
+
+    function getWorkingDaysLate($returnDate, $currentDate, $dbcon)
+    {
+        $workingDays = 0;
+
+        $start = strtotime($returnDate . ' +1 day');
+        $end   = strtotime($currentDate);
+
+        for($date = $start; $date <= $end; $date = strtotime('+1 day', $date))
+        {
+            $current = date('Y-m-d', $date);
+
+            // Sunday = 0, Saturday = 6
+            $dayOfWeek = date('w', $date);
+
+            // Skip weekends
+            if($dayOfWeek == 0 || $dayOfWeek == 6){
+                continue;
+            }
+
+            // Skip holidays from holiday_master table
+            $holidayCheck = mysqli_query(
+                $dbcon,
+                "SELECT id
+                FROM holidays
+                WHERE holiday_date='$current'
+                LIMIT 1"
+            );
+
+            if(mysqli_num_rows($holidayCheck) > 0){
+                continue;
+            }
+
+            $workingDays++;
+        }
+
+        return $workingDays;
+    }
 
 // Store membernumber in session if submitted - KEEP IT ALWAYS
 if(isset($_POST['membernumber'])){
@@ -64,7 +106,10 @@ if(isset($_POST['btncheckouts']) && isset($_SESSION['csrf_token']) && isset($_PO
         $sql1 = mysqli_query($dbcon,
             "SELECT * FROM member 
              WHERE cardnumber='$membernumber'
-             OR regtnumber='$membernumber'"
+             OR regtnumber='$membernumber'
+             OR REPLACE(cardnumber, CONCAT(SUBSTRING_INDEX(cardnumber,'/',1),'/'), '')='$membernumber'
+             OR REPLACE(regtnumber, CONCAT(SUBSTRING_INDEX(regtnumber,'/',1),'/'), '')='$membernumber'"
+
         );
 
         if (mysqli_num_rows($sql1) == 0) {
@@ -188,22 +233,52 @@ if(isset($_POST['btncheckouts']) && isset($_SESSION['csrf_token']) && isset($_PO
                             mysqli_stmt_bind_param($update,'ss',$status,$booknumber);
 
                             if (mysqli_stmt_execute($stmt) && mysqli_stmt_execute($update)) {
+
+                            // Send email
+                            $emailStatus = "";
+                            if (function_exists('sendBookIssueMail')) {
+                                $mailSent = sendBookIssueMail(
+                                    $member['email'],
+                                    $member_id,
+                                    $rank,
+                                    $membername,
+                                    $booknumber,
+                                    $bookname,
+                                    $issuesdate,
+                                    $returndate       
+                                );
+                                // var_dump($mailSent);
+                                // die();
+                                if ($mailSent) {
+                                    $emailStatus = "<br><span style='color:green'>Email sent successfully.</span>";
+                                } else {
+                                    $emailStatus = "<br><span style='color:red'>Email could not be sent.</span>";
+                                }
+                            }
+
                                 $_SESSION['success_msg'] = "
-                                    <div class='border p-2 mt-3'>
-                                        <b>Checkout Successful!</b><br><br>
-                                        Member ID: <strong>$member_id</strong><br>
-                                        Member Rank: <strong>$rank</strong><br>
-                                        Member Name: <strong>$membername</strong><br><br>
-                                        
-                                        Book: <strong>$bookname</strong><br>
-                                        Book ID: <strong>$booknumber</strong><br><br>
-                                        Return Date: <strong>$returndate</strong>
-                                    </div>
+                                <div class='border p-2 mt-3'>
+                                    <b>Checkout Successful!</b><br><br>
+
+                                    Member ID: <strong>$member_id</strong><br>
+                                    Member Rank: <strong>$rank</strong><br>
+                                    Member Name: <strong>$membername</strong><br><br>
+
+                                    Book: <strong>$bookname</strong><br>
+                                    Book ID: <strong>$booknumber</strong><br><br>
+
+                                    Return Date: <strong>$returndate</strong>
+
+                                    $emailStatus
+                                </div>
                                 ";
                                 // DO NOT clear membernumber - KEEP IT for next checkout
                                 // $_SESSION['membernumber'] remains the same
                                 header("Location: checkouts.php");
                                 exit;
+
+
+                                
                             } else {
                                 $_SESSION['error_msg'] = "Database Error: " . mysqli_error($dbcon);
                                 $_SESSION['membernumber'] = $membernumber; // KEEP the member number
@@ -217,6 +292,11 @@ if(isset($_POST['btncheckouts']) && isset($_SESSION['csrf_token']) && isset($_PO
         }
     }
 }
+
+
+
+
+
 
 // Display messages from session
 if(isset($_SESSION['error_msg'])) {
@@ -236,6 +316,7 @@ if(isset($_SESSION['allFineComments'])) {
 }
 
 $_SESSION['csrf_token'] = $token;
+
 ?>
 
 <!DOCTYPE html>
@@ -342,7 +423,7 @@ $_SESSION['csrf_token'] = $token;
                                 </div>
                                 <div class="col-sm-4">
                                     <input type="text" class="form-control" id="membernumber" name="membernumber" 
-                                        placeholder="Enter Member ID or Registration Number" 
+                                        placeholder="Enter Member ID or Service Number" 
                                         value="<?php echo isset($_SESSION['membernumber']) ? htmlspecialchars($_SESSION['membernumber']) : ''; ?>" required>
                                     <?php if($error): ?>
                                         <span class="text-danger font-weight-bold"><?php echo $error; ?></span>
@@ -383,9 +464,138 @@ $_SESSION['csrf_token'] = $token;
                             </div>    
                         </fieldset>                                                        
                     </form>      
-                </div>
+                </div>                
+                <?php
+                if(!empty($_SESSION['membernumber'])){
 
-                <?php include('includes/footer.php');?>  
+                    $searchMember = trim($_SESSION['membernumber']);
+
+                    $memberQuery = mysqli_query($dbcon,"
+                        SELECT *
+                        FROM member
+                        WHERE cardnumber='$searchMember'
+                        OR regtnumber='$searchMember'
+                        OR SUBSTRING_INDEX(cardnumber,'/',-1)='$searchMember'
+                        OR SUBSTRING_INDEX(regtnumber,'/',-1)='$searchMember'
+                    ");
+
+                    if(mysqli_num_rows($memberQuery) > 0){
+
+                        $memberData = mysqli_fetch_assoc($memberQuery);
+                        $memberID = $memberData['cardnumber'];
+
+                            ?>
+                            <div class="container mt-4">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        Borrowing History -
+                                        <?php echo $memberData['regtnumber']. ' ' .$memberData['title'].' '.$memberData['surname'].' '.$memberData['firstname']; ?>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Ser </th>
+                                                    <th>Book ID</th>
+                                                    <th>Title</th>
+                                                    <th>Issue Date</th>
+                                                    <th>Due Date</th>
+                                                    <th>Overdue Days</th>
+                                                    <th>Fine Amount</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+
+                                            <tbody>
+
+                                            <?php
+
+                                            $history = mysqli_query($dbcon,"
+                                                SELECT i.*, c.title
+                                                FROM issuedbook i
+                                                LEFT JOIN catalog c
+                                                    ON c.booknumber=i.booknumber
+                                                WHERE i.membernumber='$memberID'
+                                                ORDER BY i.issueid DESC
+                                                LIMIT 20
+                                            ");
+
+                                            while($row = mysqli_fetch_assoc($history)){
+                                                $daysLate = 0;
+                                                $fine = 0;
+                                                $finePerDay = 10;
+
+                                                // Only calculate fine if book not returned and overdue
+                                                if($row['RetrunStatus'] == 0)
+                                                {
+                                                    $today = date('Y-m-d');
+
+                                                    if($today > $row['ReturnDate'])
+                                                    {
+                                                        $daysLate = getWorkingDaysLate(
+                                                        $row['ReturnDate'],
+                                                        date('Y-m-d'),
+                                                        $dbcon
+                                                    );
+
+                                                    $finePerDay = 10;
+                                                    $fine = $daysLate * $finePerDay;
+
+                                                        $fine = $daysLate * $finePerDay;
+                                                    }
+                                                }
+                                            ?>
+
+                                                <tr>
+                                                    <td class="text-center"><?php echo $cnt; ?></td>
+                                                    <td><?php echo $row['booknumber']; ?></td>
+                                                    <td><?php echo htmlspecialchars($row['title']); ?></td>
+                                                    <td><?php echo $row['IssuesDate']; ?></td>
+                                                    <td><?php echo $row['ReturnDate']; ?></td>
+                                                    <td class="text-center">
+                                                        <?php echo $daysLate; ?>
+                                                    </td>
+
+                                                    <td class="text-center">
+                                                        <?php
+                                                        if($fine > 0){
+                                                            echo '<span class="text-danger"><strong>Rs. '
+                                                                . number_format($fine,2)
+                                                                . '</strong></span>';
+                                                        }else{
+                                                            echo '<span class="text-success">No Fine</span>';
+                                                        }
+                                                        ?>
+                                                    </td>
+
+                                                    <td>
+                                                        <?php
+                                                        if($row['RetrunStatus']==0){
+                                                            echo '<span class="badge bg-warning">Borrowed</span>';
+                                                        } else {
+                                                            echo '<span class="badge bg-success">Returned</span>';
+                                                        }
+                                                        ?>
+                                                    </td>
+                                                </tr>
+
+                                            <?php 
+                                            $cnt++;
+                                            } ?>
+
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <?php
+                                }
+                            }
+                            ?>
+                                <?php include('includes/footer.php');?>  
             </div>      
         </div>  
     </div>

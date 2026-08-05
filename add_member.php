@@ -416,12 +416,12 @@ $_SESSION['csrf_token']=$token;
                                 <fieldset class="border p-3">
                                     <legend class="w-auto">Contact information:</legend>
 
-                                    <div class="row p-2">
+                                    <!-- <div class="row p-2">
                                         <div class="col-sm-2 text-end">        
                                             <label for="inputPriMob" class="form-label">Primary Mobile:<i class="text-danger font-weight-bold">*</i></label>
                                         </div>
                                         <div class="col-sm-4">
-                                            <input type="number" class="form-control" name="mobile" id="inputPriMob" required>  <!--required-->
+                                            <input type="number" class="form-control" name="mobile" id="inputPriMob" required>  
                                         </div>
                                    
                                         <div class="col-sm-2 text-end">        
@@ -430,7 +430,7 @@ $_SESSION['csrf_token']=$token;
                                         <div class="col-sm-4">
                                             <input type="number" class="form-control" name="mobile2" id="inputSecMob">
                                         </div>
-                                    </div>
+                                    </div> -->
 
                                     <div class="row p-2">
                                         <div class="col-sm-2 text-end">        

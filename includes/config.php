@@ -1,6 +1,8 @@
 <?php 
 
-$dbcon=mysqli_connect('localhost','root','','dscsc_lib');
+// $dbcon=mysqli_connect('localhost','root','','dscsc_lib');
+
+$dbcon=mysqli_connect('localhost','root','','foundation');
 
 if(!$dbcon) {
    echo "<script>alert ('DB Not connected'.mysqli_error($dbcon))</script>";

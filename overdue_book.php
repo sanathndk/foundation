@@ -73,32 +73,64 @@ else{
                                                         <th>Member ID</th>
                                                         <th>Member Rank</th>
                                                         <th>Member Name</th>
-                                                        <th>ISBN </th>
+                                                        <th>ISBN</th>
                                                         <th>Issued Date</th>
                                                         <th>Return Date</th>
+                                                        <th>Overdue Days</th>
+                                                        <th>Fine Amount</th>
                                                     </tr>
                                                 </thead>
                                             <tbody>
                                                 
-                                            <?php 
+                                            <?php
+                                                $query = mysqli_query($dbcon,"
+                                                    SELECT * 
+                                                    FROM issuedbook_view 
+                                                    WHERE RetrunStatus = 0
+                                                    AND ReturnDate <= '$sysdate'
+                                                ");
 
-                                            $query = mysqli_query($dbcon,"SELECT * from `issuedbook_view` WHERE `RetrunStatus`=0 && `ReturnDate`<= '$sysdate'");
-                                            if(mysqli_num_rows($query) > 0)
-                                            {                                                
-                                                while ($row=mysqli_fetch_array($query)) 
-                                                {  $cnt++;?>                                      
+                                                if(mysqli_num_rows($query) > 0)
+                                                {
+                                                    while ($row = mysqli_fetch_array($query))
+                                                    {
+                                                        $cnt++;
+
+                                                        // Calculate overdue days
+                                                        $daysLate = floor(
+                                                            (strtotime($sysdate) - strtotime($row['ReturnDate']))
+                                                            / (60 * 60 * 24)
+                                                        );
+
+                                                        // Fine calculation
+                                                        $fine = $daysLate * 10; // Rs.10 per day
+                                                ?>
                                                 <tr>
-                                                    <td class="text-center"><?php echo htmlentities($cnt);?></td>
-                                                    <td><?php echo $row['booknumber'];?></td>
-                                                    <td><?php echo $row['title'];?></td>
+                                                    <td class="text-center"><?php echo htmlentities($cnt); ?></td>
+                                                    <td><?php echo $row['booknumber']; ?></td>
+                                                    <td><?php echo $row['title']; ?></td>
                                                     <td><?php echo $row['membercard']; ?></td>
-                                                    <td><?php echo $row['memberrank']; ?></td>                                                    
-                                                    <td><?php echo $row['initials'].' '.$row['surname'];?></td>
-                                                    <td><?php echo $row['isbn'];?></td>
-                                                    <td><?php echo $row['IssuesDate'];?></td>
-                                                    <td><?php echo $row['ReturnDate'];?></td>                                                                                        
+                                                    <td><?php echo $row['memberrank']; ?></td>
+                                                    <td><?php echo $row['initials'].' '.$row['surname']; ?></td>
+                                                    <td><?php echo $row['isbn']; ?></td>
+                                                    <td><?php echo $row['IssuesDate']; ?></td>
+                                                    <td><?php echo $row['ReturnDate']; ?></td>
+
+                                                    <!-- Fine Date (Overdue Days) -->
+                                                    <td><?php echo $daysLate; ?> Days</td>
+
+                                                    <!-- Fine Amount -->
+                                                    <td>
+                                                        <span class="text-danger">
+                                                            <strong>Rs. <?php echo number_format($fine, 2); ?></strong>
+                                                        </span>
+                                                    </td>
                                                 </tr>
-                                            <?php }} ?>                                      
+
+                                                <?php
+                                                    }
+                                                }
+                                                ?>                                   
                                     </tbody>
                                 </table>
                             </div>                            
@@ -119,17 +151,7 @@ else{
 		new DataTable('#dataTables');  
 	</script>
 
-    <!-- <script src="js/jquery-3.7.0.js"></script>
-	<script src="js/jquery.dataTables.min.js"></script>
-    <script src="js/dataTables.buttons.min.js"></script>
-    <script src="js/buttons.print.min.js"></script>
-    <script src="js/jszip.min.js"></script>
-    <script src="js/pdfmake.min.js"></script>
-    <script src="js/vfs_fonts.js"></script>
-    <script src="js/buttons.html5.min.js"></script>      
-    <script src="js/dataTables.bootstrap5.min.js"></script>    
-    <script src="js/buttons.bootstrap5.min.js"></script>    
-    <script src="js/buttons.colVis.min.js"></script>   -->
+
 
     <script>
 		// new DataTable('#dataTables'); 
@@ -147,8 +169,6 @@ else{
     } );
 }
 
-    // table.buttons().container()
-    // .appendTo( '#dataTables .col-md-6:eq(0)' );
 
 	</script>
 
