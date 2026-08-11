@@ -124,6 +124,60 @@ if(isset($_SESSION['error_msg'])){
         color: #721c24;
         border: 1px solid #f5c6cb;
     }
+    .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 10px;
+    }
+    .badge-success {
+        color: #fff;
+        background-color: #28a745;
+    }
+    .badge-danger {
+        color: #fff;
+        background-color: #dc3545;
+    }
+    .badge-warning {
+        color: #212529;
+        background-color: #ffc107;
+    }
+    .badge-info {
+        color: #fff;
+        background-color: #17a2b8;
+    }
+    .badge-secondary {
+        color: #fff;
+        background-color: #6c757d;
+    }
+    .btn-sm {
+        padding: 2px 8px;
+        font-size: 12px;
+        border-radius: 3px;
+    }
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-success:hover {
+        background-color: #218838;
+    }
+    .btn-info {
+        background-color: #17a2b8;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    .btn-info:hover {
+        background-color: #138496;
+    }
 </style>
 </head>
 <body class="top-navbar-fixed">
@@ -153,7 +207,7 @@ if(isset($_SESSION['error_msg'])){
             <!-- Search Form -->
             <div class="container">
                 <div class="row justify-content-md-center">
-                    <div class="col-md-10">
+                    <div class="col-md-12">
                     
                     <!-- Display success/error messages -->
                     <?php if(isset($success_msg)): ?>
@@ -198,6 +252,8 @@ if(isset($_SESSION['error_msg'])){
                                                 <th>Return Date</th>
                                                 <th>Status</th>
                                                 <th>Fine</th>
+                                                <th>Fine Status</th>      
+                                                <th>Fine Comment</th>     
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -206,18 +262,18 @@ if(isset($_SESSION['error_msg'])){
                                                 $cnt = 0;
                                                 $hasRecords = false;
 
-                                                // Base SQL query
-                                                $sql = "SELECT ib.*, 
-                                                            ibv.title,
-                                                            m.initials, 
-                                                            m.surname, 
-                                                            m.firstname, 
-                                                            m.regtnumber
-                                                        FROM issuedbook ib
-                                                        LEFT JOIN member m 
-                                                            ON ib.membernumber = m.cardnumber
-                                                        LEFT JOIN issuedbook_view ibv
-                                                            ON ib.booknumber = ibv.booknumber";
+                                                // Base SQL query - Added fine_status and fine_comment
+                                                $sql = "SELECT DISTINCT ib.*, 
+                                                    ibv.title,
+                                                    m.initials, 
+                                                    m.surname, 
+                                                    m.firstname, 
+                                                    m.regtnumber
+                                                FROM issuedbook ib
+                                                LEFT JOIN member m 
+                                                    ON ib.membernumber = m.cardnumber
+                                                LEFT JOIN issuedbook_view ibv
+                                                    ON ib.booknumber = ibv.booknumber";
 
                                                 // Search condition
                                                 $params = [];
@@ -233,7 +289,7 @@ if(isset($_SESSION['error_msg'])){
                                                         )";
                                                     
                                                     $search = "%".$searchMember."%";
-                                                    $params = [$search, $search, $search, $search, $search ,$search ,$search];
+                                                    $params = [$search, $search, $search, $search, $search, $search, $search];
                                                 }
 
                                                 // Order
@@ -243,7 +299,7 @@ if(isset($_SESSION['error_msg'])){
                                                 $stmt = mysqli_prepare($dbcon, $sql);
 
                                                 if($stmt === false){
-                                                    echo '<tr><td colspan="10" class="text-center">SQL Error: '.mysqli_error($dbcon).'</td></tr>';
+                                                    echo '<tr><td colspan="12" class="text-center">SQL Error: '.mysqli_error($dbcon).'</td></tr>';
                                                 } 
                                                 else {
 
@@ -279,13 +335,63 @@ if(isset($_SESSION['error_msg'])){
                                                                 $fine = $daysLate * 10; // Rs.10 per day
                                                             }
 
+                                                            // ✅ Get Fine Status and Comment from Database
+                                                            $fineStatus = $row['fine_status'] ?? 'pending';
+                                                            $fineComment = $row['fine_comment'] ?? '';
+
+                                                            // ✅ If book is returned and fine exists but status is empty, set default
+                                                            if($row['RetrunStatus'] == 1 && $fine == 0 && empty($fineStatus)){
+                                                                $fineStatus = 'paid';
+                                                            }
+
+                                                            // ✅ If book is issued and overdue, set status
+                                                            if($row['RetrunStatus'] == 0 && $fine > 0 && empty($fineStatus)){
+                                                                $fineStatus = 'pending';
+                                                                $fineComment = "Book is overdue. Fine accumulating.";
+                                                            }
+
                                                             // Fine display
                                                             if($fine > 0){
-                                                                $fineDisplay = "<span class='text-danger'><strong>Rs. ".number_format($fine,2)."</strong></span>";
+                                                                if($fineStatus == 'paid'){
+                                                                    $fineDisplay = "<span class='text-success'><strong>Rs. ".number_format($fine,2)." (Paid)</strong></span>";
+                                                                } elseif($fineStatus == 'not_paid'){
+                                                                    $fineDisplay = "<span class='text-danger'><strong>Rs. ".number_format($fine,2)." (Unpaid)</strong></span>";
+                                                                } elseif($fineStatus == 'waived'){
+                                                                    $fineDisplay = "<span class='text-info'><strong>Rs. ".number_format($fine,2)." (Waived)</strong></span>";
+                                                                } else {
+                                                                    $fineDisplay = "<span class='text-warning'><strong>Rs. ".number_format($fine,2)." (Pending)</strong></span>";
+                                                                }
                                                             } else {
                                                                 $fineDisplay = "<span class='text-success'>No Fine</span>";
                                                             }
 
+                                                            // ✅ FINE STATUS DISPLAY
+                                                                if ($fine > 0) {
+                                                                    // If there is an actual fine amount, check the status
+                                                                    if ($fineStatus == 'paid') {
+                                                                        $fineStatusDisplay = '<span class="badge badge-success">Paid</span>';
+                                                                    } elseif ($fineStatus == 'waived') {
+                                                                        $fineStatusDisplay = '<span class="badge badge-info">Waived</span>';
+                                                                    } else {
+                                                                        // Default for unpaid overdue books
+                                                                        $fineStatusDisplay = '<span class="badge badge-danger">Not Paid</span>';
+                                                                    }
+                                                                } else {
+                                                                    // If there is no fine, show a dash
+                                                                    $fineStatusDisplay = '<span class="text-muted">-</span>';
+                                                                }
+
+                                                                // ✅ FINE COMMENT DISPLAY
+                                                                if (!empty($fineComment)) {
+                                                                    if ($fineStatus == 'paid') {
+                                                                        $fineCommentDisplay = '<span class="text-success"><i class="fa fa-check-circle"></i> ' . htmlentities($fineComment) . '</span>';
+                                                                    } else {
+                                                                        $fineCommentDisplay = '<span class="text-danger"><i class="fa fa-exclamation-circle"></i> ' . htmlentities($fineComment) . '</span>';
+                                                                    }
+                                                                } else {
+                                                                    // If the comment is empty, show a dash
+                                                                    $fineCommentDisplay = '<span class="text-muted">-</span>';
+                                                                }
                                                             // Delete button with confirmation
                                                             $deleteUrl = "member_history.php?delete_id=" . $row['issueid'];
                                                             if(!empty($searchMember)){
@@ -308,12 +414,14 @@ if(isset($_SESSION['error_msg'])){
                                                                     <td>" . htmlentities($row['ReturnDate']) . "</td>
                                                                     <td>{$status}</td>
                                                                     <td>{$fineDisplay}</td>
+                                                                    <td class='text-center'>{$fineStatusDisplay}</td>
+                                                                    <td>{$fineCommentDisplay}</td>
                                                                     <td class='text-center'>{$actionButtons}</td>
                                                                    </tr>";
                                                         }
 
                                                     } else {
-                                                        echo '<tr><td colspan="10" class="text-center">No records found</td></tr>';
+                                                        echo '<tr><td colspan="12" class="text-center">No records found</td></tr>';
                                                     }
                                                 }
                                             ?>
@@ -322,7 +430,7 @@ if(isset($_SESSION['error_msg'])){
                                 </div>
                             </div>
                         </div> <!-- panel -->
-                    </div> <!-- col-md-10 -->
+                    </div> <!-- col-md-12 -->
                 </div> <!-- row -->
             </div> <!-- container -->
             <?php include('includes/footer.php'); ?>
@@ -354,7 +462,6 @@ $(document).ready(function() {
                 ]
             });
         } else {
-            // Just show a simple table without DataTable features
             console.log('No records found, skipping DataTable initialization');
         }
     } else {

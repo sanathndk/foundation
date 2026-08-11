@@ -501,7 +501,49 @@ $_SESSION['csrf_token']=$token;
                               <option value="L">Lost</option>
                               <option value="D">Damage</option> 
                             </select>
-                          </div>      
+                          </div> 
+                          
+                          <!-- <div class="col-sm-4 text-end">
+                              <label for="inputBarcode" class="form-label">Generate Barcodes:</label>  
+                            </div>
+                                <div class="col-sm-4">
+                                    <button type="button" onclick="downloadSingleBarcode()" class="btn btn-secondary btn-md">Download Single</button>
+                                    <button type="button" onclick="previewBarcodes()" class="btn btn-info btn-md">Preview All</button>
+                                      <script>
+                                      function downloadSingleBarcode() {
+                                          let bookId = document.getElementById("inputBarcode").value.trim();
+                                          if (bookId === "") {
+                                              alert("Please enter the Book Number first.");
+                                              return;
+                                          }
+                                          window.open("barcode_generator.php?print=1&ids=" + encodeURIComponent(bookId), '_blank');
+                                      }
+                                      
+                                      function previewBarcodes() {
+                                          let baseBookId = document.getElementById("inputBarcode").value.trim();
+                                          let numBooks = parseInt(document.getElementById("inputmultiple").value) || 1;
+                                          
+                                          if (baseBookId === "") {
+                                              alert("Please enter the Book Number first.");
+                                              return;
+                                          }
+                                          
+                                          // Generate all book IDs
+                                          let bookIds = [baseBookId];
+                                          for(let i = 1; i < numBooks; i++) {
+                                              bookIds.push(baseBookId + '-' + (i + 1));
+                                          }
+                                          
+                                          // Open barcode generator with all IDs
+                                          window.open("barcode_generator.php?print=1&ids=" + encodeURIComponent(bookIds.join(',')), '_blank');
+                                      }
+                                      </script>
+                                </div>
+                            </div>   -->
+
+
+
+
                         </div>
                       </fieldset>     
                       
